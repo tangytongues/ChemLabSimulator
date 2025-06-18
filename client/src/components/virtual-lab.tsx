@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { AlertTriangle, Thermometer, Scale, Beaker, Droplets, CheckCircle, X, Flame, Play, Pause, RotateCcw } from "lucide-react";
+import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, X, Flame, Play, Pause, RotateCcw, Scale } from "lucide-react";
 import type { ExperimentStep } from "@shared/schema";
 
 interface VirtualLabProps {
@@ -42,13 +41,14 @@ interface LabState {
   reactionProgress: number;
   currentColor: string;
   isReacting: boolean;
+  flaskContents: string[];
 }
 
 const ASPIRIN_CHEMICALS: Chemical[] = [
-  { id: "salicylic", name: "Salicylic Acid", formula: "C₇H₆O₃", amount: 2.0, unit: "g", color: "bg-white", added: false },
-  { id: "acetic", name: "Acetic Anhydride", formula: "(CH₃CO)₂O", amount: 5.0, unit: "mL", color: "bg-yellow-100", added: false },
-  { id: "phosphoric", name: "Phosphoric Acid", formula: "H₃PO₄", amount: 3, unit: "drops", color: "bg-red-100", added: false },
-  { id: "water", name: "Distilled Water", formula: "H₂O", amount: 20.0, unit: "mL", color: "bg-blue-100", added: false },
+  { id: "salicylic", name: "Salicylic Acid", formula: "C₇H₆O₃", amount: 2.0, unit: "g", color: "#ffffff", added: false },
+  { id: "acetic", name: "Acetic Anhydride", formula: "(CH₃CO)₂O", amount: 5.0, unit: "mL", color: "#fef3c7", added: false },
+  { id: "phosphoric", name: "Phosphoric Acid", formula: "H₃PO₄", amount: 3, unit: "drops", color: "#fecaca", added: false },
+  { id: "water", name: "Distilled Water", formula: "H₂O", amount: 20.0, unit: "mL", color: "#dbeafe", added: false },
 ];
 
 const EQUIPMENT: Equipment[] = [
@@ -68,37 +68,40 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
     mixingSpeed: 0,
     reactionProgress: 0,
     currentColor: '#f0f8ff',
-    isReacting: false
+    isReacting: false,
+    flaskContents: []
   });
+  
   const [draggedItem, setDraggedItem] = useState<{type: 'chemical' | 'equipment', id: string} | null>(null);
-  const labBenchRef = useRef<HTMLDivElement>(null);
-  const [userInput, setUserInput] = useState("");
   const [showQuiz, setShowQuiz] = useState(false);
+  const [quizAnswer, setQuizAnswer] = useState("");
+  const [quizCorrect, setQuizCorrect] = useState<boolean | null>(null);
+  const labBenchRef = useRef<HTMLDivElement>(null);
 
-  // Temperature control and heating simulation
+  // Temperature control simulation
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (labState.isHeating && labState.temperature < labState.targetTemperature) {
       interval = setInterval(() => {
         setLabState(prev => ({
           ...prev,
-          temperature: Math.min(prev.temperature + 0.5, prev.targetTemperature)
+          temperature: Math.min(prev.temperature + 1, prev.targetTemperature)
         }));
-      }, 200);
+      }, 300);
     }
     return () => clearInterval(interval);
   }, [labState.isHeating, labState.temperature, labState.targetTemperature]);
 
-  // Reaction simulation based on temperature and chemicals
+  // Reaction simulation
   useEffect(() => {
-    if (labState.temperature > 80 && chemicals.every(c => c.added) && !labState.isReacting) {
+    if (labState.temperature > 80 && labState.flaskContents.length >= 2 && !labState.isReacting) {
       setLabState(prev => ({ ...prev, isReacting: true }));
       
       const reactionInterval = setInterval(() => {
         setLabState(prev => {
-          const newProgress = Math.min(prev.reactionProgress + 2, 100);
-          const colorIntensity = Math.floor((newProgress / 100) * 255);
-          const newColor = `rgb(${255 - colorIntensity}, ${255 - colorIntensity/2}, 200)`;
+          const newProgress = Math.min(prev.reactionProgress + 3, 100);
+          const colorIntensity = Math.floor((newProgress / 100) * 200);
+          const newColor = `hsl(${60 - newProgress/5}, 70%, ${80 - colorIntensity/4}%)`;
           
           return {
             ...prev,
@@ -106,382 +109,401 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
             currentColor: newColor
           };
         });
-      }, 100);
+      }, 150);
 
       setTimeout(() => {
         clearInterval(reactionInterval);
         setLabState(prev => ({ ...prev, isReacting: false }));
       }, 5000);
     }
-  }, [labState.temperature, chemicals, labState.isReacting]);
+  }, [labState.temperature, labState.flaskContents, labState.isReacting]);
 
-  const [quizAnswer, setQuizAnswer] = useState("");
-  const [quizCorrect, setQuizCorrect] = useState<boolean | null>(null);
-  const [stepProgress, setStepProgress] = useState(0);
-
-  const getStepConfig = (stepId: number) => {
-    const configs: Record<number, {
-      title: string;
-      requiredChemicals: string[];
-      requiredEquipment: string[];
-      quiz: string;
-      answer: string;
-      targetTemp: number;
-      instructions: string;
-    }> = {
-      1: {
-        title: "Prepare Reagents",
-        requiredChemicals: ["salicylic", "acetic"],
-        requiredEquipment: ["flask", "cylinder"],
-        quiz: "How much salicylic acid should be measured?",
-        answer: "2.0g",
-        targetTemp: 25,
-        instructions: "Drag salicylic acid and acetic anhydride to the flask"
-      },
-      2: {
-        title: "Add Catalyst",
-        requiredChemicals: ["phosphoric"],
-        requiredEquipment: ["stirrer"],
-        quiz: "How many drops of phosphoric acid catalyst should be added?",
-        answer: "2-3",
-        targetTemp: 25,
-        instructions: "Carefully add phosphoric acid catalyst drop by drop"
-      },
-      3: {
-        title: "Heat Reaction Mixture",
-        requiredChemicals: [],
-        requiredEquipment: ["thermometer"],
-        quiz: "What temperature should the reaction mixture reach?",
-        answer: "85°C",
-        targetTemp: 85,
-        instructions: "Heat the mixture to the correct temperature"
-      },
-      4: {
-        title: "Cool and Add Water",
-        requiredChemicals: ["water"],
-        requiredEquipment: ["cylinder"],
-        quiz: "How much water should be added to precipitate the product?",
-        answer: "20mL",
-        targetTemp: 25,
-        instructions: "Cool the mixture and add distilled water"
-      }
-    };
-    return configs[stepId];
-  };
-
-  const currentConfig = getStepConfig(step.id);
-
-  useEffect(() => {
-    if (currentConfig) {
-      setTargetTemperature(currentConfig.targetTemp);
-      setShowQuiz(false);
-      setQuizCorrect(null);
-      setStepProgress(0);
-    }
-  }, [step.id, currentConfig]);
-
-  const handleDragStart = (e: React.DragEvent, itemId: string, type: 'chemical' | 'equipment') => {
-    setDraggedItem(`${type}-${itemId}`);
-    e.dataTransfer.setData("text/plain", `${type}-${itemId}`);
+  const handleDragStart = (e: React.DragEvent, type: 'chemical' | 'equipment', id: string) => {
+    setDraggedItem({ type, id });
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const data = e.dataTransfer.getData("text/plain");
-    const [type, itemId] = data.split("-");
+    if (!draggedItem) return;
 
-    if (type === "chemical") {
-      addChemical(itemId);
-    } else if (type === "equipment") {
-      useEquipment(itemId);
+    const rect = labBenchRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (draggedItem.type === 'chemical') {
+      // Add chemical to flask
+      const chemical = chemicals.find(c => c.id === draggedItem.id);
+      if (chemical && !chemical.added) {
+        setChemicals(prev => prev.map(c => 
+          c.id === draggedItem.id ? { ...c, added: true, position: { x, y } } : c
+        ));
+        setLabState(prev => ({
+          ...prev,
+          flaskContents: [...prev.flaskContents, chemical.name]
+        }));
+      }
+    } else {
+      // Position equipment
+      setEquipment(prev => prev.map(e => 
+        e.id === draggedItem.id ? { ...e, used: true, position: { x, y } } : e
+      ));
     }
+
     setDraggedItem(null);
   };
 
-  const addChemical = (chemicalId: string) => {
-    if (!currentConfig?.requiredChemicals.includes(chemicalId)) return;
-
-    setChemicals(prev => prev.map(chem => 
-      chem.id === chemicalId ? { ...chem, added: true } : chem
-    ));
-    setTimeout(updateProgress, 100);
+  const startHeating = () => {
+    setLabState(prev => ({ ...prev, isHeating: true, targetTemperature: 85 }));
   };
 
-  const useEquipment = (equipmentId: string) => {
-    if (!currentConfig?.requiredEquipment.includes(equipmentId)) return;
-
-    setEquipment(prev => prev.map(equip => 
-      equip.id === equipmentId ? { ...equip, used: true } : equip
-    ));
-    setTimeout(updateProgress, 100);
+  const stopHeating = () => {
+    setLabState(prev => ({ ...prev, isHeating: false }));
   };
 
-  const updateProgress = () => {
-    if (!currentConfig) return;
+  const resetLab = () => {
+    setChemicals(ASPIRIN_CHEMICALS);
+    setEquipment(EQUIPMENT);
+    setLabState({
+      temperature: 25,
+      targetTemperature: 25,
+      isHeating: false,
+      mixingSpeed: 0,
+      reactionProgress: 0,
+      currentColor: '#f0f8ff',
+      isReacting: false,
+      flaskContents: []
+    });
+  };
 
-    const totalRequired = currentConfig.requiredChemicals.length + currentConfig.requiredEquipment.length;
-    const chemicalsAdded = chemicals.filter(c => c.added && currentConfig.requiredChemicals.includes(c.id)).length;
-    const equipmentUsed = equipment.filter(e => e.used && currentConfig.requiredEquipment.includes(e.id)).length;
-    
-    const progress = totalRequired > 0 ? ((chemicalsAdded + equipmentUsed) / totalRequired) * 100 : 0;
-    setStepProgress(progress);
+  const getStepQuiz = (stepId: number) => {
+    const quizzes: Record<number, {question: string, answer: string}> = {
+      1: { question: "How many grams of salicylic acid should be used?", answer: "2.0" },
+      2: { question: "How many drops of phosphoric acid catalyst should be added?", answer: "3" },
+      3: { question: "What temperature should the reaction mixture be heated to?", answer: "85" },
+      4: { question: "How many mL of distilled water should be added?", answer: "20" },
+    };
+    return quizzes[stepId] || null;
+  };
 
-    if (progress >= 100 && !showQuiz) {
-      setTimeout(() => setShowQuiz(true), 1000);
+  const checkQuizAnswer = () => {
+    const quiz = getStepQuiz(step.id);
+    if (quiz) {
+      const correct = quizAnswer.toLowerCase().includes(quiz.answer.toLowerCase());
+      setQuizCorrect(correct);
+      if (correct) {
+        setTimeout(() => {
+          setShowQuiz(false);
+          onStepComplete();
+        }, 1500);
+      }
     }
   };
 
-  const handleQuizSubmit = () => {
-    if (!currentConfig) return;
-
-    const isCorrect = quizAnswer.toLowerCase().includes(currentConfig.answer.toLowerCase()) ||
-                     currentConfig.answer.toLowerCase().includes(quizAnswer.toLowerCase());
-    setQuizCorrect(isCorrect);
-
-    if (isCorrect) {
-      setTimeout(() => {
-        onStepComplete();
-      }, 2000);
+  const canCompleteStep = () => {
+    switch (step.id) {
+      case 1: return labState.flaskContents.includes("Salicylic Acid") && labState.flaskContents.includes("Acetic Anhydride");
+      case 2: return labState.flaskContents.includes("Phosphoric Acid");
+      case 3: return labState.temperature >= 80 && labState.reactionProgress > 50;
+      case 4: return labState.flaskContents.includes("Distilled Water");
+      default: return true;
     }
   };
-
-  const adjustTemperature = (delta: number) => {
-    setTemperature(prev => Math.max(0, Math.min(100, prev + delta)));
-  };
-
-  if (!currentConfig) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Step Instructions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{currentConfig.title}</span>
-            <Badge variant={stepProgress >= 100 ? "default" : "secondary"}>
-              {Math.round(stepProgress)}% Complete
-            </Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-700 mb-4">{currentConfig.instructions}</p>
-          <Progress value={stepProgress} className="h-2" />
-        </CardContent>
-      </Card>
-
-      {/* Virtual Lab Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Lab Bench */}
-        <Card>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 bg-gray-50 min-h-screen">
+      {/* Lab Bench - Interactive Area */}
+      <div className="lg:col-span-2">
+        <Card className="h-full">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Beaker className="mr-2 h-5 w-5" />
-              Lab Bench
+            <CardTitle className="flex items-center gap-2">
+              <Beaker className="h-5 w-5" />
+              Virtual Lab Bench - {step.title}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div 
-              className="min-h-64 bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg border-2 border-dashed border-gray-300 p-6 flex flex-col items-center justify-center"
+              ref={labBenchRef}
+              className="relative bg-gradient-to-b from-blue-50 to-blue-100 border-2 border-dashed border-blue-300 rounded-lg h-96 overflow-hidden"
               onDragOver={handleDragOver}
               onDrop={handleDrop}
             >
-              {/* Flask Representation */}
-              <div className="relative">
-                <div className="w-32 h-40 bg-gradient-to-b from-transparent to-blue-100 rounded-b-full border-4 border-gray-400 flex items-end justify-center">
-                  {chemicals.filter(c => c.added).length > 0 && (
-                    <div className="w-24 h-16 bg-gradient-to-t from-yellow-200 to-transparent rounded-b-full mb-2 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-gray-700">
-                        {chemicals.filter(c => c.added).length} chemicals
-                      </span>
-                    </div>
+              {/* Lab Bench Background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-200 opacity-30"></div>
+              
+              {/* Main Flask */}
+              <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+                <div className="relative">
+                  <div 
+                    className="w-24 h-32 rounded-b-full border-4 border-gray-700 transition-all duration-500"
+                    style={{ backgroundColor: labState.currentColor }}
+                  >
+                    {/* Flask contents visualization */}
+                    {labState.flaskContents.length > 0 && (
+                      <div className="absolute bottom-2 left-2 right-2 text-xs text-gray-700">
+                        {labState.flaskContents.map((content, idx) => (
+                          <div key={idx} className="opacity-75">• {content}</div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Heating indicator */}
+                    {labState.isHeating && (
+                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                        <Flame className="h-6 w-6 text-red-500 animate-pulse" />
+                      </div>
+                    )}
+                    
+                    {/* Reaction bubbles */}
+                    {labState.isReacting && (
+                      <div className="absolute inset-0 pointer-events-none">
+                        {[...Array(5)].map((_, i) => (
+                          <div 
+                            key={i}
+                            className="absolute w-2 h-2 bg-white rounded-full opacity-70 animate-bounce"
+                            style={{
+                              left: `${20 + i * 15}%`,
+                              bottom: `${10 + (i % 3) * 20}%`,
+                              animationDelay: `${i * 0.2}s`
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Flask neck */}
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-6 h-6 border-4 border-gray-700 border-b-0 rounded-t-lg bg-transparent"></div>
+                </div>
+              </div>
+
+              {/* Positioned Equipment */}
+              {equipment.filter(e => e.used && e.position).map(item => (
+                <div
+                  key={item.id}
+                  className="absolute text-2xl"
+                  style={{ left: item.position!.x, top: item.position!.y }}
+                >
+                  {item.icon}
+                </div>
+              ))}
+
+              {/* Drop Instructions */}
+              {labState.flaskContents.length === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-lg">
+                  Drag chemicals and equipment here to start the experiment
+                </div>
+              )}
+            </div>
+
+            {/* Temperature and Controls */}
+            <div className="mt-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Thermometer className="h-4 w-4" />
+                    <span className="font-medium">Temperature: {labState.temperature.toFixed(1)}°C</span>
+                  </div>
+                  {labState.isReacting && (
+                    <Badge variant="secondary" className="animate-pulse">
+                      Reacting... {labState.reactionProgress.toFixed(0)}%
+                    </Badge>
                   )}
                 </div>
                 
-                {/* Temperature Display */}
-                <div className="absolute -top-2 -right-2 bg-white rounded-full p-2 shadow-lg">
-                  <div className="flex items-center space-x-1">
-                    <Thermometer className="h-4 w-4 text-red-500" />
-                    <span className="text-sm font-semibold">{temperature}°C</span>
-                  </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={startHeating}
+                    disabled={labState.isHeating}
+                    size="sm"
+                    className="bg-red-500 hover:bg-red-600"
+                  >
+                    <Flame className="h-4 w-4 mr-1" />
+                    Heat
+                  </Button>
+                  <Button
+                    onClick={stopHeating}
+                    disabled={!labState.isHeating}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Pause className="h-4 w-4 mr-1" />
+                    Stop
+                  </Button>
+                  <Button onClick={resetLab} size="sm" variant="outline">
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Reset
+                  </Button>
                 </div>
               </div>
 
-              {stepProgress < 100 ? (
-                <p className="text-gray-500 text-center mt-4">
-                  Drag chemicals and equipment here
-                </p>
-              ) : (
-                <p className="text-green-600 text-center mt-4 font-semibold">
-                  Ready for next step!
-                </p>
+              {/* Progress Bar */}
+              {labState.reactionProgress > 0 && (
+                <div>
+                  <Label>Reaction Progress</Label>
+                  <Progress value={labState.reactionProgress} className="mt-1" />
+                </div>
               )}
             </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            {/* Temperature Controls */}
-            {step.id === 3 && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <Label className="text-sm font-semibold mb-2 block">Temperature Control</Label>
-                <div className="flex items-center space-x-2">
-                  <Button size="sm" onClick={() => adjustTemperature(-5)}>-5°C</Button>
-                  <Button size="sm" onClick={() => adjustTemperature(5)}>+5°C</Button>
-                  <span className="text-sm text-gray-600">
-                    Target: {targetTemperature}°C
-                  </span>
-                </div>
-                {Math.abs(temperature - targetTemperature) <= 2 && (
-                  <div className="mt-2 text-green-600 text-sm flex items-center">
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    Correct temperature reached!
+      {/* Sidebar - Chemicals and Equipment */}
+      <div className="space-y-6">
+        {/* Chemicals Panel */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Droplets className="h-5 w-5" />
+              Chemicals
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {chemicals.map(chemical => (
+              <div
+                key={chemical.id}
+                draggable={!chemical.added}
+                onDragStart={(e) => handleDragStart(e, 'chemical', chemical.id)}
+                className={`p-3 border rounded-lg cursor-move transition-all ${
+                  chemical.added 
+                    ? 'bg-green-50 border-green-200 opacity-60' 
+                    : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium text-sm">{chemical.name}</div>
+                    <div className="text-xs text-gray-500">{chemical.formula}</div>
+                    <div className="text-xs font-medium mt-1">
+                      {chemical.amount} {chemical.unit}
+                    </div>
                   </div>
+                  <div 
+                    className="w-6 h-6 rounded border-2 border-gray-300"
+                    style={{ backgroundColor: chemical.color }}
+                  />
+                </div>
+                {chemical.added && (
+                  <Badge size="sm" className="mt-2 bg-green-100 text-green-800">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Added
+                  </Badge>
                 )}
               </div>
-            )}
+            ))}
           </CardContent>
         </Card>
 
-        {/* Chemicals & Equipment */}
-        <div className="space-y-4">
-          {/* Chemicals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Droplets className="mr-2 h-5 w-5" />
-                Chemicals
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-3">
-                {chemicals.map((chemical) => (
-                  <div
-                    key={chemical.id}
-                    draggable={!chemical.added && currentConfig.requiredChemicals.includes(chemical.id)}
-                    onDragStart={(e) => handleDragStart(e, chemical.id, 'chemical')}
-                    className={`p-3 rounded-lg border-2 cursor-move transition-all ${
-                      chemical.added 
-                        ? 'bg-green-50 border-green-200 opacity-50' 
-                        : currentConfig.requiredChemicals.includes(chemical.id)
-                        ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
-                        : 'bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed'
-                    } ${draggedItem === `chemical-${chemical.id}` ? 'scale-105 shadow-lg' : ''}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-4 h-4 rounded-full ${chemical.color} border border-gray-300`}></div>
-                      <div className="flex-grow">
-                        <div className="font-semibold text-sm">{chemical.name}</div>
-                        <div className="text-gray-500 text-xs">{chemical.formula}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-semibold text-sm">{chemical.amount} {chemical.unit}</div>
-                        {chemical.added && <CheckCircle className="h-4 w-4 text-green-500 mt-1" />}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Equipment */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Scale className="mr-2 h-5 w-5" />
-                Equipment
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-3">
-                {equipment.map((item) => (
-                  <div
-                    key={item.id}
-                    draggable={!item.used && currentConfig.requiredEquipment.includes(item.id)}
-                    onDragStart={(e) => handleDragStart(e, item.id, 'equipment')}
-                    className={`p-3 rounded-lg border-2 cursor-move transition-all ${
-                      item.used 
-                        ? 'bg-green-50 border-green-200 opacity-50' 
-                        : currentConfig.requiredEquipment.includes(item.id)
-                        ? 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
-                        : 'bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed'
-                    } ${draggedItem === `equipment-${item.id}` ? 'scale-105 shadow-lg' : ''}`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{item.icon}</div>
-                      <div className="flex-grow">
-                        <div className="font-semibold text-sm">{item.name}</div>
-                      </div>
-                      {item.used && <CheckCircle className="h-4 w-4 text-green-500" />}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Quiz Section */}
-      {showQuiz && (
-        <Card className="border-blue-200 bg-blue-50">
+        {/* Equipment Panel */}
+        <Card>
           <CardHeader>
-            <CardTitle className="text-blue-800">Knowledge Check</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5" />
+              Equipment
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {equipment.map(item => (
+              <div
+                key={item.id}
+                draggable={!item.used}
+                onDragStart={(e) => handleDragStart(e, 'equipment', item.id)}
+                className={`p-3 border rounded-lg cursor-move transition-all ${
+                  item.used 
+                    ? 'bg-blue-50 border-blue-200 opacity-60' 
+                    : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-md'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-sm">{item.name}</div>
+                  </div>
+                  <div className="text-2xl">{item.icon}</div>
+                </div>
+                {item.used && (
+                  <Badge size="sm" className="mt-2 bg-blue-100 text-blue-800">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    In Use
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Step Progress */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Step Progress</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="font-semibold">{currentConfig.quiz}</p>
+              <div className="text-sm text-gray-600">{step.description}</div>
               
-              <div className="flex space-x-2">
-                <Input
-                  value={quizAnswer}
-                  onChange={(e) => setQuizAnswer(e.target.value)}
-                  placeholder="Enter your answer..."
-                  className="flex-grow"
-                />
-                <Button onClick={handleQuizSubmit} disabled={!quizAnswer.trim()}>
-                  Submit
-                </Button>
-              </div>
-
-              {quizCorrect !== null && (
-                <div className={`p-3 rounded-lg flex items-center space-x-2 ${
-                  quizCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  {quizCorrect ? (
-                    <>
-                      <CheckCircle className="h-5 w-5" />
-                      <span>Correct! Proceeding to next step...</span>
-                    </>
-                  ) : (
-                    <>
-                      <X className="h-5 w-5" />
-                      <span>Incorrect. The correct answer is: {currentConfig.answer}</span>
-                    </>
-                  )}
+              {step.temperature && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Thermometer className="h-4 w-4" />
+                  Target: {step.temperature}
                 </div>
               )}
+
+              {step.safety && (
+                <div className="flex items-center gap-2 text-sm text-amber-600">
+                  <AlertTriangle className="h-4 w-4" />
+                  {step.safety}
+                </div>
+              )}
+
+              <Button
+                onClick={() => setShowQuiz(true)}
+                disabled={!canCompleteStep() || showQuiz}
+                className="w-full"
+              >
+                {canCompleteStep() ? 'Complete Step' : 'Complete the step requirements first'}
+              </Button>
             </div>
           </CardContent>
         </Card>
-      )}
 
-      {/* Safety Notice */}
-      <Card className="border-red-200 bg-red-50">
-        <CardContent className="p-4">
-          <div className="flex items-start space-x-3">
-            <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
-            <div>
-              <h4 className="font-semibold text-red-800 mb-1">Safety Reminder</h4>
-              <p className="text-red-700 text-sm">
-                In a real laboratory, always wear safety goggles, gloves, and work in a well-ventilated area. 
-                Acetic anhydride is corrosive and phosphoric acid can cause burns.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Quiz Modal */}
+        {showQuiz && (
+          <Card className="border-2 border-blue-300">
+            <CardHeader>
+              <CardTitle>Knowledge Check</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="text-sm">{getStepQuiz(step.id)?.question}</div>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={quizAnswer}
+                    onChange={(e) => setQuizAnswer(e.target.value)}
+                    className="flex-1 px-3 py-2 border rounded"
+                    placeholder="Enter your answer..."
+                  />
+                  <Button onClick={checkQuizAnswer} size="sm">
+                    Check
+                  </Button>
+                </div>
+                {quizCorrect !== null && (
+                  <div className={`text-sm ${quizCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                    {quizCorrect ? '✓ Correct! Proceeding to next step...' : '✗ Try again'}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
