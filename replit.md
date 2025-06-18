@@ -49,6 +49,10 @@ ChemLab Virtual is a full-stack web application that provides an interactive vir
 ### Core Features
 - Interactive experiment cards with progress indicators
 - Step-by-step experiment execution with timers
+- **Interactive Virtual Lab**: Drag-and-drop chemistry simulation for aspirin synthesis
+- **Educational Quizzes**: Built-in knowledge checks with immediate feedback
+- **Chemical Measurement System**: Accurate chemical amounts and concentrations
+- **Temperature Control**: Virtual heating and cooling with real-time monitoring
 - Progress tracking with percentage completion
 - Equipment lists and safety information
 - Responsive design for mobile and desktop

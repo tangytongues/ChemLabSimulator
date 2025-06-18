@@ -2,12 +2,13 @@ import { useParams } from "wouter";
 import { useState, useEffect } from "react";
 import { useExperiment, useExperimentProgress, useUpdateProgress } from "@/hooks/use-experiments";
 import Header from "@/components/header";
+import VirtualLab from "@/components/virtual-lab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle, Clock, Thermometer, Play, Pause } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle, Clock, Thermometer, Play, Pause, FlaskConical } from "lucide-react";
 import { Link } from "wouter";
 import type { ExperimentStep } from "@shared/schema";
 
@@ -22,6 +23,7 @@ export default function Experiment() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     if (progress) {
@@ -95,7 +97,7 @@ export default function Experiment() {
     );
   }
 
-  if (!experiment) {
+  if (!experiment || !experiment.stepDetails || experiment.stepDetails.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -207,18 +209,26 @@ export default function Experiment() {
                   )}
                 </div>
 
-                {/* Virtual Lab Simulation Area */}
-                <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-8 mb-6">
-                  <div className="text-center">
-                    <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg">
-                      <div className="text-4xl">🧪</div>
+                {/* Interactive Virtual Lab */}
+                {experiment.title === "Aspirin Synthesis" ? (
+                  <VirtualLab 
+                    step={currentStepData} 
+                    onStepComplete={handleNextStep}
+                    isActive={true}
+                  />
+                ) : (
+                  <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-8 mb-6">
+                    <div className="text-center">
+                      <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg">
+                        <FlaskConical className="h-16 w-16 text-science-blue" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Virtual Lab Simulation</h3>
+                      <p className="text-lab-gray text-sm">
+                        Interactive experiment simulation for this experiment is coming soon.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Virtual Lab Simulation</h3>
-                    <p className="text-lab-gray text-sm">
-                      Interactive experiment simulation would appear here with 3D models and animations.
-                    </p>
                   </div>
-                </div>
+                )}
 
                 {/* Navigation */}
                 <div className="flex justify-between">
