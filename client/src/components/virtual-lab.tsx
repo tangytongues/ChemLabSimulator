@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Thermometer, Scale, Beaker, Droplets, CheckCircle, X } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { AlertTriangle, Thermometer, Scale, Beaker, Droplets, CheckCircle, X, Flame, Play, Pause, RotateCcw } from "lucide-react";
 import type { ExperimentStep } from "@shared/schema";
 
 interface VirtualLabProps {
@@ -22,6 +23,7 @@ interface Chemical {
   unit: string;
   color: string;
   added: boolean;
+  position?: { x: number; y: number };
 }
 
 interface Equipment {
@@ -29,6 +31,17 @@ interface Equipment {
   name: string;
   icon: string;
   used: boolean;
+  position?: { x: number; y: number };
+}
+
+interface LabState {
+  temperature: number;
+  targetTemperature: number;
+  isHeating: boolean;
+  mixingSpeed: number;
+  reactionProgress: number;
+  currentColor: string;
+  isReacting: boolean;
 }
 
 const ASPIRIN_CHEMICALS: Chemical[] = [
@@ -48,14 +61,63 @@ const EQUIPMENT: Equipment[] = [
 export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLabProps) {
   const [chemicals, setChemicals] = useState<Chemical[]>(ASPIRIN_CHEMICALS);
   const [equipment, setEquipment] = useState<Equipment[]>(EQUIPMENT);
-  const [temperature, setTemperature] = useState(25);
-  const [targetTemperature, setTargetTemperature] = useState(25);
+  const [labState, setLabState] = useState<LabState>({
+    temperature: 25,
+    targetTemperature: 25,
+    isHeating: false,
+    mixingSpeed: 0,
+    reactionProgress: 0,
+    currentColor: '#f0f8ff',
+    isReacting: false
+  });
+  const [draggedItem, setDraggedItem] = useState<{type: 'chemical' | 'equipment', id: string} | null>(null);
+  const labBenchRef = useRef<HTMLDivElement>(null);
   const [userInput, setUserInput] = useState("");
   const [showQuiz, setShowQuiz] = useState(false);
+
+  // Temperature control and heating simulation
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (labState.isHeating && labState.temperature < labState.targetTemperature) {
+      interval = setInterval(() => {
+        setLabState(prev => ({
+          ...prev,
+          temperature: Math.min(prev.temperature + 0.5, prev.targetTemperature)
+        }));
+      }, 200);
+    }
+    return () => clearInterval(interval);
+  }, [labState.isHeating, labState.temperature, labState.targetTemperature]);
+
+  // Reaction simulation based on temperature and chemicals
+  useEffect(() => {
+    if (labState.temperature > 80 && chemicals.every(c => c.added) && !labState.isReacting) {
+      setLabState(prev => ({ ...prev, isReacting: true }));
+      
+      const reactionInterval = setInterval(() => {
+        setLabState(prev => {
+          const newProgress = Math.min(prev.reactionProgress + 2, 100);
+          const colorIntensity = Math.floor((newProgress / 100) * 255);
+          const newColor = `rgb(${255 - colorIntensity}, ${255 - colorIntensity/2}, 200)`;
+          
+          return {
+            ...prev,
+            reactionProgress: newProgress,
+            currentColor: newColor
+          };
+        });
+      }, 100);
+
+      setTimeout(() => {
+        clearInterval(reactionInterval);
+        setLabState(prev => ({ ...prev, isReacting: false }));
+      }, 5000);
+    }
+  }, [labState.temperature, chemicals, labState.isReacting]);
+
   const [quizAnswer, setQuizAnswer] = useState("");
   const [quizCorrect, setQuizCorrect] = useState<boolean | null>(null);
   const [stepProgress, setStepProgress] = useState(0);
-  const [draggedItem, setDraggedItem] = useState<string | null>(null);
 
   const getStepConfig = (stepId: number) => {
     const configs: Record<number, {
