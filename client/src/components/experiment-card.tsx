@@ -20,13 +20,13 @@ export default function ExperimentCard({ experiment, progress, onViewDetails }: 
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Organic Chemistry':
-        return 'bg-blue-100 text-science-blue';
+        return 'bg-blue-100 text-blue-700';
       case 'Acid-Base':
-        return 'bg-green-100 text-lab-green';
+        return 'bg-green-100 text-green-700';
       case 'Equilibrium':
-        return 'bg-purple-100 text-purple-600';
+        return 'bg-purple-100 text-purple-700';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 text-gray-700';
     }
   };
 
@@ -67,19 +67,19 @@ export default function ExperimentCard({ experiment, progress, onViewDetails }: 
         </div>
         
         <h4 className="text-xl font-bold text-gray-900 mb-3">{experiment.title}</h4>
-        <p className="text-lab-gray mb-4 text-sm leading-relaxed">
+        <p className="text-gray-600 mb-4 text-sm leading-relaxed">
           {experiment.description}
         </p>
         
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center text-sm text-lab-gray">
+            <div className="flex items-center text-sm text-gray-600">
               <Activity className="mr-1 h-4 w-4" />
               <span className={getDifficultyColor(experiment.difficulty)}>
                 {experiment.difficulty}
               </span>
             </div>
-            <div className="flex items-center text-sm text-lab-gray">
+            <div className="flex items-center text-sm text-gray-600">
               <FlaskRound className="mr-1 h-4 w-4" />
               <span>{experiment.steps} Steps</span>
             </div>
@@ -92,14 +92,14 @@ export default function ExperimentCard({ experiment, progress, onViewDetails }: 
         
         <div className="mb-4">
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-lab-gray">Progress</span>
-            <span className={`font-medium ${isCompleted ? 'text-lab-green' : 'text-science-blue'}`}>
+            <span className="text-gray-600">Progress</span>
+            <span className={`font-medium ${isCompleted ? 'text-green-600' : 'text-blue-600'}`}>
               {progressPercentage}%
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className={`h-2 rounded-full ${isCompleted ? 'bg-lab-green' : 'bg-science-blue'}`}
+              className={`h-2 rounded-full ${isCompleted ? 'bg-green-600' : 'bg-blue-600'}`}
               style={{ width: `${progressPercentage}%` }}
             />
           </div>

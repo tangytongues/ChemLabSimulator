@@ -9,26 +9,26 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center space-x-2">
-              <FlaskRound className="text-2xl text-science-blue" />
+              <FlaskRound className="h-8 w-8 text-blue-600" />
               <h1 className="text-xl font-bold text-gray-900">ChemLab Virtual</h1>
             </Link>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#experiments" className="text-science-blue font-medium border-b-2 border-science-blue pb-1">
+            <a href="#experiments" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">
               Experiments
             </a>
-            <a href="#progress" className="text-lab-gray hover:text-gray-900 transition-colors">
+            <a href="#progress" className="text-gray-600 hover:text-gray-900 transition-colors">
               My Progress
             </a>
-            <a href="#safety" className="text-lab-gray hover:text-gray-900 transition-colors">
+            <a href="#safety" className="text-gray-600 hover:text-gray-900 transition-colors">
               Safety Guide
             </a>
-            <Button className="bg-science-blue text-white hover:bg-blue-700">
+            <Button className="bg-blue-600 text-white hover:bg-blue-700">
               Sign In
             </Button>
           </nav>
-          <button className="md:hidden p-2 text-lab-gray">
-            <Menu className="text-xl" />
+          <button className="md:hidden p-2 text-gray-600">
+            <Menu className="h-6 w-6" />
           </button>
         </div>
       </div>

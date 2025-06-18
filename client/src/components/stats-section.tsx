@@ -30,20 +30,20 @@ export default function StatsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div className="border-r border-gray-200 last:border-r-0">
-            <div className="text-3xl font-bold text-science-blue mb-2">{stats.experiments}</div>
-            <div className="text-lab-gray">Available Experiments</div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">{stats.experiments}</div>
+            <div className="text-gray-600">Available Experiments</div>
           </div>
           <div className="border-r border-gray-200 last:border-r-0">
-            <div className="text-3xl font-bold text-lab-green mb-2">{stats.students.toLocaleString()}</div>
-            <div className="text-lab-gray">Active Students</div>
+            <div className="text-3xl font-bold text-green-600 mb-2">{stats.students.toLocaleString()}</div>
+            <div className="text-gray-600">Active Students</div>
           </div>
           <div className="border-r border-gray-200 last:border-r-0">
-            <div className="text-3xl font-bold text-science-blue mb-2">{stats.completed.toLocaleString()}</div>
-            <div className="text-lab-gray">Experiments Completed</div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">{stats.completed.toLocaleString()}</div>
+            <div className="text-gray-600">Experiments Completed</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-lab-green mb-2">{stats.rating}</div>
-            <div className="text-lab-gray">Average Rating</div>
+            <div className="text-3xl font-bold text-green-600 mb-2">{stats.rating}</div>
+            <div className="text-gray-600">Average Rating</div>
           </div>
         </div>
       </div>

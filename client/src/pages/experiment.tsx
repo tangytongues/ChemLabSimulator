@@ -210,25 +210,49 @@ export default function Experiment() {
                 </div>
 
                 {/* Interactive Virtual Lab */}
-                {experiment.title === "Aspirin Synthesis" ? (
-                  <VirtualLab 
-                    step={currentStepData} 
-                    onStepComplete={handleNextStep}
-                    isActive={true}
-                  />
-                ) : (
-                  <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-8 mb-6">
-                    <div className="text-center">
-                      <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg">
-                        <FlaskConical className="h-16 w-16 text-science-blue" />
+                <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-8 mb-6">
+                  <div className="text-center">
+                    <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg">
+                      <FlaskConical className="h-16 w-16 text-science-blue" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Virtual Lab Simulation</h3>
+                    <p className="text-lab-gray text-sm mb-4">
+                      Step {currentStep + 1}: {currentStepData.title}
+                    </p>
+                    <p className="text-gray-700 text-sm">
+                      {currentStepData.description}
+                    </p>
+                    
+                    {/* Interactive Elements */}
+                    <div className="mt-6 space-y-4">
+                      {/* Chemical Mixing Animation */}
+                      <div className="flex justify-center space-x-4">
+                        <div className="w-16 h-16 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center">
+                          <span className="text-2xl">⚗️</span>
+                        </div>
+                        <div className="w-16 h-16 bg-yellow-100 rounded-full border-4 border-yellow-300 flex items-center justify-center">
+                          <span className="text-2xl">🧪</span>
+                        </div>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Virtual Lab Simulation</h3>
-                      <p className="text-lab-gray text-sm">
-                        Interactive experiment simulation for this experiment is coming soon.
-                      </p>
+                      
+                      {/* Step Progress */}
+                      <div className="bg-white rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-700">Step Progress</span>
+                          <span className="text-sm text-science-blue font-semibold">
+                            {Math.round(((currentStep + 1) / experiment.stepDetails.length) * 100)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-science-blue h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${((currentStep + 1) / experiment.stepDetails.length) * 100}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
-                )}
+                </div>
 
                 {/* Navigation */}
                 <div className="flex justify-between">
