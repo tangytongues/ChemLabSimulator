@@ -91,7 +91,12 @@ export class MemStorage implements IStorage {
 
   async createExperiment(insertExperiment: InsertExperiment): Promise<Experiment> {
     const id = this.currentExperimentId++;
-    const experiment: Experiment = { ...insertExperiment, id };
+    const experiment: Experiment = { 
+      ...insertExperiment, 
+      id,
+      equipment: insertExperiment.equipment as string[],
+      stepDetails: insertExperiment.stepDetails as ExperimentStep[]
+    };
     this.experiments.set(id, experiment);
     return experiment;
   }
@@ -127,8 +132,12 @@ export class MemStorage implements IStorage {
   async createUserProgress(insertProgress: InsertUserProgress): Promise<UserProgress> {
     const id = this.currentProgressId++;
     const progress: UserProgress = {
-      ...insertProgress,
       id,
+      userId: insertProgress.userId,
+      experimentId: insertProgress.experimentId,
+      currentStep: insertProgress.currentStep ?? 0,
+      completed: insertProgress.completed ?? false,
+      progressPercentage: insertProgress.progressPercentage ?? 0,
       lastUpdated: new Date(),
     };
     const key = `${progress.userId}_${progress.experimentId}`;
