@@ -1,0 +1,149 @@
+[
+  {
+    "title": "Aspirin Synthesis",
+    "description": "Learn how to synthesize acetylsalicylic acid (aspirin) from salicylic acid and acetic anhydride. This experiment demonstrates esterification reactions and purification techniques.",
+    "category": "Organic Chemistry",
+    "difficulty": "Intermediate",
+    "duration": 45,
+    "steps": 8,
+    "rating": 4.8,
+    "imageUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400",
+    "equipment": [
+      "125mL Erlenmeyer Flask",
+      "Thermometer",
+      "Graduated Cylinder",
+      "Water Bath",
+      "Stirring Rod",
+      "Filter Paper",
+      "Buchner Funnel",
+      "Vacuum Flask"
+    ],
+    "stepDetails": [
+      {
+        "id": 1,
+        "title": "Prepare Reagents",
+        "description": "Measure 2.0g of salicylic acid and place in a dry 125mL Erlenmeyer flask. Add 5mL of acetic anhydride using a graduated cylinder.",
+        "duration": "5 minutes",
+        "temperature": "Room temperature",
+        "completed": false
+      },
+      {
+        "id": 2,
+        "title": "Add Catalyst",
+        "description": "Carefully add 2-3 drops of concentrated phosphoric acid (H₃PO₄) as a catalyst. Swirl gently to mix the contents.",
+        "duration": "2 minutes",
+        "safety": "Caution: Corrosive acid",
+        "completed": false
+      },
+      {
+        "id": 3,
+        "title": "Heat Reaction Mixture",
+        "description": "Heat the flask in a water bath at 85°C for 15 minutes. Monitor the temperature carefully and observe the formation of acetylsalicylic acid.",
+        "duration": "15 minutes",
+        "temperature": "85°C",
+        "completed": false
+      },
+      {
+        "id": 4,
+        "title": "Cool and Add Water",
+        "description": "Remove from heat and allow to cool for 5 minutes. Slowly add 20mL of distilled water while stirring to precipitate the product.",
+        "duration": "8 minutes",
+        "completed": false
+      },
+      {
+        "id": 5,
+        "title": "Filter Product",
+        "description": "Filter the precipitated aspirin using vacuum filtration. Wash the crystals with cold distilled water.",
+        "duration": "10 minutes",
+        "completed": false
+      },
+      {
+        "id": 6,
+        "title": "Dry Product",
+        "description": "Transfer the filtered crystals to a watch glass and allow to air dry, or place in a drying oven at 60°C.",
+        "duration": "Variable",
+        "completed": false
+      },
+      {
+        "id": 7,
+        "title": "Weigh and Calculate Yield",
+        "description": "Weigh the dry aspirin crystals and calculate the theoretical and percent yield of the reaction.",
+        "duration": "5 minutes",
+        "completed": false
+      },
+      {
+        "id": 8,
+        "title": "Purity Test",
+        "description": "Perform a melting point determination to assess the purity of your synthesized aspirin.",
+        "duration": "10 minutes",
+        "completed": false
+      }
+    ],
+    "safetyInfo": "This virtual experiment simulates real laboratory conditions. Please review safety protocols and understand the procedures before starting. Always wear proper PPE in real laboratory settings. Acetic anhydride and phosphoric acid are corrosive chemicals."
+  },
+  {
+    "title": "Acid-Base Titration",
+    "description": "Determine the concentration of an unknown acid solution using a standard base solution. Master the art of precise measurements and endpoint detection.",
+    "category": "Acid-Base",
+    "difficulty": "Beginner",
+    "duration": 30,
+    "steps": 6,
+    "rating": 4.9,
+    "imageUrl": "https://images.unsplash.com/photo-1554475901-4538ddfbccc2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=400",
+    "equipment": [
+      "50mL Burette",
+      "250mL Conical Flask",
+      "25mL Pipette",
+      "Pipette Filler",
+      "White Tile",
+      "Phenolphthalein Indicator",
+      "Burette Stand",
+      "Funnel"
+    ],
+    "stepDetails": [
+      {
+        "id": 1,
+        "title": "Prepare Equipment",
+        "description": "Set up the burette in the stand and rinse with distilled water, then with the NaOH solution. Fill the burette with 0.1M NaOH solution.",
+        "duration": "8 minutes",
+        "completed": false
+      },
+      {
+        "id": 2,
+        "title": "Prepare Sample",
+        "description": "Using a pipette, transfer exactly 25.0mL of the unknown HCl solution into a clean conical flask.",
+        "duration": "5 minutes",
+        "completed": false
+      },
+      {
+        "id": 3,
+        "title": "Add Indicator",
+        "description": "Add 2-3 drops of phenolphthalein indicator to the acid solution in the conical flask. Place on white tile for better endpoint visibility.",
+        "duration": "2 minutes",
+        "completed": false
+      },
+      {
+        "id": 4,
+        "title": "Initial Titration",
+        "description": "Record the initial burette reading. Begin titrating by adding NaOH solution slowly while swirling the flask continuously.",
+        "duration": "8 minutes",
+        "completed": false
+      },
+      {
+        "id": 5,
+        "title": "Identify Endpoint",
+        "description": "Continue adding NaOH drop by drop near the endpoint. The endpoint is reached when the solution turns permanently pale pink.",
+        "duration": "5 minutes",
+        "completed": false
+      },
+      {
+        "id": 6,
+        "title": "Calculate Concentration",
+        "description": "Record the final burette reading and calculate the volume of NaOH used. Use the formula to determine the concentration of the HCl solution.",
+        "duration": "7 minutes",
+        "completed": false
+      }
+    ],
+    "safetyInfo": "Handle all chemicals with care. NaOH is caustic and can cause burns. HCl is corrosive. Always wear safety goggles and handle glassware carefully. Work in a well-ventilated area."
+  }
+]
