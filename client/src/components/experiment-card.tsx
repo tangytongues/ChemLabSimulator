@@ -109,8 +109,8 @@ export default function ExperimentCard({ experiment, progress, onViewDetails }: 
           onClick={handleStartExperiment}
           className={`w-full py-3 font-semibold transition-colors ${
             isCompleted 
-              ? 'bg-lab-green hover:bg-green-700 text-white' 
-              : 'bg-science-blue hover:bg-blue-700 text-white'
+              ? 'bg-green-600 hover:bg-green-700 text-white' 
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
           }`}
         >
           {isCompleted ? (
