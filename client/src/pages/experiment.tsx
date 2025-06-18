@@ -14,9 +14,9 @@ import type { ExperimentStep } from "@shared/schema";
 
 export default function Experiment() {
   const { id } = useParams<{ id: string }>();
-  const experimentId = parseInt(id || "0");
+  const experimentId = parseInt(id || "1"); // Default to experiment 1 if no ID
   
-  const { data: experiment, isLoading: experimentLoading } = useExperiment(experimentId);
+  const { data: experiment, isLoading: experimentLoading, error } = useExperiment(experimentId);
   const { data: progress } = useExperimentProgress(experimentId);
   const updateProgressMutation = useUpdateProgress();
   
@@ -97,6 +97,20 @@ export default function Experiment() {
     );
   }
 
+  if (experimentLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading Experiment...</h2>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!experiment || !experiment.stepDetails || experiment.stepDetails.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -104,9 +118,11 @@ export default function Experiment() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Experiment Not Found</h2>
-            <p className="text-lab-gray mb-6">The requested experiment could not be found.</p>
+            <p className="text-gray-600 mb-6">
+              The requested experiment (ID: {experimentId}) could not be found. Please try again.
+            </p>
             <Link href="/">
-              <Button>Return to Home</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">Return to Home</Button>
             </Link>
           </div>
         </div>

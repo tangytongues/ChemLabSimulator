@@ -23,14 +23,14 @@ export default function HeroSection() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               onClick={scrollToExperiments}
-              className="bg-white text-science-blue px-8 py-3 hover:bg-gray-100"
+              className="bg-white text-blue-600 px-8 py-3 hover:bg-gray-100 font-semibold"
             >
               <Play className="mr-2 h-4 w-4" />
               Start Experimenting
             </Button>
             <Button 
               variant="outline" 
-              className="border-white text-white px-8 py-3 hover:bg-white hover:text-science-blue"
+              className="border-2 border-white text-white px-8 py-3 hover:bg-white hover:text-blue-600 font-semibold"
             >
               <Book className="mr-2 h-4 w-4" />
               View Safety Guide
