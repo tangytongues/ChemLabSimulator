@@ -392,7 +392,7 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
                   />
                 </div>
                 {chemical.added && (
-                  <Badge size="sm" className="mt-2 bg-green-100 text-green-800">
+                  <Badge className="mt-2 bg-green-100 text-green-800">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Added
                   </Badge>
@@ -429,7 +429,7 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
                   <div className="text-2xl">{item.icon}</div>
                 </div>
                 {item.used && (
-                  <Badge size="sm" className="mt-2 bg-blue-100 text-blue-800">
+                  <Badge className="mt-2 bg-blue-100 text-blue-800">
                     <CheckCircle className="h-3 w-3 mr-1" />
                     In Use
                   </Badge>
