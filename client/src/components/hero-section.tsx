@@ -1,12 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Play, Book } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function HeroSection() {
+  const [, navigate] = useLocation();
+  
   const scrollToExperiments = () => {
     const experimentsSection = document.getElementById('experiments');
     if (experimentsSection) {
       experimentsSection.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleSafetyGuide = () => {
+    // For now, scroll to experiments section as safety info is displayed there
+    scrollToExperiments();
   };
 
   return (
@@ -29,6 +37,7 @@ export default function HeroSection() {
               Start Experimenting
             </Button>
             <Button 
+              onClick={handleSafetyGuide}
               variant="outline" 
               className="border-2 border-white text-white px-8 py-3 hover:bg-white hover:text-blue-600 font-semibold"
             >

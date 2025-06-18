@@ -41,9 +41,9 @@ export class MemStorage implements IStorage {
       const experimentsPath = path.resolve(process.cwd(), 'data', 'experiments.json');
       const experimentsData = JSON.parse(fs.readFileSync(experimentsPath, 'utf-8'));
       
-      experimentsData.forEach((exp: any) => {
+      experimentsData.forEach((exp: any, index: number) => {
         const experiment: Experiment = {
-          id: this.currentExperimentId++,
+          id: index + 1, // Use 1-based indexing for consistent IDs
           title: exp.title,
           description: exp.description,
           category: exp.category,
@@ -57,7 +57,9 @@ export class MemStorage implements IStorage {
           safetyInfo: exp.safetyInfo,
         };
         this.experiments.set(experiment.id, experiment);
+        console.log(`Loaded experiment ${experiment.id}: ${experiment.title}`);
       });
+      console.log(`Total experiments loaded: ${this.experiments.size}`);
     } catch (error) {
       console.error('Failed to load experiments data:', error);
       // Fallback to empty experiments if file doesn't exist

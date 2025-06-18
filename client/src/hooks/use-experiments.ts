@@ -20,8 +20,8 @@ export function useExperiments() {
 
 export function useExperiment(id: number) {
   return useQuery<Experiment>({
-    queryKey: ['/api/experiments', id],
-    enabled: !!id,
+    queryKey: [`/api/experiments/${id}`],
+    enabled: !!id && id > 0,
   });
 }
 
@@ -29,8 +29,8 @@ export function useUserProgress(experimentId?: number) {
   const userId = getUserId();
   
   return useQuery<UserProgress[]>({
-    queryKey: ['/api/progress', userId],
-    enabled: !experimentId,
+    queryKey: [`/api/progress/${userId}`],
+    enabled: !experimentId && !!userId,
   });
 }
 
@@ -38,8 +38,8 @@ export function useExperimentProgress(experimentId: number) {
   const userId = getUserId();
   
   return useQuery<UserProgress | null>({
-    queryKey: ['/api/progress', userId, experimentId],
-    enabled: !!experimentId,
+    queryKey: [`/api/progress/${userId}/${experimentId}`],
+    enabled: !!experimentId && !!userId,
   });
 }
 
