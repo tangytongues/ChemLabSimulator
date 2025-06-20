@@ -21,6 +21,7 @@ export default function Home() {
   const categories = [
     "All Experiments",
     "Organic Chemistry",
+    "Inorganic Chemistry",
     "Acid-Base",
     "Equilibrium",
     "Synthesis",

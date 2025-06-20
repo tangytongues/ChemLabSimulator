@@ -60,7 +60,16 @@ const EQUIPMENT: Equipment[] = [
 ];
 
 export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLabProps) {
-  const [chemicals, setChemicals] = useState<Chemical[]>(ASPIRIN_CHEMICALS);
+  // Determine chemistry based on step title or experiment context
+  const getChemicalsForExperiment = () => {
+    const stepTitle = step.title.toLowerCase();
+    if (stepTitle.includes('copper') || stepTitle.includes('crystal')) {
+      return COPPER_SULFATE_CHEMICALS;
+    }
+    return ASPIRIN_CHEMICALS; // Default to aspirin
+  };
+
+  const [chemicals, setChemicals] = useState<Chemical[]>(getChemicalsForExperiment());
   const [equipment, setEquipment] = useState<Equipment[]>(EQUIPMENT);
   const [labState, setLabState] = useState<LabState>({
     temperature: 22,
@@ -287,7 +296,42 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
   };
 
   const getStepQuiz = (stepId: number) => {
-    const quizzes: Record<number, {question: string, answer: string, hint: string}> = {
+    const stepTitle = step.title.toLowerCase();
+    
+    // Copper sulfate crystal growth quiz questions
+    if (stepTitle.includes('copper') || stepTitle.includes('crystal')) {
+      const copperQuizzes: Record<number, {question: string, answer: string, hint: string}> = {
+        1: { 
+          question: "How many grams of copper sulfate pentahydrate are needed for this experiment?", 
+          answer: "25",
+          hint: "Check the procedure - this amount will create a saturated solution."
+        },
+        2: { 
+          question: "What temperature should the solution reach to create supersaturation?", 
+          answer: "80",
+          hint: "This temperature allows maximum dissolution of copper sulfate."
+        },
+        3: { 
+          question: "Why is it important to cool the solution slowly?", 
+          answer: "controlled crystallization",
+          hint: "Slow cooling prevents rapid precipitation and allows proper crystal formation."
+        },
+        4: { 
+          question: "What is the purpose of the seed crystal?", 
+          answer: "nucleation",
+          hint: "The seed provides a starting point for crystal growth."
+        },
+        5: { 
+          question: "What should you avoid doing during crystal growth?", 
+          answer: "disturbing",
+          hint: "Any movement can disrupt the delicate crystal formation process."
+        },
+      };
+      return copperQuizzes[stepId] || null;
+    }
+    
+    // Aspirin synthesis quiz questions (original)
+    const aspirinQuizzes: Record<number, {question: string, answer: string, hint: string}> = {
       1: { 
         question: "How many grams of salicylic acid should be measured for this synthesis?", 
         answer: "2.0",
@@ -309,7 +353,7 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
         hint: "This amount will cause the aspirin to crystallize out of solution."
       },
     };
-    return quizzes[stepId] || null;
+    return aspirinQuizzes[stepId] || null;
   };
 
   const checkQuizAnswer = () => {
@@ -327,6 +371,22 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
   };
 
   const canCompleteStep = () => {
+    const stepTitle = step.title.toLowerCase();
+    
+    // Copper sulfate crystal growth experiment logic
+    if (stepTitle.includes('copper') || stepTitle.includes('crystal')) {
+      switch (step.id) {
+        case 1: return labState.flaskContents.some(c => c.id === "copper_sulfate") && 
+                       labState.flaskContents.some(c => c.id === "water");
+        case 2: return labState.temperature >= 75 && labState.reactionProgress > 30;
+        case 3: return labState.temperature <= 30; // Cooling step
+        case 4: return labState.flaskContents.some(c => c.id === "seed_crystal");
+        case 5: return true; // Observation step
+        default: return true;
+      }
+    }
+    
+    // Aspirin synthesis experiment logic (original)
     switch (step.id) {
       case 1: return labState.flaskContents.some(c => c.id === "salicylic") && 
                      labState.flaskContents.some(c => c.id === "acetic");
@@ -338,6 +398,21 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
   };
 
   const getCompletionPercentage = () => {
+    const stepTitle = step.title.toLowerCase();
+    
+    // Copper sulfate crystal growth progress tracking
+    if (stepTitle.includes('copper') || stepTitle.includes('crystal')) {
+      switch (step.id) {
+        case 1: return labState.flaskContents.length >= 2 ? 100 : (labState.flaskContents.length * 50);
+        case 2: return Math.min(100, (labState.temperature / 80) * 60 + (labState.reactionProgress / 100) * 40);
+        case 3: return labState.temperature <= 30 ? 100 : Math.max(0, 100 - ((labState.temperature - 22) / 58) * 100);
+        case 4: return labState.flaskContents.some(c => c.id === "seed_crystal") ? 100 : 0;
+        case 5: return 100; // Observation step is always complete
+        default: return 0;
+      }
+    }
+    
+    // Aspirin synthesis progress tracking (original)
     switch (step.id) {
       case 1: return labState.flaskContents.length >= 2 ? 100 : (labState.flaskContents.length * 50);
       case 2: return labState.flaskContents.some(c => c.id === "phosphoric") ? 100 : 0;
