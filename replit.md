@@ -110,8 +110,27 @@ ChemLab Virtual is a full-stack web application that provides an interactive vir
 
 ## Changelog
 
-Changelog:
-- June 18, 2025. Initial setup
+- June 20, 2025: Made application downloadable and runnable locally
+  - Created comprehensive README.md with installation instructions
+  - Added SETUP.md with step-by-step local development guide
+  - Created platform-specific startup scripts (Windows .bat, Mac .command, Linux .sh)
+  - Added .env.example for environment configuration template
+  - Created DOWNLOAD.md for easy distribution
+  - Added DEPLOYMENT.md for production deployment options
+  - Fixed TypeScript errors in virtual lab drag-and-drop handlers
+  - Application now fully portable and runnable on any local device with Node.js
+
+- June 20, 2025: Completely redesigned virtual lab interface
+  - Enhanced visual design with realistic flask rendering and lab bench
+  - Implemented smooth stirring rod animations using requestAnimationFrame
+  - Added dynamic bubble generation during reactions with physics movement
+  - Improved drag-and-drop with visual feedback and smooth transitions
+  - Created professional control panel with organized temperature and stirring controls
+  - Enhanced chemical cards showing formulas, densities, and color indicators
+  - Upgraded interactive quiz system with helpful hints and better feedback
+  - Interface now matches professional chemistry simulators like ChemCollective
+
+- June 18, 2025: Initial setup
 
 ## User Preferences
 

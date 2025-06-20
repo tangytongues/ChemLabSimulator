@@ -187,13 +187,13 @@ export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLa
     }
   }, [labState.temperature, labState.flaskContents, labState.isReacting]);
 
-  const handleDragStart = (e: React.DragEvent, type: 'chemical' | 'equipment', id: string) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, type: 'chemical' | 'equipment', id: string) => {
     setDraggedItem({ type, id });
     e.dataTransfer.effectAllowed = 'move';
     e.currentTarget.style.opacity = '0.5';
   };
 
-  const handleDragEnd = (e: React.DragEvent) => {
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
     e.currentTarget.style.opacity = '1';
   };
 

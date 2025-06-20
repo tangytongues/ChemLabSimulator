@@ -1,121 +1,180 @@
 # ChemLab Virtual - Interactive Chemistry Learning Platform
 
-## Overview
-
-ChemLab Virtual is a full-stack web application that provides an interactive virtual chemistry laboratory environment. The platform allows users to conduct chemistry experiments safely through step-by-step guided processes, track their progress, and learn through hands-on simulation.
+A full-stack web application that provides an interactive virtual chemistry laboratory environment for conducting safe chemistry experiments through step-by-step guided processes.
 
 ## Features
 
-- **Interactive Experiments**: Step-by-step chemistry experiments with virtual lab simulations
-- **Progress Tracking**: Track your learning journey with detailed progress reports
-- **Safe Learning Environment**: Practice dangerous or expensive experiments safely
-- **Multiple Experiments**: Aspirin synthesis, acid-base titration, and more
+- **Interactive Virtual Lab**: Drag-and-drop chemistry simulation with realistic animations
+- **Step-by-Step Experiments**: Guided chemistry procedures with safety information
+- **Real-Time Reactions**: Temperature control, stirring, and bubble animations
+- **Educational Quizzes**: Built-in knowledge checks with immediate feedback
+- **Progress Tracking**: Track completion across multiple experiments
 - **Responsive Design**: Works on desktop and mobile devices
 
-## Local Development Setup
+## Tech Stack
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **Backend**: Node.js + Express + TypeScript
+- **Database**: PostgreSQL with Drizzle ORM (optional - uses in-memory storage by default)
+- **UI**: Tailwind CSS + shadcn/ui components
+- **State Management**: TanStack Query
+
+## Quick Start
 
 ### Prerequisites
 
-Before running the application locally, make sure you have:
+- Node.js 18+ (recommended: Node.js 20)
+- npm or yarn package manager
 
-- **Node.js 18 or higher** installed on your system
-- **npm** (comes with Node.js) or **yarn** package manager
-- **Git** for cloning the repository
+### Installation
 
-### Installation Instructions
-
-1. **Clone or Download the Repository**
+1. **Download the project**
    ```bash
    git clone <repository-url>
    cd chemlab-virtual
    ```
-   
-   Or if you downloaded as a ZIP file, extract it and navigate to the folder in your terminal.
 
-2. **Install Dependencies**
+2. **Install dependencies**
    ```bash
    npm install
    ```
-   
-   This will install all required packages for both frontend and backend.
 
-3. **Start the Development Server**
+3. **Start the development server**
    ```bash
    npm run dev
    ```
-   
-   This command will:
-   - Start the Express backend server on port 5000
-   - Start the Vite frontend development server
-   - Automatically open your browser to the application
 
-4. **Access the Application**
-   
-   Open your web browser and navigate to:
-   ```
-   http://localhost:5000
-   ```
+4. **Open your browser**
+   - Navigate to `http://localhost:5000`
+   - The application will be running with hot reload enabled
 
-### Project Structure
+### Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run check` - Run TypeScript type checking
+
+## Project Structure
 
 ```
 chemlab-virtual/
-├── client/                 # Frontend React application
+├── client/                 # React frontend
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── pages/         # Page components
+│   │   ├── components/    # UI components
+│   │   ├── pages/         # Application pages
 │   │   ├── hooks/         # Custom React hooks
-│   │   └── lib/           # Utility functions
-│   └── index.html         # HTML template
-├── server/                # Backend Express server
+│   │   └── lib/           # Utility libraries
+├── server/                # Express backend
 │   ├── index.ts          # Server entry point
 │   ├── routes.ts         # API routes
 │   └── storage.ts        # Data storage layer
 ├── shared/               # Shared types and schemas
-│   └── schema.ts        # Database schema and types
-├── data/                # Sample experiment data
-│   └── experiments.json # Experiment definitions
-└── package.json         # Project dependencies
+├── data/                 # Experiment data (JSON)
+└── dist/                # Production build output
 ```
 
-### Available Scripts
+## Configuration
 
-- `npm run dev` - Start development server (frontend + backend)
-- `npm run build` - Build the application for production
-- `npm run start` - Start production server
+### Environment Variables
 
-### Troubleshooting
+Create a `.env` file in the root directory for custom configuration:
 
-**Port Already in Use**
-If port 5000 is already in use, the application will automatically try the next available port.
+```env
+# Optional: Database connection (uses in-memory storage by default)
+DATABASE_URL=postgresql://username:password@localhost:5432/chemlab
 
-**Dependencies Issues**
-If you encounter dependency issues, try:
+# Optional: Custom port (default: 5000)
+PORT=5000
+
+# Optional: Node environment
+NODE_ENV=development
+```
+
+### Database Setup (Optional)
+
+The application works with in-memory storage by default. For persistent data:
+
+1. Set up a PostgreSQL database
+2. Add `DATABASE_URL` to your `.env` file
+3. Run database migrations:
+   ```bash
+   npm run db:push
+   ```
+
+## Local Development
+
+### Hot Reload Development
 ```bash
+npm run dev
+```
+- Frontend: React with Vite hot reload
+- Backend: Node.js with tsx hot reload
+- Serves on `http://localhost:5000`
+
+### Production Build
+```bash
+npm run build
+npm run start
+```
+
+## Available Experiments
+
+1. **Aspirin Synthesis** - Learn esterification reactions
+2. **Acid-Base Titration** - Master titration techniques
+
+Each experiment includes:
+- Interactive virtual lab with realistic chemistry simulation
+- Step-by-step procedures with safety information
+- Real-time temperature and reaction monitoring
+- Educational quizzes and progress tracking
+
+## Browser Support
+
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+## Troubleshooting
+
+### Common Issues
+
+**Port already in use**
+```bash
+# Kill process using port 5000
+lsof -ti:5000 | xargs kill -9
+```
+
+**Dependencies not installing**
+```bash
+# Clear npm cache and reinstall
 rm -rf node_modules package-lock.json
+npm cache clean --force
 npm install
 ```
 
-**Browser Not Opening**
-If the browser doesn't open automatically, manually navigate to `http://localhost:5000`
+**TypeScript errors**
+```bash
+# Run type checking
+npm run check
+```
 
-### Development Features
+## Contributing
 
-- **Hot Reload**: Changes to code automatically refresh the browser
-- **TypeScript Support**: Full TypeScript support for both frontend and backend
-- **Modern React**: Uses React 18 with modern hooks and patterns
-- **Tailwind CSS**: Utility-first CSS framework for styling
-- **API Integration**: RESTful API with progress tracking
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Database
+## License
 
-The application uses in-memory storage for development, so data will reset when you restart the server. This is perfect for testing and development purposes.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Contributing
+## Support
 
-1. Make your changes
-2. Test the application thoroughly
-3. Ensure all TypeScript types are correct
-4. Submit your changes
-
-For any issues or questions, please refer to the project documentation or create an issue in the repository.
+For support and questions:
+- Check the troubleshooting section above
+- Create an issue in the repository
+- Review the project documentation in `replit.md`
