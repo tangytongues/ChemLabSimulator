@@ -28,9 +28,21 @@ A full-stack web application that provides an interactive virtual chemistry labo
 
 ### Installation
 
+**Option 1: One-Click Setup (Recommended)**
+
+1. **Download** the ChemLab Virtual ZIP file
+2. **Extract** to your desired folder
+3. **Double-click** the launcher for your OS:
+   - Windows: `start-windows.bat`
+   - Mac: `start-mac.command`
+   - Linux: `start-linux.sh`
+4. **Wait** for automatic setup and browser opening
+
+**Option 2: Manual Setup**
+
 1. **Download the project**
    ```bash
-   git clone <repository-url>
+   # Extract ZIP file or clone repository
    cd chemlab-virtual
    ```
 
@@ -39,7 +51,7 @@ A full-stack web application that provides an interactive virtual chemistry labo
    npm install
    ```
 
-3. **Start the development server**
+3. **Start the application**
    ```bash
    npm run dev
    ```
