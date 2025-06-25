@@ -1,17 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, Flame, RotateCcw, Scale, Timer } from "lucide-react";
+import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, Flame, RotateCcw, Scale, Timer, Play, Pause, Square, Clock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import type { ExperimentStep } from "@shared/schema";
 
 interface VirtualLabProps {
   step: ExperimentStep;
   onStepComplete: () => void;
   isActive: boolean;
+  stepNumber: number;
+  totalSteps: number;
 }
 
 interface Chemical {
@@ -37,12 +40,17 @@ interface LabState {
   temperature: number;
   targetTemperature: number;
   isHeating: boolean;
+  isCooling: boolean;
   stirringSpeed: number;
   reactionProgress: number;
   flaskColor: string;
   isReacting: boolean;
   flaskContents: Chemical[];
   bubbleIntensity: number;
+  stepCompleted: boolean;
+  timer: number;
+  isTimerRunning: boolean;
+  checkpoints: string[];
 }
 
 const ASPIRIN_CHEMICALS: Chemical[] = [
@@ -59,7 +67,8 @@ const EQUIPMENT: Equipment[] = [
   { id: "timer", name: "Lab Timer", icon: "⏱️", used: false },
 ];
 
-export default function VirtualLab({ step, onStepComplete, isActive }: VirtualLabProps) {
+export default function VirtualLab({ step, onStepComplete, isActive, stepNumber, totalSteps }: VirtualLabProps) {
+  const { toast } = useToast();
   // Determine chemistry based on step title or experiment context
   const getChemicalsForExperiment = () => {
     const stepTitle = step.title.toLowerCase();
