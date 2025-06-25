@@ -6,10 +6,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getUserId(): string {
-  let userId = localStorage.getItem('userId');
+  let userId = localStorage.getItem('chemlab_user_id');
   if (!userId) {
-    userId = `user_${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('userId', userId);
+    userId = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('chemlab_user_id', userId);
   }
   return userId;
 }

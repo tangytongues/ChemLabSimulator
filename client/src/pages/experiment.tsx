@@ -1,8 +1,9 @@
 import { useParams } from "wouter";
 import { useState, useEffect } from "react";
 import { useExperiment, useExperimentProgress, useUpdateProgress } from "@/hooks/use-experiments";
+import { getUserId } from "@/lib/utils";
 import Header from "@/components/header";
-import VirtualLab from "@/components/virtual-lab";
+import EnhancedVirtualLab from "@/components/enhanced-virtual-lab";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -12,14 +13,7 @@ import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle, Clock, Thermometer, 
 import { Link } from "wouter";
 import type { ExperimentStep } from "@shared/schema";
 
-function getUserId() {
-  let userId = localStorage.getItem('userId');
-  if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('userId', userId);
-  }
-  return userId;
-}
+
 
 export default function Experiment() {
   const { id } = useParams<{ id: string }>();
@@ -212,10 +206,12 @@ export default function Experiment() {
                 </div>
 
                 {/* Interactive Virtual Lab */}
-                <VirtualLab 
+                <EnhancedVirtualLab 
                   step={currentStepData} 
                   onStepComplete={handleCompleteStep}
                   isActive={isActive}
+                  stepNumber={currentStep + 1}
+                  totalSteps={experiment.stepDetails.length}
                 />
 
                 {/* Navigation */}
