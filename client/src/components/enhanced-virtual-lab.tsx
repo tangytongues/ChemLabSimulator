@@ -7,6 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, Flame, RotateCcw, Scale, Timer, Play, Pause, Square, Clock, Target, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import FlaskComponent from "./lab-equipment/flask-component";
+import TestTubeRack from "./lab-equipment/test-tube-rack";
+import BeakerComponent from "./lab-equipment/beaker-component";
+import BurnerComponent from "./lab-equipment/burner-component";
+import ThermometerComponent from "./lab-equipment/thermometer-component";
+import StirringPlate from "./lab-equipment/stirring-plate";
+import GraduatedCylinder from "./lab-equipment/graduated-cylinder";
 import type { ExperimentStep } from "@shared/schema";
 
 interface VirtualLabProps {
@@ -361,89 +368,122 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const renderFlask = () => (
-    <div 
-      className="relative mx-auto"
-      style={{ width: '200px', height: '300px' }}
-      onDrop={(e) => {
-        e.preventDefault();
-        if (draggedItem?.type === 'chemical') {
-          handleChemicalDrop(draggedItem.id);
-        }
-        setDraggedItem(null);
-      }}
-      onDragOver={(e) => e.preventDefault()}
-    >
-      {/* Flask Body */}
+  const renderLabBench = () => (
+    <div className="relative bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl p-8 min-h-96 border-2 border-gray-200 shadow-inner">
+      {/* Lab Bench Surface */}
       <div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 border-4 border-gray-800 rounded-b-full transition-all duration-300"
-        style={{ 
-          width: '160px', 
-          height: '180px',
-          backgroundColor: labState.flaskColor || 'rgba(200, 220, 255, 0.3)',
-          boxShadow: 'inset 0 0 20px rgba(0,0,0,0.1)'
+        className="absolute inset-0 rounded-xl"
+        style={{
+          backgroundImage: `
+            linear-gradient(45deg, transparent 24%, rgba(59, 130, 246, 0.05) 25%, rgba(59, 130, 246, 0.05) 26%, transparent 27%, transparent 74%, rgba(59, 130, 246, 0.05) 75%, rgba(59, 130, 246, 0.05) 76%, transparent 77%, transparent),
+            linear-gradient(45deg, transparent 24%, rgba(59, 130, 246, 0.05) 25%, rgba(59, 130, 246, 0.05) 26%, transparent 27%, transparent 74%, rgba(59, 130, 246, 0.05) 75%, rgba(59, 130, 246, 0.05) 76%, transparent 77%, transparent)
+          `,
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0, 10px 10px'
         }}
-      >
-        {/* Liquid Level */}
-        {labState.flaskContents.length > 0 && (
-          <div 
-            className="absolute bottom-0 left-0 right-0 rounded-b-full transition-all duration-500"
-            style={{
-              height: `${Math.min(80, labState.flaskContents.length * 20)}%`,
-              backgroundColor: labState.flaskColor,
-              opacity: 0.8
-            }}
-          />
-        )}
-        
-        {/* Bubbles */}
-        {bubbles.map(bubble => (
-          <div
-            key={bubble.id}
-            className="absolute rounded-full bg-white"
-            style={{
-              left: `${bubble.x}%`,
-              top: `${bubble.y}%`,
-              width: `${bubble.size}px`,
-              height: `${bubble.size}px`,
-              opacity: bubble.opacity,
-              transform: 'translate(-50%, -50%)'
-            }}
-          />
-        ))}
-        
-        {/* Stirring Rod */}
-        {isStirring && (
-          <div
-            className="absolute top-1/2 left-1/2 w-1 bg-gray-600 origin-bottom transition-transform"
-            style={{
-              height: '60px',
-              transform: `translate(-50%, -50%) rotate(${stirringAngle}deg)`,
-            }}
-          />
-        )}
-      </div>
-      
-      {/* Flask Neck */}
-      <div 
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 border-4 border-gray-800 border-b-0"
-        style={{ width: '40px', height: '120px', backgroundColor: 'rgba(255,255,255,0.1)' }}
       />
       
-      {/* Temperature Display */}
-      {labState.temperature > 25 && (
-        <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
-          <Badge variant="destructive" className="animate-pulse">
-            {labState.isHeating && <Thermometer className="w-3 h-3 mr-1" />}
-            {Math.round(labState.temperature)}°C
-          </Badge>
+      <div className="relative z-10 flex items-center justify-center space-x-8">
+        {/* Main Flask */}
+        <FlaskComponent
+          contents={labState.flaskContents.map((content, index) => ({
+            color: content.color,
+            level: 20,
+            name: content.name
+          }))}
+          temperature={labState.temperature}
+          isHeating={labState.isHeating}
+          bubbles={bubbles}
+          stirringAngle={stirringAngle}
+          isStirring={isStirring}
+          onDrop={() => {
+            if (draggedItem?.type === 'chemical') {
+              handleChemicalDrop(draggedItem.id);
+              setDraggedItem(null);
+            }
+          }}
+        />
+        
+        {/* Supporting Equipment */}
+        <div className="space-y-4">
+          <BeakerComponent
+            size="medium"
+            contents={labState.flaskContents.length > 2 ? {
+              color: "#e0f2fe",
+              level: 40,
+              name: "Wash Water"
+            } : undefined}
+            label="Wash"
+          />
+          
+          <TestTubeRack
+            testTubes={[
+              { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
+              { id: "sample2", label: "S2" },
+              { id: "sample3", label: "S3" },
+              { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
+            ]}
+            className="scale-75"
+          />
+        </div>
+        
+        {/* Lab Equipment Station */}
+        <div className="space-y-6">
+          <ThermometerComponent
+            temperature={labState.temperature}
+            label="Digital"
+            className="scale-90"
+          />
+          
+          <GraduatedCylinder
+            capacity={100}
+            contents={labState.flaskContents.length > 1 ? {
+              color: "#ddd6fe",
+              volume: 75,
+              name: "Solution"
+            } : undefined}
+            accuracy="high"
+            label="100mL"
+            className="scale-75"
+          />
+        </div>
+      </div>
+      
+      {/* Hot Plate */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+        <StirringPlate
+          isOn={labState.stirringSpeed > 0}
+          speed={labState.stirringSpeed}
+          temperature={labState.temperature}
+          isHeating={labState.isHeating}
+          onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
+          onSpeedChange={(speed) => startStirring(speed)}
+          onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
+          className="scale-75"
+        />
+      </div>
+      
+      {/* Burner (Alternative heating) */}
+      {step.description.toLowerCase().includes('flame') && (
+        <div className="absolute bottom-4 right-4">
+          <BurnerComponent
+            isOn={labState.isHeating}
+            intensity={Math.round((labState.temperature - 22) / 80 * 100)}
+            onToggle={() => labState.isHeating ? stopHeating() : startHeating()}
+            className="scale-75"
+          />
         </div>
       )}
       
-      {/* Heat Indicator */}
-      {labState.isHeating && (
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce">
-          🔥
+      {/* Progress Indicator */}
+      {labState.reactionProgress > 0 && (
+        <div className="absolute top-4 right-4 bg-white rounded-lg shadow-md p-3 border">
+          <div className="text-sm font-medium mb-2 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+            Reaction Progress
+          </div>
+          <Progress value={labState.reactionProgress} className="w-32 h-2" />
+          <div className="text-xs text-gray-500 mt-1">{Math.round(labState.reactionProgress)}% Complete</div>
         </div>
       )}
     </div>
@@ -483,20 +523,8 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div 
-                ref={labBenchRef}
-                className="relative bg-gradient-to-b from-gray-100 to-gray-200 rounded-lg p-8 min-h-96 border-2 border-dashed border-gray-300"
-                style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.05) 10px, rgba(0,0,0,.05) 20px)' }}
-              >
-                {renderFlask()}
-                
-                {/* Progress Indicator */}
-                {labState.reactionProgress > 0 && (
-                  <div className="absolute top-4 right-4">
-                    <div className="text-sm font-medium mb-1">Reaction Progress</div>
-                    <Progress value={labState.reactionProgress} className="w-32" />
-                  </div>
-                )}
+              <div ref={labBenchRef}>
+                {renderLabBench()}
               </div>
             </CardContent>
           </Card>
@@ -534,54 +562,64 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             </CardContent>
           </Card>
 
-          {/* Temperature Control */}
+          {/* Equipment Status */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Thermometer className="h-4 w-4" />
-                Temperature Control
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center mb-3">
-                <div className="text-xl font-bold">
-                  {Math.round(labState.temperature)}°C
-                </div>
-                {labState.isHeating && <Badge variant="destructive" className="text-xs">Heating</Badge>}
-                {labState.isCooling && <Badge variant="secondary" className="text-xs">Cooling</Badge>}
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant={labState.isHeating ? "destructive" : "outline"}
-                  onClick={labState.isHeating ? stopHeating : startHeating}
-                  className="flex-1"
-                >
-                  <Flame className="h-3 w-3 mr-1" />
-                  {labState.isHeating ? "Stop" : "Heat"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Stirring Control */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <RotateCcw className="h-4 w-4" />
-                Stirring Control
+                Equipment Status
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Label>Speed: {labState.stirringSpeed}</Label>
-                <Slider
-                  value={[labState.stirringSpeed]}
-                  onValueChange={([value]) => startStirring(value)}
-                  max={100}
-                  step={10}
-                  className="w-full"
-                />
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Temperature</span>
+                  <Badge variant={labState.temperature > 50 ? "destructive" : "secondary"}>
+                    {Math.round(labState.temperature)}°C
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Stirring</span>
+                  <Badge variant={labState.stirringSpeed > 0 ? "default" : "secondary"}>
+                    {labState.stirringSpeed > 0 ? `${labState.stirringSpeed}%` : "Off"}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Heating</span>
+                  <Badge variant={labState.isHeating ? "destructive" : "secondary"}>
+                    {labState.isHeating ? "Active" : "Off"}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <RotateCcw className="h-4 w-4" />
+                Quick Controls
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2">
+                <Button 
+                  size="sm" 
+                  variant={labState.isHeating ? "destructive" : "outline"}
+                  onClick={labState.isHeating ? stopHeating : startHeating}
+                >
+                  <Flame className="h-3 w-3 mr-1" />
+                  {labState.isHeating ? "Stop" : "Heat"}
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant={labState.stirringSpeed > 0 ? "default" : "outline"}
+                  onClick={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  {labState.stirringSpeed > 0 ? "Stop" : "Stir"}
+                </Button>
               </div>
             </CardContent>
           </Card>
