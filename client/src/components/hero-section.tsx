@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Play, Book } from "lucide-react";
 import { useLocation } from "wouter";
+import SafetyGuideModal from "./safety-guide-modal";
 
 export default function HeroSection() {
   const [, navigate] = useLocation();
@@ -12,10 +13,7 @@ export default function HeroSection() {
     }
   };
 
-  const handleSafetyGuide = () => {
-    // For now, scroll to experiments section as safety info is displayed there
-    scrollToExperiments();
-  };
+
 
   return (
     <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
@@ -36,14 +34,15 @@ export default function HeroSection() {
               <Play className="mr-2 h-4 w-4" />
               Start Experimenting
             </Button>
-            <Button 
-              onClick={handleSafetyGuide}
-              variant="outline" 
-              className="border-2 border-white text-white px-8 py-3 hover:bg-white hover:text-blue-600 font-semibold"
-            >
-              <Book className="mr-2 h-4 w-4" />
-              View Safety Guide
-            </Button>
+            <SafetyGuideModal>
+              <Button 
+                variant="outline" 
+                className="border-2 border-white text-white px-8 py-3 bg-transparent hover:bg-white hover:text-blue-600 font-semibold"
+              >
+                <Book className="mr-2 h-4 w-4" />
+                View Safety Guide
+              </Button>
+            </SafetyGuideModal>
           </div>
         </div>
       </div>

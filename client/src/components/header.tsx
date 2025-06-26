@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FlaskRound, Menu, X } from "lucide-react";
 import { Link } from "wouter";
+import SafetyGuideModal from "./safety-guide-modal";
+import ProgressModal from "./progress-modal";
+import SignInModal from "./sign-in-modal";
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -22,15 +25,21 @@ export default function Header() {
             <a href="#experiments" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">
               Experiments
             </a>
-            <a href="#progress" className="text-gray-600 hover:text-gray-900 transition-colors">
-              My Progress
-            </a>
-            <a href="#safety" className="text-gray-600 hover:text-gray-900 transition-colors">
-              Safety Guide
-            </a>
-            <Button className="bg-blue-600 text-white hover:bg-blue-700">
-              Sign In
-            </Button>
+            <ProgressModal>
+              <button className="text-gray-600 hover:text-gray-900 transition-colors">
+                My Progress
+              </button>
+            </ProgressModal>
+            <SafetyGuideModal>
+              <button className="text-gray-600 hover:text-gray-900 transition-colors">
+                Safety Guide
+              </button>
+            </SafetyGuideModal>
+            <SignInModal>
+              <Button className="bg-blue-600 text-white hover:bg-blue-700">
+                Sign In
+              </Button>
+            </SignInModal>
           </nav>
           
           {/* Mobile Menu Button */}
@@ -49,16 +58,22 @@ export default function Header() {
               <a href="#experiments" className="text-blue-600 font-medium px-4 py-2">
                 Experiments
               </a>
-              <a href="#progress" className="text-gray-600 hover:text-gray-900 px-4 py-2">
-                My Progress
-              </a>
-              <a href="#safety" className="text-gray-600 hover:text-gray-900 px-4 py-2">
-                Safety Guide
-              </a>
+              <ProgressModal>
+                <button className="text-gray-600 hover:text-gray-900 px-4 py-2 text-left">
+                  My Progress
+                </button>
+              </ProgressModal>
+              <SafetyGuideModal>
+                <button className="text-gray-600 hover:text-gray-900 px-4 py-2 text-left">
+                  Safety Guide
+                </button>
+              </SafetyGuideModal>
               <div className="px-4">
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
-                  Sign In
-                </Button>
+                <SignInModal>
+                  <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                    Sign In
+                  </Button>
+                </SignInModal>
               </div>
             </div>
           </div>

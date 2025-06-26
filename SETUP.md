@@ -1,158 +1,315 @@
-# Local Setup Guide - ChemLab Virtual
+# ChemLab Virtual - Local Setup Guide
 
-This guide will help you download and run ChemLab Virtual on your local machine.
+This guide will help you set up ChemLab Virtual on your local machine for development or personal use.
 
-## System Requirements
+## 📋 Prerequisites
 
-- **Node.js**: Version 18 or higher (recommended: Node.js 20)
-- **RAM**: Minimum 4GB, recommended 8GB
-- **Disk Space**: At least 1GB free space
-- **Browser**: Chrome 90+, Firefox 88+, Safari 14+, or Edge 90+
+### Required Software
 
-## Step-by-Step Installation
+1. **Node.js 18 or later**
+   - Download from [https://nodejs.org/](https://nodejs.org/)
+   - Choose the LTS (Long Term Support) version
+   - Verify installation: `node --version` and `npm --version`
 
-### 1. Download Node.js
+2. **Git** (for cloning the repository)
+   - Download from [https://git-scm.com/](https://git-scm.com/)
+   - Verify installation: `git --version`
 
-If you don't have Node.js installed:
+### System Requirements
 
-**Windows/Mac:**
-- Visit [nodejs.org](https://nodejs.org/)
-- Download and install the LTS version
+- **RAM**: 4GB minimum, 8GB recommended
+- **Storage**: 2GB free space
+- **OS**: Windows 10+, macOS 10.15+, or Linux Ubuntu 18.04+
 
-**Linux (Ubuntu/Debian):**
+## 🚀 Installation Steps
+
+### Step 1: Clone the Repository
+
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
+# Using HTTPS
+git clone https://github.com/yourusername/chemlab-virtual.git
 
-**Verify installation:**
-```bash
-node --version
-npm --version
-```
+# OR using SSH (if you have SSH keys set up)
+git clone git@github.com:yourusername/chemlab-virtual.git
 
-### 2. Download the Project
-
-**Option A: Download ZIP**
-1. Download the project ZIP file
-2. Extract to your desired folder
-3. Open terminal/command prompt in that folder
-
-**Option B: Git Clone**
-```bash
-git clone <repository-url>
+# Navigate to the project directory
 cd chemlab-virtual
 ```
 
-### 3. Install Dependencies
+### Step 2: Install Dependencies
 
 ```bash
+# Install all required packages
 npm install
+
+# This will install both frontend and backend dependencies
+# Takes 2-5 minutes depending on your internet connection
 ```
 
-This will download all required packages (~200MB). May take 2-5 minutes depending on your internet speed.
-
-### 4. Start the Application
+### Step 3: Environment Configuration (Optional)
 
 ```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit the .env file if needed (optional for basic usage)
+# The default settings work for local development
+```
+
+### Step 4: Start the Application
+
+```bash
+# Start the development server
 npm run dev
+
+# You should see output like:
+# Loaded experiment 1: Aspirin Synthesis
+# Loaded experiment 2: Acid-Base Titration
+# Total experiments loaded: 2
+# [express] serving on port 5000
 ```
 
-You should see:
+### Step 5: Access the Application
+
+Open your web browser and navigate to:
 ```
-[express] serving on port 5000
-[vite] ready in Xms
+http://localhost:5000
 ```
 
-### 5. Open in Browser
+You should see the ChemLab Virtual home page with available experiments.
 
-Navigate to: `http://localhost:5000`
+## 🖥️ Platform-Specific Instructions
 
-The ChemLab Virtual application will load with the home page showing available experiments.
+### Windows
 
-## Production Build (Optional)
+1. **Using the Batch File**
+   - Double-click `start-windows.bat`
+   - A command prompt will open and start the server
+   - Your default browser should open automatically
 
-For better performance in production:
+2. **Manual Setup**
+   ```cmd
+   # Open Command Prompt or PowerShell
+   cd path\to\chemlab-virtual
+   npm install
+   npm run dev
+   ```
 
+### macOS
+
+1. **Using the Command File**
+   - Double-click `start-mac.command`
+   - You may need to allow it in System Preferences > Security & Privacy
+   - Terminal will open and start the server
+
+2. **Manual Setup**
+   ```bash
+   # Open Terminal
+   cd /path/to/chemlab-virtual
+   npm install
+   npm run dev
+   ```
+
+### Linux
+
+1. **Using the Shell Script**
+   ```bash
+   # Make the script executable
+   chmod +x start-linux.sh
+   
+   # Run the script
+   ./start-linux.sh
+   ```
+
+2. **Manual Setup**
+   ```bash
+   # Open terminal
+   cd /path/to/chemlab-virtual
+   npm install
+   npm run dev
+   ```
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### Port 5000 Already in Use
 ```bash
-npm run build
-npm run start
-```
+# Error: EADDRINUSE: address already in use :::5000
 
-## Troubleshooting
-
-### Port 5000 Already in Use
-
-**Windows:**
-```cmd
+# Solution 1: Kill the process using port 5000
+# On Windows:
 netstat -ano | findstr :5000
-taskkill /PID <PID_NUMBER> /F
-```
+taskkill /PID <PID> /F
 
-**Mac/Linux:**
-```bash
+# On macOS/Linux:
 lsof -ti:5000 | xargs kill -9
+
+# Solution 2: Use a different port
+PORT=3000 npm run dev
 ```
 
-### Permission Errors (Linux/Mac)
+#### npm install Fails
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# If you have permission issues on Windows
+npm install --no-optional
+```
+
+#### TypeScript Errors
+```bash
+# Run type checking
+npm run check
+
+# If types are missing
+npm install --save-dev @types/node
+```
+
+#### Git Clone Issues
+```bash
+# If HTTPS clone fails, try:
+git config --global http.sslVerify false
+git clone https://github.com/yourusername/chemlab-virtual.git
+
+# Then re-enable SSL
+git config --global http.sslVerify true
+```
+
+### Performance Issues
+
+#### Slow Loading
+- Ensure you have a stable internet connection during `npm install`
+- Close other applications to free up RAM
+- Use `npm run build` for production mode (faster but no hot reload)
+
+#### Browser Compatibility
+- Use Chrome, Firefox, Safari, or Edge (latest versions)
+- Enable JavaScript and disable ad blockers for localhost
+- Clear browser cache if experiencing issues
+
+## 🗃️ Database Setup (Optional)
+
+The application uses in-memory storage by default, but you can configure PostgreSQL:
+
+### PostgreSQL Setup
+
+1. **Install PostgreSQL**
+   - Download from [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
+
+2. **Create Database**
+   ```sql
+   CREATE DATABASE chemlab_virtual;
+   CREATE USER chemlab_user WITH PASSWORD 'your_password';
+   GRANT ALL PRIVILEGES ON DATABASE chemlab_virtual TO chemlab_user;
+   ```
+
+3. **Update Environment**
+   ```env
+   DATABASE_URL=postgresql://chemlab_user:your_password@localhost:5432/chemlab_virtual
+   ```
+
+4. **Push Schema**
+   ```bash
+   npm run db:push
+   ```
+
+## 🏗️ Building for Production
 
 ```bash
-sudo chown -R $(whoami) ~/.npm
+# Build the application
+npm run build
+
+# Start production server
+npm run start
+
+# The built files will be in the dist/ directory
 ```
 
-### Slow Installation
-
-If npm install is slow, try using a faster registry:
-```bash
-npm install --registry https://registry.npmmirror.com/
-```
-
-### Memory Issues
-
-If you encounter memory errors:
-```bash
-export NODE_OPTIONS="--max-old-space-size=4096"
-npm run dev
-```
-
-## File Structure After Installation
+## 📁 Project Structure Overview
 
 ```
 chemlab-virtual/
-├── node_modules/          # Dependencies (auto-generated)
-├── client/               # Frontend React app
-├── server/               # Backend Express server
-├── data/                 # Experiment definitions
-├── shared/               # Shared TypeScript types
-├── package.json          # Project configuration
-└── dist/                 # Production build (after npm run build)
+├── client/src/          # React frontend source
+├── server/              # Express backend source
+├── shared/              # Shared TypeScript types
+├── data/                # Experiment data files
+├── dist/                # Built application (after npm run build)
+├── node_modules/        # Dependencies (after npm install)
+├── package.json         # Project configuration
+├── README.md           # Main documentation
+└── SETUP.md            # This file
 ```
 
-## Development Mode Features
+## 🔄 Development Workflow
 
-When running `npm run dev`:
-- **Hot Reload**: Changes to code automatically refresh the browser
-- **TypeScript Checking**: Real-time error checking
-- **Development Logging**: Detailed console output for debugging
+1. **Make Changes**: Edit files in `client/src/` or `server/`
+2. **Hot Reload**: Changes automatically reload in the browser
+3. **Type Check**: Run `npm run check` to verify TypeScript
+4. **Build**: Run `npm run build` to create production files
+5. **Test**: Access `http://localhost:5000` to test changes
 
-## Offline Usage
+## 🌐 Accessing from Other Devices
 
-Once installed, the application works completely offline:
-- All experiments are stored locally in JSON files
-- No external API calls required
-- User progress stored in browser memory
+To access the application from other devices on your network:
 
-## Next Steps
+1. **Find Your IP Address**
+   ```bash
+   # Windows
+   ipconfig
+   
+   # macOS/Linux
+   ifconfig
+   ```
 
-1. Open `http://localhost:5000` in your browser
-2. Click on "Aspirin Synthesis" experiment
-3. Follow the step-by-step lab procedures
-4. Drag chemicals into the virtual flask
-5. Control temperature and stirring
-6. Complete knowledge check quizzes
+2. **Start with External Access**
+   ```bash
+   # The server already binds to 0.0.0.0:5000
+   npm run dev
+   ```
 
-## Getting Help
+3. **Access from Other Devices**
+   ```
+   http://YOUR_IP_ADDRESS:5000
+   # Example: http://192.168.1.100:5000
+   ```
 
-- Check `README.md` for detailed documentation
-- Review `replit.md` for technical architecture
-- Common issues are covered in the troubleshooting section above
+## 🛡️ Security Notes
+
+- The default setup is for local development only
+- For production deployment, configure proper authentication
+- Use HTTPS in production environments
+- Keep dependencies updated with `npm audit` and `npm update`
+
+## 📞 Getting Help
+
+If you encounter issues:
+
+1. Check this troubleshooting guide
+2. Search existing [GitHub Issues](https://github.com/yourusername/chemlab-virtual/issues)
+3. Create a new issue with:
+   - Your operating system
+   - Node.js version (`node --version`)
+   - Error messages
+   - Steps to reproduce
+
+## ✅ Verification Checklist
+
+- [ ] Node.js 18+ installed
+- [ ] Git installed
+- [ ] Repository cloned successfully
+- [ ] Dependencies installed (`npm install`)
+- [ ] Development server starts (`npm run dev`)
+- [ ] Application loads at `http://localhost:5000`
+- [ ] Can navigate to experiments page
+- [ ] Virtual lab components load properly
+- [ ] No console errors in browser developer tools
+
+---
+
+**Ready to explore virtual chemistry!** 🧪
