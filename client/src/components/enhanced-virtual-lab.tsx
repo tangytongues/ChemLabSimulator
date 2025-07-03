@@ -412,7 +412,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
   };
 
   const renderLabBench = () => (
-    <div className="relative bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl p-12 min-h-[600px] border-2 border-gray-200 shadow-inner overflow-hidden">
+    <div className="relative bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 rounded-xl p-16 min-h-[700px] w-full border-2 border-gray-200 shadow-inner overflow-hidden">
       {/* Lab Bench Surface */}
       <div 
         className="absolute inset-0 rounded-xl"
@@ -426,8 +426,8 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
         }}
       />
       
-      {/* Lab Equipment Grid Layout */}
-      <div className="relative z-10 h-full grid grid-cols-4 grid-rows-3 gap-8 p-4">
+      {/* Lab Equipment Spread Out Layout */}
+      <div className="relative z-10 h-full grid grid-cols-6 grid-rows-3 gap-12 p-6">
         {/* Top Row - Measurement Equipment */}
         <div className="col-span-1 flex flex-col items-center justify-center">
           <GraduatedCylinder
@@ -439,7 +439,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             } : undefined}
             accuracy="high"
             label="100mL"
-            className="scale-90"
+            className="scale-100"
           />
         </div>
         
@@ -455,15 +455,15 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
           />
         </div>
         
-        <div className="col-span-1 flex flex-col items-center justify-center">
+        <div className="col-span-2 col-start-3 flex flex-col items-center justify-center">
           <ThermometerComponent
             temperature={labState.temperature}
             label="Digital"
-            className="scale-100"
+            className="scale-110"
           />
         </div>
         
-        <div className="col-span-1 flex flex-col items-center justify-center">
+        <div className="col-span-2 col-start-5 flex flex-col items-center justify-center">
           <TestTubeRack
             testTubes={[
               { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
@@ -471,12 +471,12 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
               { id: "sample3", label: "S3" },
               { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
             ]}
-            className="scale-90"
+            className="scale-100"
           />
         </div>
         
         {/* Middle Row - Main Reaction Area */}
-        <div className="col-span-2 col-start-2 row-start-2 flex flex-col items-center justify-center">
+        <div className="col-span-4 col-start-2 row-start-2 flex flex-col items-center justify-center">
           <div className="relative">
             <FlaskComponent
               contents={labState.flaskContents.map((content, index) => ({
@@ -489,7 +489,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
               bubbles={bubbles}
               stirringAngle={stirringAngle}
               isStirring={isStirring}
-              className="scale-110"
+              className="scale-125"
               onDrop={() => {
                 if (draggedItem?.type === 'chemical') {
                   handleChemicalDrop(draggedItem.id);
@@ -500,15 +500,15 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             
             {/* Drop Zone Indicator */}
             {draggedItem && (
-              <div className="absolute -inset-4 border-2 border-dashed border-blue-400 rounded-lg bg-blue-50 bg-opacity-50 flex items-center justify-center">
-                <div className="text-sm font-medium text-blue-600">Drop Chemical Here</div>
+              <div className="absolute -inset-6 border-2 border-dashed border-blue-400 rounded-lg bg-blue-50 bg-opacity-50 flex items-center justify-center">
+                <div className="text-lg font-medium text-blue-600">Drop Chemical Here</div>
               </div>
             )}
           </div>
         </div>
         
         {/* Bottom Row - Heating Equipment */}
-        <div className="col-span-2 col-start-2 row-start-3 flex flex-col items-center justify-start">
+        <div className="col-span-4 col-start-2 row-start-3 flex flex-col items-center justify-start">
           <StirringPlate
             isOn={labState.stirringSpeed > 0}
             speed={labState.stirringSpeed}
@@ -517,18 +517,18 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
             onSpeedChange={(speed) => startStirring(speed)}
             onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-            className="scale-100"
+            className="scale-110"
           />
         </div>
         
         {/* Burner (Alternative heating) */}
         {step.description.toLowerCase().includes('flame') && (
-          <div className="col-span-1 col-start-4 row-start-3 flex flex-col items-center justify-start">
+          <div className="col-span-1 col-start-6 row-start-3 flex flex-col items-center justify-start">
             <BurnerComponent
               isOn={labState.isHeating}
               intensity={Math.round((labState.temperature - 22) / 80 * 100)}
               onToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-              className="scale-90"
+              className="scale-100"
             />
           </div>
         )}
@@ -536,7 +536,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
       
       {/* Progress Indicator */}
       {labState.reactionProgress > 0 && (
-        <div className="absolute top-6 right-6 bg-white rounded-lg shadow-md p-4 border min-w-[200px]">
+        <div className="absolute top-8 right-8 bg-white rounded-lg shadow-md p-4 border min-w-[240px]">
           <div className="text-sm font-medium mb-3 flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
             Reaction Progress
@@ -547,7 +547,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
       )}
       
       {/* Safety Warning */}
-      <div className="absolute bottom-6 left-6 bg-yellow-50 border border-yellow-200 rounded-lg p-3 max-w-xs">
+      <div className="absolute bottom-8 left-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-sm">
         <div className="flex items-center gap-2 mb-1">
           <AlertTriangle className="h-4 w-4 text-yellow-600" />
           <span className="text-sm font-medium text-yellow-800">Safety First</span>
@@ -560,7 +560,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
   );
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
+    <div className="max-w-full mx-auto p-6 space-y-6">
       {/* Step Progress Header */}
       <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
         <CardHeader>
@@ -582,9 +582,9 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
         {/* Lab Bench - Much Larger */}
-        <div className="xl:col-span-3">
+        <div className="xl:col-span-4">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -592,8 +592,8 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                 Virtual Lab Bench
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-2">
-              <div ref={labBenchRef}>
+            <CardContent className="p-1">
+              <div ref={labBenchRef} className="w-full">
                 {renderLabBench()}
               </div>
             </CardContent>
