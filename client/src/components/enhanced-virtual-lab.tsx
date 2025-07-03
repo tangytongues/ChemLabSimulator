@@ -534,45 +534,205 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
   );
 
   return (
-    <div className="max-w-full mx-auto p-6 space-y-6">
-      {/* Step Progress Header */}
-      <Card className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <CardHeader>
-          <div className="flex items-center justify-between">
+    <div className="w-full max-w-none p-4 space-y-4">
+      {/* Compact Step Header */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Target className="h-4 w-4 text-blue-600" />
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5 text-blue-600" />
-                Step {stepNumber} of {totalSteps}: {step.title}
-              </CardTitle>
-              <p className="text-sm text-gray-600 mt-2">{step.description}</p>
-            </div>
-            <div className="text-right">
-              <Badge variant={labState.canProceed ? "default" : "secondary"} className="mb-2">
-                {labState.canProceed ? "Complete" : "In Progress"}
-              </Badge>
-              <Progress value={(stepNumber / totalSteps) * 100} className="w-32" />
+              <h3 className="font-semibold text-sm">Step {stepNumber} of {totalSteps}: {step.title}</h3>
+              <p className="text-xs text-gray-600">{step.description}</p>
             </div>
           </div>
-        </CardHeader>
-      </Card>
-
-      {/* Full Width Lab Bench */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Beaker className="h-5 w-5" />
-            Virtual Lab Bench
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-2">
-          <div ref={labBenchRef} className="w-full">
-            {renderLabBench()}
+          <div className="flex items-center gap-3">
+            <Badge variant={labState.canProceed ? "default" : "secondary"} className="text-xs">
+              {labState.canProceed ? "Complete" : "In Progress"}
+            </Badge>
+            <Progress value={(stepNumber / totalSteps) * 100} className="w-24 h-2" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Controls and Information Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* YouTube-style Wide Lab Layout */}
+      <div className="grid grid-cols-12 gap-4">
+        {/* Main Lab Bench - Wide like YouTube video */}
+        <div className="col-span-9">
+          <Card>
+            <CardContent className="p-0">
+              <div 
+                className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg"
+                style={{ height: '480px', width: '100%' }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  if (draggedItem?.type === 'chemical') {
+                    handleChemicalDrop(draggedItem.id);
+                    setDraggedItem(null);
+                  }
+                }}
+                onDragOver={(e) => e.preventDefault()}
+              >
+                <div className="absolute inset-0 bg-white rounded-lg opacity-20"></div>
+                
+                {/* Equipment Container - Fits perfectly inside */}
+                <div className="relative p-6 h-full flex flex-col justify-between">
+                  
+                  {/* Top Equipment Row - Smaller and contained */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex space-x-8">
+                      <div className="text-center">
+                        <div className="scale-75">
+                          <GraduatedCylinder
+                            capacity={100}
+                            contents={labState.flaskContents.length > 1 ? {
+                              color: "#ddd6fe",
+                              volume: 75,
+                              name: "Solution"
+                            } : undefined}
+                            accuracy="high"
+                            label="100mL"
+                            className="cursor-pointer hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Cylinder</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="scale-75">
+                          <BeakerComponent
+                            size="medium"
+                            contents={labState.flaskContents.length > 2 ? {
+                              color: "#e0f2fe",
+                              level: 40,
+                              name: "Wash Water"
+                            } : undefined}
+                            label="Wash"
+                            className="cursor-pointer hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Beaker</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-8">
+                      <div className="text-center">
+                        <div className="scale-75">
+                          <ThermometerComponent
+                            temperature={labState.temperature}
+                            label="Digital"
+                            className="cursor-pointer hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Thermometer</div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <div className="scale-75">
+                          <TestTubeRack
+                            testTubes={[
+                              { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
+                              { id: "sample2", label: "S2" },
+                              { id: "sample3", label: "S3" },
+                              { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
+                            ]}
+                            className="cursor-pointer hover:scale-105 transition-transform"
+                          />
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">Test Tubes</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Central Flask Area */}
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="relative">
+                      <div className={`absolute -inset-6 rounded-xl border-2 border-dashed transition-all ${
+                        draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
+                      }`}>
+                        {draggedItem && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-blue-600 text-white px-3 py-1 rounded-lg font-medium text-sm">
+                              Drop Chemical Here
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="scale-125">
+                        <FlaskComponent
+                          contents={labState.flaskContents.map((content, index) => ({
+                            color: content.color,
+                            level: 30 + (index * 10),
+                            name: content.name
+                          }))}
+                          temperature={labState.temperature}
+                          isHeating={labState.isHeating}
+                          bubbles={bubbles}
+                          stirringAngle={stirringAngle}
+                          isStirring={isStirring}
+                          className="cursor-pointer hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Bottom Equipment */}
+                  <div className="flex justify-center">
+                    <div className="text-center">
+                      <div className="scale-90">
+                        <StirringPlate
+                          isOn={labState.stirringSpeed > 0}
+                          speed={labState.stirringSpeed}
+                          temperature={labState.temperature}
+                          isHeating={labState.isHeating}
+                          onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
+                          onSpeedChange={(speed) => startStirring(speed)}
+                          onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
+                          className="cursor-pointer hover:scale-105 transition-transform"
+                        />
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">Hot Plate & Stirrer</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Status Indicators */}
+                <div className="absolute top-3 right-3 space-y-1">
+                  {labState.isHeating && (
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                      🔥 {Math.round(labState.temperature)}°C
+                    </div>
+                  )}
+                  {labState.stirringSpeed > 0 && (
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                      🌀 {labState.stirringSpeed}%
+                    </div>
+                  )}
+                  {labState.isReacting && (
+                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                      ⚗️ Reacting
+                    </div>
+                  )}
+                </div>
+                
+                {/* Reaction Progress */}
+                {labState.reactionProgress > 0 && (
+                  <div className="absolute bottom-3 left-3 bg-white rounded-lg shadow p-3 border border-gray-200">
+                    <div className="text-xs font-medium mb-1 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                      Progress
+                    </div>
+                    <Progress value={labState.reactionProgress} className="w-20 h-1.5 mb-1" />
+                    <div className="text-xs text-gray-500">{Math.round(labState.reactionProgress)}%</div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Sidebar - Controls and Info */}
+        <div className="col-span-3 space-y-4">
         {/* Lab Controls - Column 1 */}
         <div className="space-y-4">
           <Card>
