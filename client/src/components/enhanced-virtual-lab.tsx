@@ -1,18 +1,15 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Slider } from "@/components/ui/slider";
-import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, Flame, RotateCcw, Scale, Timer, Play, Pause, Square, Clock, Target, BookOpen } from "lucide-react";
+import { AlertTriangle, Thermometer, Beaker, Droplets, CheckCircle, Flame, RotateCcw, Target, Play, Pause, Square } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import FlaskComponent from "./lab-equipment/flask-component";
 import TestTubeRack from "./lab-equipment/test-tube-rack";
 import BeakerComponent from "./lab-equipment/beaker-component";
-import BurnerComponent from "./lab-equipment/burner-component";
-import ThermometerComponent from "./lab-equipment/thermometer-component";
 import StirringPlate from "./lab-equipment/stirring-plate";
+import ThermometerComponent from "./lab-equipment/thermometer-component";
 import GraduatedCylinder from "./lab-equipment/graduated-cylinder";
 import type { ExperimentStep } from "@shared/schema";
 
@@ -34,15 +31,6 @@ interface Chemical {
   added: boolean;
   density?: number;
   required?: boolean;
-}
-
-interface Equipment {
-  id: string;
-  name: string;
-  icon: string;
-  used: boolean;
-  required?: boolean;
-  position?: { x: number; y: number };
 }
 
 interface LabState {
@@ -76,35 +64,12 @@ const ASPIRIN_CHEMICALS: Chemical[] = [
   { id: "salicylic", name: "Salicylic Acid", formula: "C₇H₆O₃", amount: 2.0, unit: "g", color: "#ffffff", added: false, density: 1.44, required: true },
   { id: "acetic", name: "Acetic Anhydride", formula: "(CH₃CO)₂O", amount: 5.0, unit: "mL", color: "#fff3cd", added: false, density: 1.08, required: true },
   { id: "phosphoric", name: "Phosphoric Acid", formula: "H₃PO₄", amount: 3, unit: "drops", color: "#f8d7da", added: false, density: 1.69, required: true },
-  { id: "water", name: "Distilled Water", formula: "H₂O", amount: 20.0, unit: "mL", color: "#cce7ff", added: false, density: 1.0, required: false },
 ];
 
-const TITRATION_CHEMICALS: Chemical[] = [
-  { id: "naoh", name: "NaOH Solution", formula: "NaOH", amount: 0.1, unit: "M", color: "#e3f2fd", added: false, density: 1.04, required: true },
-  { id: "hcl", name: "HCl Solution", formula: "HCl", amount: 0.1, unit: "M", color: "#fff3e0", added: false, density: 1.02, required: true },
-  { id: "phenolphthalein", name: "Phenolphthalein", formula: "C₂₀H₁₄O₄", amount: 2, unit: "drops", color: "#fce4ec", added: false, density: 1.0, required: true },
-];
-
-const EQUIPMENT: Equipment[] = [
-  { id: "thermometer", name: "Digital Thermometer", icon: "🌡️", used: false, required: false },
-  { id: "stirrer", name: "Magnetic Stirrer", icon: "🔄", used: false, required: false },
-  { id: "heater", name: "Hot Plate", icon: "🔥", used: false, required: false },
-  { id: "timer", name: "Lab Timer", icon: "⏱️", used: false, required: false },
-];
-
-export default function EnhancedVirtualLab({ step, onStepComplete, isActive, stepNumber, totalSteps }: VirtualLabProps) {
+export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepNumber, totalSteps }: VirtualLabProps) {
   const { toast } = useToast();
   
-  const getChemicalsForExperiment = () => {
-    const stepTitle = step.title.toLowerCase();
-    if (stepTitle.includes('titration') || stepTitle.includes('acid') || stepTitle.includes('base')) {
-      return TITRATION_CHEMICALS;
-    }
-    return ASPIRIN_CHEMICALS;
-  };
-
-  const [chemicals, setChemicals] = useState<Chemical[]>(getChemicalsForExperiment());
-  const [equipment, setEquipment] = useState<Equipment[]>(EQUIPMENT);
+  const [chemicals, setChemicals] = useState<Chemical[]>(ASPIRIN_CHEMICALS);
   const [labState, setLabState] = useState<LabState>({
     temperature: 22,
     targetTemperature: 22,
@@ -128,10 +93,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
   const [stirringAngle, setStirringAngle] = useState(0);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   
-  const labBenchRef = useRef<HTMLDivElement>(null);
-  const animationFrameRef = useRef<number>();
   const timerIntervalRef = useRef<NodeJS.Timeout>();
-  const bubbleIdRef = useRef(0);
 
   // Timer management
   useEffect(() => {
@@ -144,7 +106,6 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
         clearInterval(timerIntervalRef.current);
       }
     }
-
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -152,28 +113,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
     };
   }, [labState.isTimerRunning]);
 
-  // Stirring animation
-  useEffect(() => {
-    if (isStirring && labState.stirringSpeed > 0) {
-      const animate = () => {
-        setStirringAngle(prev => (prev + (labState.stirringSpeed / 10)) % 360);
-        animationFrameRef.current = requestAnimationFrame(animate);
-      };
-      animationFrameRef.current = requestAnimationFrame(animate);
-    } else {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    }
-    
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isStirring, labState.stirringSpeed]);
-
-  // Temperature control simulation
+  // Temperature and reaction simulation
   useEffect(() => {
     const interval = setInterval(() => {
       setLabState(prev => {
@@ -181,9 +121,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
         
         if (prev.isHeating && newTemp < prev.targetTemperature) {
           newTemp = Math.min(prev.targetTemperature, newTemp + 2);
-        } else if (prev.isCooling && newTemp > prev.targetTemperature) {
-          newTemp = Math.max(prev.targetTemperature, newTemp - 1);
-        } else if (!prev.isHeating && !prev.isCooling && newTemp > 22) {
+        } else if (!prev.isHeating && newTemp > 22) {
           newTemp = Math.max(22, newTemp - 0.5);
         }
 
@@ -197,7 +135,6 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
           temperature: newTemp,
           reactionProgress: newProgress,
           isReacting: newTemp > 60 && prev.flaskContents.length > 1 && prev.stirringSpeed > 0,
-          bubbleIntensity: prev.isReacting ? Math.min(10, Math.floor(newTemp / 10)) : 0
         };
       });
     }, 500);
@@ -205,75 +142,43 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
     return () => clearInterval(interval);
   }, []);
 
-  // Check step completion criteria - Enhanced validation
+  // Check completion criteria
   useEffect(() => {
-    const checkCompletion = () => {
-      const requiredChemicals = chemicals.filter(c => c.required);
-      const addedRequiredChemicals = requiredChemicals.filter(c => c.added);
-      
-      const stepTitle = step.title.toLowerCase();
-      const stepDescription = step.description.toLowerCase();
-      
-      let completionCriteria: boolean[] = [];
-      
-      if (stepTitle.includes('synthesis') || stepTitle.includes('aspirin')) {
-        completionCriteria = [
-          addedRequiredChemicals.length === requiredChemicals.length,
-          labState.reactionProgress >= 80,
-          labState.temperature >= 60,
-          labState.stirringSpeed > 0,
-          labState.timer >= 120
-        ];
-      } else if (stepTitle.includes('titration') || stepTitle.includes('acid') || stepTitle.includes('base')) {
-        completionCriteria = [
-          addedRequiredChemicals.length === requiredChemicals.length,
-          labState.reactionProgress >= 60,
-          labState.timer >= 60,
-          labState.flaskContents.length >= 2
-        ];
-      } else if (stepTitle.includes('heat') || stepDescription.includes('heat')) {
-        completionCriteria = [
-          addedRequiredChemicals.length === requiredChemicals.length,
-          labState.temperature >= 60,
-          labState.timer >= 90,
-          labState.isHeating
-        ];
-      } else if (stepTitle.includes('cool') || stepDescription.includes('cool')) {
-        completionCriteria = [
-          labState.temperature <= 35,
-          labState.timer >= 60,
-          !labState.isHeating
-        ];
-      } else if (stepTitle.includes('mix') || stepDescription.includes('stir')) {
-        completionCriteria = [
-          addedRequiredChemicals.length === requiredChemicals.length,
-          labState.stirringSpeed > 0,
-          labState.timer >= 30,
-          labState.reactionProgress >= 30
-        ];
-      } else {
-        completionCriteria = [
-          addedRequiredChemicals.length === requiredChemicals.length,
-          labState.timer >= 30,
-          labState.reactionProgress >= 20 || labState.temperature >= 30
-        ];
-      }
-
-      const canProceed = completionCriteria.every(Boolean);
-      
-      setLabState(prev => ({ ...prev, canProceed, stepCompleted: canProceed }));
-      
-      if (canProceed && !labState.stepCompleted) {
-        addCheckpoint("Step requirements completed successfully");
-        toast({
-          title: "Step Complete!",
-          description: "All laboratory procedures completed. You can proceed to the next step.",
-        });
-      }
-    };
-
-    checkCompletion();
-  }, [chemicals, equipment, labState.reactionProgress, labState.timer, labState.temperature, labState.stirringSpeed, labState.isHeating, labState.flaskContents, step.title, step.description, toast]);
+    const requiredChemicals = chemicals.filter(c => c.required);
+    const addedRequiredChemicals = requiredChemicals.filter(c => c.added);
+    
+    const stepTitle = step.title.toLowerCase();
+    let canProceed = false;
+    
+    if (stepTitle.includes('synthesis') || stepTitle.includes('aspirin')) {
+      canProceed = 
+        addedRequiredChemicals.length === requiredChemicals.length &&
+        labState.reactionProgress >= 80 &&
+        labState.temperature >= 60 &&
+        labState.stirringSpeed > 0 &&
+        labState.timer >= 120;
+    } else if (stepTitle.includes('heat')) {
+      canProceed = 
+        addedRequiredChemicals.length === requiredChemicals.length &&
+        labState.temperature >= 60 &&
+        labState.timer >= 90 &&
+        labState.isHeating;
+    } else {
+      canProceed = 
+        addedRequiredChemicals.length === requiredChemicals.length &&
+        labState.timer >= 30;
+    }
+    
+    setLabState(prev => ({ ...prev, canProceed }));
+    
+    if (canProceed && !labState.stepCompleted) {
+      addCheckpoint("Step requirements completed successfully");
+      toast({
+        title: "Step Complete!",
+        description: "All laboratory procedures completed.",
+      });
+    }
+  }, [chemicals, labState.reactionProgress, labState.timer, labState.temperature, labState.stirringSpeed, labState.isHeating, step.title, toast]);
 
   const addCheckpoint = (description: string) => {
     setLabState(prev => ({
@@ -299,7 +204,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
     addCheckpoint(`Added ${chemical.name} to reaction flask`);
     toast({
       title: "Chemical Added",
-      description: `${chemical.name} (${chemical.amount}${chemical.unit}) added to flask`,
+      description: `${chemical.name} added to flask`,
     });
   };
 
@@ -320,7 +225,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
       isCooling: true,
       targetTemperature: 22
     }));
-    addCheckpoint("Stopped heating - allowing to cool");
+    addCheckpoint("Stopped heating");
   };
 
   const startStirring = (speed: number) => {
@@ -340,12 +245,10 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
 
   const pauseTimer = () => {
     setLabState(prev => ({ ...prev, isTimerRunning: false }));
-    addCheckpoint("Paused lab timer");
   };
 
   const resetTimer = () => {
     setLabState(prev => ({ ...prev, timer: 0, isTimerRunning: false }));
-    addCheckpoint("Reset lab timer");
   };
 
   const formatTime = (seconds: number) => {
@@ -354,215 +257,42 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const renderLabBench = () => (
-    <div 
-      className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg border-2 border-slate-300 shadow-lg"
-      style={{ minHeight: '600px', width: '100%' }}
-      onDrop={(e) => {
-        e.preventDefault();
-        if (draggedItem?.type === 'chemical') {
-          handleChemicalDrop(draggedItem.id);
-          setDraggedItem(null);
-        }
-      }}
-      onDragOver={(e) => e.preventDefault()}
-    >
-      <div className="absolute inset-0 bg-white rounded-lg opacity-30"></div>
-      
-      <div className="relative p-12 h-full">
-        
-        {/* Top Equipment Row */}
-        <div className="flex justify-between items-start mb-12">
-          <div className="flex space-x-16">
-            <div className="text-center">
-              <GraduatedCylinder
-                capacity={100}
-                contents={labState.flaskContents.length > 1 ? {
-                  color: "#ddd6fe",
-                  volume: 75,
-                  name: "Solution"
-                } : undefined}
-                accuracy="high"
-                label="100mL"
-                className="cursor-pointer hover:scale-105 transition-transform"
-              />
-              <div className="text-xs text-gray-600 mt-2">Graduated Cylinder</div>
-            </div>
-            
-            <div className="text-center">
-              <BeakerComponent
-                size="medium"
-                contents={labState.flaskContents.length > 2 ? {
-                  color: "#e0f2fe",
-                  level: 40,
-                  name: "Wash Water"
-                } : undefined}
-                label="Wash"
-                className="cursor-pointer hover:scale-105 transition-transform"
-              />
-              <div className="text-xs text-gray-600 mt-2">Beaker</div>
-            </div>
-          </div>
-          
-          <div className="flex space-x-16">
-            <div className="text-center">
-              <ThermometerComponent
-                temperature={labState.temperature}
-                label="Digital"
-                className="cursor-pointer hover:scale-105 transition-transform"
-              />
-              <div className="text-xs text-gray-600 mt-2">Thermometer</div>
-            </div>
-            
-            <div className="text-center">
-              <TestTubeRack
-                testTubes={[
-                  { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
-                  { id: "sample2", label: "S2" },
-                  { id: "sample3", label: "S3" },
-                  { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
-                ]}
-                className="cursor-pointer hover:scale-105 transition-transform"
-              />
-              <div className="text-xs text-gray-600 mt-2">Test Tubes</div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Central Reaction Area */}
-        <div className="flex-1 flex flex-col items-center justify-center mb-12">
-          <div className="relative mb-8">
-            <div className={`absolute -inset-8 rounded-xl border-2 border-dashed transition-all ${
-              draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
-            }`}>
-              {draggedItem && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-lg">
-                    Drop {draggedItem.type === 'chemical' ? 'Chemical' : 'Equipment'} Here
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <FlaskComponent
-              contents={labState.flaskContents.map((content, index) => ({
-                color: content.color,
-                level: 30 + (index * 10),
-                name: content.name
-              }))}
-              temperature={labState.temperature}
-              isHeating={labState.isHeating}
-              bubbles={bubbles}
-              stirringAngle={stirringAngle}
-              isStirring={isStirring}
-              className="scale-150 cursor-pointer hover:scale-155 transition-transform"
-            />
-          </div>
-          
-          {labState.reactionProgress > 0 && (
-            <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 min-w-[250px] text-center">
-              <div className="text-sm font-medium mb-2 flex items-center justify-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                Reaction Progress
-              </div>
-              <Progress value={labState.reactionProgress} className="w-full h-3 mb-2" />
-              <div className="text-xs text-gray-500">{Math.round(labState.reactionProgress)}% Complete</div>
-            </div>
-          )}
-        </div>
-        
-        {/* Bottom Equipment Row */}
-        <div className="flex justify-center items-end space-x-20">
-          <div className="text-center">
-            <StirringPlate
-              isOn={labState.stirringSpeed > 0}
-              speed={labState.stirringSpeed}
-              temperature={labState.temperature}
-              isHeating={labState.isHeating}
-              onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
-              onSpeedChange={(speed) => startStirring(speed)}
-              onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-              className="cursor-pointer hover:scale-105 transition-transform"
-            />
-            <div className="text-xs text-gray-600 mt-2">Hot Plate & Stirrer</div>
-          </div>
-          
-          {step.description.toLowerCase().includes('flame') && (
-            <div className="text-center">
-              <BurnerComponent
-                isOn={labState.isHeating}
-                intensity={Math.round((labState.temperature - 22) / 80 * 100)}
-                onToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-                className="cursor-pointer hover:scale-105 transition-transform"
-              />
-              <div className="text-xs text-gray-600 mt-2">Bunsen Burner</div>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Status Indicators */}
-      <div className="absolute top-4 right-4 space-y-2">
-        {labState.isHeating && (
-          <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">
-            🔥 Heating: {Math.round(labState.temperature)}°C
-          </div>
-        )}
-        {labState.stirringSpeed > 0 && (
-          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium">
-            🌀 Stirring: {labState.stirringSpeed}%
-          </div>
-        )}
-        {labState.isReacting && (
-          <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">
-            ⚗️ Reacting
-          </div>
-        )}
-      </div>
-      
-      {/* Safety Notice */}
-      <div className="absolute bottom-4 left-4 bg-yellow-100 border border-yellow-300 rounded-lg p-3 max-w-xs">
-        <div className="flex items-center gap-2 mb-1">
-          <AlertTriangle className="h-4 w-4 text-yellow-600" />
-          <span className="text-sm font-medium text-yellow-800">Lab Safety</span>
-        </div>
-        <div className="text-xs text-yellow-700">
-          Always follow proper safety protocols
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="w-full max-w-none p-4 space-y-4">
+    <div className="w-full max-w-7xl mx-auto p-6 space-y-6">
       {/* Compact Step Header */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Target className="h-4 w-4 text-blue-600" />
+            <Target className="h-5 w-5 text-blue-600" />
             <div>
-              <h3 className="font-semibold text-sm">Step {stepNumber} of {totalSteps}: {step.title}</h3>
-              <p className="text-xs text-gray-600">{step.description}</p>
+              <h3 className="font-semibold">Step {stepNumber} of {totalSteps}: {step.title}</h3>
+              <p className="text-sm text-gray-600">{step.description}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant={labState.canProceed ? "default" : "secondary"} className="text-xs">
+          <div className="flex items-center gap-4">
+            <Badge variant={labState.canProceed ? "default" : "secondary"}>
               {labState.canProceed ? "Complete" : "In Progress"}
             </Badge>
-            <Progress value={(stepNumber / totalSteps) * 100} className="w-24 h-2" />
+            <Progress value={(stepNumber / totalSteps) * 100} className="w-32" />
           </div>
         </div>
       </div>
 
-      {/* YouTube-style Wide Lab Layout */}
-      <div className="grid grid-cols-12 gap-4">
-        {/* Main Lab Bench - Wide like YouTube video */}
+      {/* YouTube-style Wide Lab Area */}
+      <div className="grid grid-cols-12 gap-6">
+        {/* Main Lab Bench - 75% width like YouTube */}
         <div className="col-span-9">
           <Card>
-            <CardContent className="p-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Beaker className="h-5 w-5" />
+                Virtual Lab Bench
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
               <div 
-                className="relative bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg"
-                style={{ height: '480px', width: '100%' }}
+                className="relative bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border-2 border-slate-200"
+                style={{ height: '500px', width: '100%' }}
                 onDrop={(e) => {
                   e.preventDefault();
                   if (draggedItem?.type === 'chemical') {
@@ -572,144 +302,127 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                 }}
                 onDragOver={(e) => e.preventDefault()}
               >
-                <div className="absolute inset-0 bg-white rounded-lg opacity-20"></div>
                 
-                {/* Equipment Container - Fits perfectly inside */}
-                <div className="relative p-6 h-full flex flex-col justify-between">
+                {/* Lab Equipment Layout - Properly Contained */}
+                <div className="absolute inset-6 grid grid-cols-5 grid-rows-4 gap-4">
                   
-                  {/* Top Equipment Row - Smaller and contained */}
-                  <div className="flex justify-between items-start">
-                    <div className="flex space-x-8">
-                      <div className="text-center">
-                        <div className="scale-75">
-                          <GraduatedCylinder
-                            capacity={100}
-                            contents={labState.flaskContents.length > 1 ? {
-                              color: "#ddd6fe",
-                              volume: 75,
-                              name: "Solution"
-                            } : undefined}
-                            accuracy="high"
-                            label="100mL"
-                            className="cursor-pointer hover:scale-105 transition-transform"
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">Cylinder</div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="scale-75">
-                          <BeakerComponent
-                            size="medium"
-                            contents={labState.flaskContents.length > 2 ? {
-                              color: "#e0f2fe",
-                              level: 40,
-                              name: "Wash Water"
-                            } : undefined}
-                            label="Wash"
-                            className="cursor-pointer hover:scale-105 transition-transform"
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">Beaker</div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex space-x-8">
-                      <div className="text-center">
-                        <div className="scale-75">
-                          <ThermometerComponent
-                            temperature={labState.temperature}
-                            label="Digital"
-                            className="cursor-pointer hover:scale-105 transition-transform"
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">Thermometer</div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="scale-75">
-                          <TestTubeRack
-                            testTubes={[
-                              { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
-                              { id: "sample2", label: "S2" },
-                              { id: "sample3", label: "S3" },
-                              { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
-                            ]}
-                            className="cursor-pointer hover:scale-105 transition-transform"
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">Test Tubes</div>
-                      </div>
-                    </div>
+                  {/* Top Row Equipment */}
+                  <div className="col-span-1 flex flex-col items-center justify-center">
+                    <GraduatedCylinder
+                      capacity={100}
+                      contents={labState.flaskContents.length > 1 ? {
+                        color: "#ddd6fe",
+                        volume: 75,
+                        name: "Solution"
+                      } : undefined}
+                      accuracy="high"
+                      label="100mL"
+                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
+                    />
+                    <div className="text-xs text-gray-600 mt-1">Cylinder</div>
                   </div>
                   
-                  {/* Central Flask Area */}
-                  <div className="flex-1 flex items-center justify-center">
+                  <div className="col-span-1 flex flex-col items-center justify-center">
+                    <BeakerComponent
+                      size="medium"
+                      contents={labState.flaskContents.length > 2 ? {
+                        color: "#e0f2fe",
+                        level: 40,
+                        name: "Wash"
+                      } : undefined}
+                      label="Wash"
+                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
+                    />
+                    <div className="text-xs text-gray-600 mt-1">Beaker</div>
+                  </div>
+                  
+                  <div className="col-span-1"></div> {/* Empty space */}
+                  
+                  <div className="col-span-1 flex flex-col items-center justify-center">
+                    <ThermometerComponent
+                      temperature={labState.temperature}
+                      label="Digital"
+                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
+                    />
+                    <div className="text-xs text-gray-600 mt-1">Thermometer</div>
+                  </div>
+                  
+                  <div className="col-span-1 flex flex-col items-center justify-center">
+                    <TestTubeRack
+                      testTubes={[
+                        { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
+                        { id: "sample2", label: "S2" },
+                        { id: "sample3", label: "S3" },
+                        { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
+                      ]}
+                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
+                    />
+                    <div className="text-xs text-gray-600 mt-1">Test Tubes</div>
+                  </div>
+                  
+                  {/* Middle Row - Main Flask */}
+                  <div className="col-span-5 row-span-2 flex items-center justify-center">
                     <div className="relative">
-                      <div className={`absolute -inset-6 rounded-xl border-2 border-dashed transition-all ${
+                      {/* Drop Zone */}
+                      <div className={`absolute -inset-8 rounded-xl border-2 border-dashed transition-all ${
                         draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
                       }`}>
                         {draggedItem && (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="bg-blue-600 text-white px-3 py-1 rounded-lg font-medium text-sm">
+                            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
                               Drop Chemical Here
                             </div>
                           </div>
                         )}
                       </div>
                       
-                      <div className="scale-125">
-                        <FlaskComponent
-                          contents={labState.flaskContents.map((content, index) => ({
-                            color: content.color,
-                            level: 30 + (index * 10),
-                            name: content.name
-                          }))}
-                          temperature={labState.temperature}
-                          isHeating={labState.isHeating}
-                          bubbles={bubbles}
-                          stirringAngle={stirringAngle}
-                          isStirring={isStirring}
-                          className="cursor-pointer hover:scale-105 transition-transform"
-                        />
-                      </div>
+                      {/* Main Flask */}
+                      <FlaskComponent
+                        contents={labState.flaskContents.map((content, index) => ({
+                          color: content.color,
+                          level: 30 + (index * 10),
+                          name: content.name
+                        }))}
+                        temperature={labState.temperature}
+                        isHeating={labState.isHeating}
+                        bubbles={bubbles}
+                        stirringAngle={stirringAngle}
+                        isStirring={isStirring}
+                        className="scale-125 hover:scale-130 transition-transform cursor-pointer"
+                      />
                     </div>
                   </div>
                   
-                  {/* Bottom Equipment */}
-                  <div className="flex justify-center">
-                    <div className="text-center">
-                      <div className="scale-90">
-                        <StirringPlate
-                          isOn={labState.stirringSpeed > 0}
-                          speed={labState.stirringSpeed}
-                          temperature={labState.temperature}
-                          isHeating={labState.isHeating}
-                          onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
-                          onSpeedChange={(speed) => startStirring(speed)}
-                          onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-                          className="cursor-pointer hover:scale-105 transition-transform"
-                        />
-                      </div>
-                      <div className="text-xs text-gray-600 mt-1">Hot Plate & Stirrer</div>
-                    </div>
+                  {/* Bottom Row - Heating Equipment */}
+                  <div className="col-span-2 col-start-2 flex flex-col items-center justify-center">
+                    <StirringPlate
+                      isOn={labState.stirringSpeed > 0}
+                      speed={labState.stirringSpeed}
+                      temperature={labState.temperature}
+                      isHeating={labState.isHeating}
+                      onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
+                      onSpeedChange={(speed) => startStirring(speed)}
+                      onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
+                      className="scale-90 hover:scale-95 transition-transform cursor-pointer"
+                    />
+                    <div className="text-xs text-gray-600 mt-1">Hot Plate & Stirrer</div>
                   </div>
                 </div>
                 
                 {/* Status Indicators */}
-                <div className="absolute top-3 right-3 space-y-1">
+                <div className="absolute top-4 right-4 space-y-2">
                   {labState.isHeating && (
-                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
                       🔥 {Math.round(labState.temperature)}°C
                     </div>
                   )}
                   {labState.stirringSpeed > 0 && (
-                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
                       🌀 {labState.stirringSpeed}%
                     </div>
                   )}
                   {labState.isReacting && (
-                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
                       ⚗️ Reacting
                     </div>
                   )}
@@ -717,13 +430,13 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                 
                 {/* Reaction Progress */}
                 {labState.reactionProgress > 0 && (
-                  <div className="absolute bottom-3 left-3 bg-white rounded-lg shadow p-3 border border-gray-200">
-                    <div className="text-xs font-medium mb-1 flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                      Progress
+                  <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-md p-4 border">
+                    <div className="text-sm font-medium mb-2 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                      Reaction Progress
                     </div>
-                    <Progress value={labState.reactionProgress} className="w-20 h-1.5 mb-1" />
-                    <div className="text-xs text-gray-500">{Math.round(labState.reactionProgress)}%</div>
+                    <Progress value={labState.reactionProgress} className="w-32 h-2 mb-1" />
+                    <div className="text-sm text-gray-600">{Math.round(labState.reactionProgress)}%</div>
                   </div>
                 )}
               </div>
@@ -731,20 +444,16 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
           </Card>
         </div>
 
-        {/* Right Sidebar - Controls and Info */}
+        {/* Right Sidebar - 25% width */}
         <div className="col-span-3 space-y-4">
-        {/* Lab Controls - Column 1 */}
-        <div className="space-y-4">
+          {/* Timer */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4" />
-                Lab Timer
-              </CardTitle>
+              <CardTitle className="text-sm">Lab Timer</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-3">
-                <div className="text-2xl font-mono font-bold text-blue-600">
+                <div className="text-xl font-mono font-bold text-blue-600">
                   {formatTime(labState.timer)}
                 </div>
               </div>
@@ -764,43 +473,10 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             </CardContent>
           </Card>
 
+          {/* Controls */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Thermometer className="h-4 w-4" />
-                Equipment Status
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Temperature</span>
-                  <Badge variant={labState.temperature > 50 ? "destructive" : "secondary"}>
-                    {Math.round(labState.temperature)}°C
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Stirring</span>
-                  <Badge variant={labState.stirringSpeed > 0 ? "default" : "secondary"}>
-                    {labState.stirringSpeed > 0 ? `${labState.stirringSpeed}%` : "Off"}
-                  </Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Heating</span>
-                  <Badge variant={labState.isHeating ? "destructive" : "secondary"}>
-                    {labState.isHeating ? "Active" : "Off"}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <RotateCcw className="h-4 w-4" />
-                Quick Controls
-              </CardTitle>
+              <CardTitle className="text-sm">Quick Controls</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-2">
@@ -823,16 +499,11 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Chemical Inventory - Column 2 */}
-        <div>
+          {/* Chemicals */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Droplets className="h-4 w-4" />
-                Chemicals
-              </CardTitle>
+              <CardTitle className="text-sm">Chemicals</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -841,7 +512,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                     key={chemical.id}
                     draggable={!chemical.added}
                     onDragStart={() => setDraggedItem({ type: 'chemical', id: chemical.id })}
-                    className={`p-2 rounded border cursor-pointer transition-all ${
+                    className={`p-2 rounded border cursor-pointer transition-all text-xs ${
                       chemical.added 
                         ? 'bg-green-50 border-green-200 cursor-not-allowed opacity-60' 
                         : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
@@ -849,11 +520,11 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <div className="font-medium text-xs">{chemical.name}</div>
-                        <div className="text-xs text-gray-500">{chemical.formula}</div>
+                        <div className="font-medium">{chemical.name}</div>
+                        <div className="text-gray-500">{chemical.formula}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs font-medium">{chemical.amount}{chemical.unit}</div>
+                        <div className="font-medium">{chemical.amount}{chemical.unit}</div>
                         {chemical.added && <CheckCircle className="h-3 w-3 text-green-600 ml-auto mt-1" />}
                         {chemical.required && !chemical.added && <Badge variant="outline" className="text-xs">Required</Badge>}
                       </div>
@@ -863,22 +534,16 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Step Requirements - Column 3 */}
-        <div>
+          {/* Requirements */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <Target className="h-4 w-4" />
-                Step Requirements
-              </CardTitle>
+              <CardTitle className="text-sm">Requirements</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-xs">
                 {(() => {
                   const stepTitle = step.title.toLowerCase();
-                  const stepDescription = step.description.toLowerCase();
                   const requirements = [];
                   
                   const requiredChemicals = chemicals.filter(c => c.required);
@@ -895,7 +560,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
                       { text: `React for 2+ min (${labState.timer}s)`, completed: labState.timer >= 120 },
                       { text: `Complete reaction (${Math.round(labState.reactionProgress)}%)`, completed: labState.reactionProgress >= 80 }
                     );
-                  } else if (stepTitle.includes('heat') || stepDescription.includes('heat')) {
+                  } else if (stepTitle.includes('heat')) {
                     requirements.push(
                       { text: `Activate heating`, completed: labState.isHeating },
                       { text: `Reach 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
@@ -924,47 +589,7 @@ export default function EnhancedVirtualLab({ step, onStepComplete, isActive, ste
             </CardContent>
           </Card>
         </div>
-
-        {/* Safety Information - Column 4 */}
-        <div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <AlertTriangle className="h-4 w-4" />
-                Safety Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-gray-700 space-y-2">
-                <p>This virtual experiment simulates real laboratory conditions.</p>
-                <p>Always wear proper PPE in real laboratory settings.</p>
-                <p>Acetic anhydride and phosphoric acid are corrosive chemicals.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
-
-      {/* Checkpoints */}
-      {labState.checkpoints.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <BookOpen className="h-4 w-4" />
-              Lab Progress Log
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1 max-h-32 overflow-y-auto">
-              {labState.checkpoints.map((checkpoint, index) => (
-                <div key={index} className="text-xs text-gray-600 border-l-2 border-blue-200 pl-2">
-                  {checkpoint}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Step Completion */}
       <div className="flex justify-between items-center">
