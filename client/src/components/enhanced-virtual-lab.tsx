@@ -258,41 +258,18 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 space-y-6">
-      {/* Compact Step Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Target className="h-5 w-5 text-blue-600" />
-            <div>
-              <h3 className="font-semibold">Step {stepNumber} of {totalSteps}: {step.title}</h3>
-              <p className="text-sm text-gray-600">{step.description}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <Badge variant={labState.canProceed ? "default" : "secondary"}>
-              {labState.canProceed ? "Complete" : "In Progress"}
-            </Badge>
-            <Progress value={(stepNumber / totalSteps) * 100} className="w-32" />
-          </div>
-        </div>
-      </div>
-
-      {/* YouTube-style Wide Lab Area */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Main Lab Bench - 75% width like YouTube */}
-        <div className="col-span-9">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Beaker className="h-5 w-5" />
-                Virtual Lab Bench
-              </CardTitle>
+    <div className="w-full max-w-none p-4">
+      <div className="grid grid-cols-4 gap-4 h-screen">
+        
+        {/* Main Workbench - Takes up 3/4 of the screen */}
+        <div className="col-span-3">
+          <Card className="h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl font-bold text-center">WORKBENCH</CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="h-full p-4">
               <div 
-                className="relative bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border-2 border-slate-200"
-                style={{ height: '500px', width: '100%' }}
+                className="relative bg-gray-200 rounded-lg h-full flex"
                 onDrop={(e) => {
                   e.preventDefault();
                   if (draggedItem?.type === 'chemical') {
@@ -303,80 +280,43 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                 onDragOver={(e) => e.preventDefault()}
               >
                 
-                {/* Lab Equipment Layout - Properly Contained */}
-                <div className="absolute inset-6 grid grid-cols-5 grid-rows-4 gap-4">
-                  
-                  {/* Top Row Equipment */}
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    <GraduatedCylinder
-                      capacity={100}
-                      contents={labState.flaskContents.length > 1 ? {
-                        color: "#ddd6fe",
-                        volume: 75,
-                        name: "Solution"
-                      } : undefined}
-                      accuracy="high"
-                      label="100mL"
-                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
-                    />
-                    <div className="text-xs text-gray-600 mt-1">Cylinder</div>
+                {/* Left Side - Test Tubes */}
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="bg-gray-800 rounded-lg p-8 h-3/4 w-3/4 flex items-center justify-center">
+                    <div className="text-white text-center">
+                      <div className="text-2xl font-bold mb-4">TEST TUBES</div>
+                      <TestTubeRack
+                        testTubes={[
+                          { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
+                          { id: "sample2", label: "S2" },
+                          { id: "sample3", label: "S3" },
+                          { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
+                        ]}
+                        className="scale-150"
+                      />
+                    </div>
                   </div>
-                  
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    <BeakerComponent
-                      size="medium"
-                      contents={labState.flaskContents.length > 2 ? {
-                        color: "#e0f2fe",
-                        level: 40,
-                        name: "Wash"
-                      } : undefined}
-                      label="Wash"
-                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
-                    />
-                    <div className="text-xs text-gray-600 mt-1">Beaker</div>
-                  </div>
-                  
-                  <div className="col-span-1"></div> {/* Empty space */}
-                  
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    <ThermometerComponent
-                      temperature={labState.temperature}
-                      label="Digital"
-                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
-                    />
-                    <div className="text-xs text-gray-600 mt-1">Thermometer</div>
-                  </div>
-                  
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    <TestTubeRack
-                      testTubes={[
-                        { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
-                        { id: "sample2", label: "S2" },
-                        { id: "sample3", label: "S3" },
-                        { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
-                      ]}
-                      className="scale-75 hover:scale-80 transition-transform cursor-pointer"
-                    />
-                    <div className="text-xs text-gray-600 mt-1">Test Tubes</div>
-                  </div>
-                  
-                  {/* Middle Row - Main Flask */}
-                  <div className="col-span-5 row-span-2 flex items-center justify-center">
-                    <div className="relative">
-                      {/* Drop Zone */}
-                      <div className={`absolute -inset-8 rounded-xl border-2 border-dashed transition-all ${
-                        draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
-                      }`}>
-                        {draggedItem && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
-                              Drop Chemical Here
-                            </div>
+                </div>
+                
+                {/* Center - Main Flask */}
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="relative">
+                    {/* Drop Zone */}
+                    <div className={`absolute -inset-8 rounded-xl border-2 border-dashed transition-all ${
+                      draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
+                    }`}>
+                      {draggedItem && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
+                            Drop Chemical Here
                           </div>
-                        )}
-                      </div>
-                      
-                      {/* Main Flask */}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Main Flask */}
+                    <div className="border-4 border-black rounded-lg p-4 bg-white">
+                      <div className="text-center text-sm font-medium mb-2">beaker/flask</div>
                       <FlaskComponent
                         contents={labState.flaskContents.map((content, index) => ({
                           color: content.color,
@@ -388,24 +328,26 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                         bubbles={bubbles}
                         stirringAngle={stirringAngle}
                         isStirring={isStirring}
-                        className="scale-125 hover:scale-130 transition-transform cursor-pointer"
+                        className="scale-150"
                       />
                     </div>
                   </div>
-                  
-                  {/* Bottom Row - Heating Equipment */}
-                  <div className="col-span-2 col-start-2 flex flex-col items-center justify-center">
-                    <StirringPlate
-                      isOn={labState.stirringSpeed > 0}
-                      speed={labState.stirringSpeed}
-                      temperature={labState.temperature}
-                      isHeating={labState.isHeating}
-                      onToggle={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
-                      onSpeedChange={(speed) => startStirring(speed)}
-                      onHeatToggle={() => labState.isHeating ? stopHeating() : startHeating()}
-                      className="scale-90 hover:scale-95 transition-transform cursor-pointer"
-                    />
-                    <div className="text-xs text-gray-600 mt-1">Hot Plate & Stirrer</div>
+                </div>
+                
+                {/* Right Side - Step Info */}
+                <div className="flex-1 flex items-start justify-center pt-8">
+                  <div className="bg-gray-600 rounded-lg p-6 w-4/5 h-1/2">
+                    <div className="text-white text-center">
+                      <div className="text-lg font-bold mb-2">STEP {stepNumber}:</div>
+                      <div className="text-sm mb-4">{step.title}</div>
+                      <div className="text-xs text-gray-300">{step.description}</div>
+                      <div className="mt-4">
+                        <Badge variant={labState.canProceed ? "default" : "secondary"} className="mb-2">
+                          {labState.canProceed ? "Complete" : "In Progress"}
+                        </Badge>
+                        <Progress value={(stepNumber / totalSteps) * 100} className="w-full h-2" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
@@ -444,166 +386,177 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
           </Card>
         </div>
 
-        {/* Right Sidebar - 25% width */}
-        <div className="col-span-3 space-y-4">
-          {/* Timer */}
-          <Card>
+        {/* Right Sidebar - 1/4 width */}
+        <div className="col-span-1 space-y-4">
+          
+          {/* Control Panel Row 1 */}
+          <div className="grid grid-cols-2 gap-2">
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold mb-2">HEAT</div>
+                  <Button 
+                    size="sm" 
+                    variant={labState.isHeating ? "destructive" : "outline"}
+                    onClick={labState.isHeating ? stopHeating : startHeating}
+                    className="w-full"
+                  >
+                    <Flame className="h-4 w-4 mr-2" />
+                    {labState.isHeating ? "Stop" : "Heat"}
+                  </Button>
+                  <div className="text-sm text-gray-600 mt-2">
+                    {Math.round(labState.temperature)}°C
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <div className="text-lg font-bold mb-2">STIR/SPIN</div>
+                  <Button 
+                    size="sm" 
+                    variant={labState.stirringSpeed > 0 ? "default" : "outline"}
+                    onClick={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
+                    className="w-full"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    {labState.stirringSpeed > 0 ? "Stop" : "Stir"}
+                  </Button>
+                  <div className="text-sm text-gray-600 mt-2">
+                    {labState.stirringSpeed}%
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Experiment Steps/Procedure */}
+          <Card className="flex-1">
             <CardHeader>
-              <CardTitle className="text-sm">Lab Timer</CardTitle>
+              <CardTitle className="text-lg font-bold text-center">EXPERIMENT STEPS/PROCEDURE</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="text-center mb-3">
+            <CardContent className="p-4">
+              
+              {/* Timer */}
+              <div className="text-center mb-4">
                 <div className="text-xl font-mono font-bold text-blue-600">
                   {formatTime(labState.timer)}
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  size="sm" 
-                  variant={labState.isTimerRunning ? "secondary" : "default"}
-                  onClick={labState.isTimerRunning ? pauseTimer : startTimer}
-                  className="flex-1"
-                >
-                  {labState.isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                </Button>
-                <Button size="sm" variant="outline" onClick={resetTimer}>
-                  <Square className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Controls */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Quick Controls</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-2">
-                <Button 
-                  size="sm" 
-                  variant={labState.isHeating ? "destructive" : "outline"}
-                  onClick={labState.isHeating ? stopHeating : startHeating}
-                >
-                  <Flame className="h-3 w-3 mr-1" />
-                  {labState.isHeating ? "Stop" : "Heat"}
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant={labState.stirringSpeed > 0 ? "default" : "outline"}
-                  onClick={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
-                >
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  {labState.stirringSpeed > 0 ? "Stop" : "Stir"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Chemicals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Chemicals</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {chemicals.map(chemical => (
-                  <div
-                    key={chemical.id}
-                    draggable={!chemical.added}
-                    onDragStart={() => setDraggedItem({ type: 'chemical', id: chemical.id })}
-                    className={`p-2 rounded border cursor-pointer transition-all text-xs ${
-                      chemical.added 
-                        ? 'bg-green-50 border-green-200 cursor-not-allowed opacity-60' 
-                        : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
-                    }`}
+                <div className="flex gap-2 mt-2">
+                  <Button 
+                    size="sm" 
+                    variant={labState.isTimerRunning ? "secondary" : "default"}
+                    onClick={labState.isTimerRunning ? pauseTimer : startTimer}
+                    className="flex-1"
                   >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="font-medium">{chemical.name}</div>
-                        <div className="text-gray-500">{chemical.formula}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">{chemical.amount}{chemical.unit}</div>
-                        {chemical.added && <CheckCircle className="h-3 w-3 text-green-600 ml-auto mt-1" />}
-                        {chemical.required && !chemical.added && <Badge variant="outline" className="text-xs">Required</Badge>}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    {labState.isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={resetTimer}>
+                    <Square className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Requirements */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Requirements</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-xs">
-                {(() => {
-                  const stepTitle = step.title.toLowerCase();
-                  const requirements = [];
-                  
-                  const requiredChemicals = chemicals.filter(c => c.required);
-                  const addedRequiredChemicals = requiredChemicals.filter(c => c.added);
-                  requirements.push({
-                    text: `Add chemicals (${addedRequiredChemicals.length}/${requiredChemicals.length})`,
-                    completed: addedRequiredChemicals.length === requiredChemicals.length
-                  });
-                  
-                  if (stepTitle.includes('synthesis') || stepTitle.includes('aspirin')) {
-                    requirements.push(
-                      { text: `Heat to 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
-                      { text: `Start stirring`, completed: labState.stirringSpeed > 0 },
-                      { text: `React for 2+ min (${labState.timer}s)`, completed: labState.timer >= 120 },
-                      { text: `Complete reaction (${Math.round(labState.reactionProgress)}%)`, completed: labState.reactionProgress >= 80 }
-                    );
-                  } else if (stepTitle.includes('heat')) {
-                    requirements.push(
-                      { text: `Activate heating`, completed: labState.isHeating },
-                      { text: `Reach 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
-                      { text: `Heat for 90s (${labState.timer}s)`, completed: labState.timer >= 90 }
-                    );
-                  } else {
-                    requirements.push(
-                      { text: `Run procedure (${labState.timer}s/30s)`, completed: labState.timer >= 30 }
-                    );
-                  }
-                  
-                  return requirements.map((req, index) => (
-                    <div key={index} className={`p-2 rounded border ${req.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                      <div className="flex items-center gap-2">
-                        {req.completed ? (
-                          <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
-                        ) : (
-                          <div className="w-3 h-3 border border-gray-300 rounded-full flex-shrink-0" />
-                        )}
-                        <span className={req.completed ? 'text-green-700' : 'text-gray-700'}>{req.text}</span>
+              
+              {/* Chemicals */}
+              <div className="mb-4">
+                <div className="text-sm font-medium mb-2">Chemicals</div>
+                <div className="space-y-2">
+                  {chemicals.map(chemical => (
+                    <div
+                      key={chemical.id}
+                      draggable={!chemical.added}
+                      onDragStart={() => setDraggedItem({ type: 'chemical', id: chemical.id })}
+                      className={`p-2 rounded border cursor-pointer transition-all text-xs ${
+                        chemical.added 
+                          ? 'bg-green-50 border-green-200 cursor-not-allowed opacity-60' 
+                          : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">{chemical.name}</div>
+                          <div className="text-gray-500">{chemical.formula}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium">{chemical.amount}{chemical.unit}</div>
+                          {chemical.added && <CheckCircle className="h-3 w-3 text-green-600 ml-auto mt-1" />}
+                          {chemical.required && !chemical.added && <Badge variant="outline" className="text-xs">Required</Badge>}
+                        </div>
                       </div>
                     </div>
-                  ));
-                })()}
+                  ))}
+                </div>
+              </div>
+              
+              {/* Requirements */}
+              <div className="mb-4">
+                <div className="text-sm font-medium mb-2">Requirements</div>
+                <div className="space-y-2 text-xs">
+                  {(() => {
+                    const stepTitle = step.title.toLowerCase();
+                    const requirements = [];
+                    
+                    const requiredChemicals = chemicals.filter(c => c.required);
+                    const addedRequiredChemicals = requiredChemicals.filter(c => c.added);
+                    requirements.push({
+                      text: `Add chemicals (${addedRequiredChemicals.length}/${requiredChemicals.length})`,
+                      completed: addedRequiredChemicals.length === requiredChemicals.length
+                    });
+                    
+                    if (stepTitle.includes('synthesis') || stepTitle.includes('aspirin')) {
+                      requirements.push(
+                        { text: `Heat to 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
+                        { text: `Start stirring`, completed: labState.stirringSpeed > 0 },
+                        { text: `React for 2+ min (${labState.timer}s)`, completed: labState.timer >= 120 },
+                        { text: `Complete reaction (${Math.round(labState.reactionProgress)}%)`, completed: labState.reactionProgress >= 80 }
+                      );
+                    } else if (stepTitle.includes('heat')) {
+                      requirements.push(
+                        { text: `Activate heating`, completed: labState.isHeating },
+                        { text: `Reach 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
+                        { text: `Heat for 90s (${labState.timer}s)`, completed: labState.timer >= 90 }
+                      );
+                    } else {
+                      requirements.push(
+                        { text: `Run procedure (${labState.timer}s/30s)`, completed: labState.timer >= 30 }
+                      );
+                    }
+                    
+                    return requirements.map((req, index) => (
+                      <div key={index} className={`p-2 rounded border ${req.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                        <div className="flex items-center gap-2">
+                          {req.completed ? (
+                            <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                          ) : (
+                            <div className="w-3 h-3 border border-gray-300 rounded-full flex-shrink-0" />
+                          )}
+                          <span className={req.completed ? 'text-green-700' : 'text-gray-700'}>{req.text}</span>
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+              
+              {/* Step Completion */}
+              <div className="text-center">
+                <div className="text-xs text-gray-600 mb-2">
+                  {labState.canProceed ? "✅ All requirements completed" : "⏳ Complete all requirements to proceed"}
+                </div>
+                <Button 
+                  onClick={onStepComplete}
+                  disabled={!labState.canProceed}
+                  size="sm"
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                >
+                  {labState.canProceed ? "Proceed to Next Step" : "Complete Requirements First"}
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      {/* Step Completion */}
-      <div className="flex justify-between items-center">
-        <div className="text-sm text-gray-600">
-          {labState.canProceed ? "✅ All requirements completed" : "⏳ Complete all requirements to proceed"}
-        </div>
-        <Button 
-          onClick={onStepComplete}
-          disabled={!labState.canProceed}
-          size="lg"
-          className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
-        >
-          {labState.canProceed ? "Proceed to Next Step" : "Complete Requirements First"}
-        </Button>
       </div>
     </div>
   );
