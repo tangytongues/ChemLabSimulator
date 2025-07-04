@@ -258,18 +258,18 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
   };
 
   return (
-    <div className="w-full max-w-none p-4">
-      <div className="grid grid-cols-4 gap-4 h-screen">
+    <div className="w-full max-w-none p-3">
+      <div className="grid grid-cols-4 gap-3" style={{ height: '85vh' }}>
         
         {/* Main Workbench - Takes up 3/4 of the screen */}
         <div className="col-span-3">
           <Card className="h-full">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-xl font-bold text-center">WORKBENCH</CardTitle>
+            <CardHeader className="py-2">
+              <CardTitle className="text-lg font-bold text-center">WORKBENCH</CardTitle>
             </CardHeader>
-            <CardContent className="h-full p-4">
+            <CardContent className="p-3" style={{ height: 'calc(100% - 60px)' }}>
               <div 
-                className="relative bg-gray-200 rounded-lg h-full flex"
+                className="relative bg-gray-200 rounded-lg h-full grid grid-cols-3 gap-4 p-4"
                 onDrop={(e) => {
                   e.preventDefault();
                   if (draggedItem?.type === 'chemical') {
@@ -281,10 +281,10 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
               >
                 
                 {/* Left Side - Test Tubes */}
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="bg-gray-800 rounded-lg p-8 h-3/4 w-3/4 flex items-center justify-center">
+                <div className="flex items-center justify-center">
+                  <div className="bg-gray-800 rounded-lg p-4 w-full h-64 flex flex-col items-center justify-center">
                     <div className="text-white text-center">
-                      <div className="text-2xl font-bold mb-4">TEST TUBES</div>
+                      <div className="text-lg font-bold mb-3">TEST TUBES</div>
                       <TestTubeRack
                         testTubes={[
                           { id: "sample1", label: "S1", contents: { color: "#fef3c7", level: 30, name: "Sample" } },
@@ -292,22 +292,22 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                           { id: "sample3", label: "S3" },
                           { id: "blank", label: "Blank", contents: { color: "#f0f9ff", level: 25, name: "Control" } }
                         ]}
-                        className="scale-150"
+                        className="scale-100"
                       />
                     </div>
                   </div>
                 </div>
                 
                 {/* Center - Main Flask */}
-                <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center justify-center">
                   <div className="relative">
                     {/* Drop Zone */}
-                    <div className={`absolute -inset-8 rounded-xl border-2 border-dashed transition-all ${
+                    <div className={`absolute -inset-4 rounded-xl border-2 border-dashed transition-all ${
                       draggedItem ? 'border-blue-400 bg-blue-50 bg-opacity-50' : 'border-transparent'
                     }`}>
                       {draggedItem && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium">
+                          <div className="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-medium">
                             Drop Chemical Here
                           </div>
                         </div>
@@ -315,8 +315,8 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                     </div>
                     
                     {/* Main Flask */}
-                    <div className="border-4 border-black rounded-lg p-4 bg-white">
-                      <div className="text-center text-sm font-medium mb-2">beaker/flask</div>
+                    <div className="border-2 border-black rounded-lg p-3 bg-white">
+                      <div className="text-center text-xs font-medium mb-2">beaker/flask</div>
                       <FlaskComponent
                         contents={labState.flaskContents.map((content, index) => ({
                           color: content.color,
@@ -328,57 +328,57 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                         bubbles={bubbles}
                         stirringAngle={stirringAngle}
                         isStirring={isStirring}
-                        className="scale-150"
+                        className="scale-100"
                       />
                     </div>
                   </div>
                 </div>
                 
                 {/* Right Side - Step Info */}
-                <div className="flex-1 flex items-start justify-center pt-8">
-                  <div className="bg-gray-600 rounded-lg p-6 w-4/5 h-1/2">
+                <div className="flex items-start justify-center pt-4">
+                  <div className="bg-gray-600 rounded-lg p-4 w-full h-48">
                     <div className="text-white text-center">
-                      <div className="text-lg font-bold mb-2">STEP {stepNumber}:</div>
-                      <div className="text-sm mb-4">{step.title}</div>
-                      <div className="text-xs text-gray-300">{step.description}</div>
-                      <div className="mt-4">
-                        <Badge variant={labState.canProceed ? "default" : "secondary"} className="mb-2">
+                      <div className="text-sm font-bold mb-2">STEP {stepNumber}:</div>
+                      <div className="text-xs mb-3">{step.title}</div>
+                      <div className="text-xs text-gray-300 mb-3 leading-tight">{step.description}</div>
+                      <div className="mt-3">
+                        <Badge variant={labState.canProceed ? "default" : "secondary"} className="mb-2 text-xs">
                           {labState.canProceed ? "Complete" : "In Progress"}
                         </Badge>
-                        <Progress value={(stepNumber / totalSteps) * 100} className="w-full h-2" />
+                        <Progress value={(stepNumber / totalSteps) * 100} className="w-full h-1.5" />
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Status Indicators */}
-                <div className="absolute top-4 right-4 space-y-2">
+                {/* Status Indicators - Reduced size */}
+                <div className="absolute top-2 right-2 space-y-1">
                   {labState.isHeating && (
-                    <div className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <div className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                       🔥 {Math.round(labState.temperature)}°C
                     </div>
                   )}
                   {labState.stirringSpeed > 0 && (
-                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                       🌀 {labState.stirringSpeed}%
                     </div>
                   )}
                   {labState.isReacting && (
-                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                       ⚗️ Reacting
                     </div>
                   )}
                 </div>
                 
-                {/* Reaction Progress */}
+                {/* Reaction Progress - Smaller */}
                 {labState.reactionProgress > 0 && (
-                  <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-md p-4 border">
-                    <div className="text-sm font-medium mb-2 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                      Reaction Progress
+                  <div className="absolute bottom-2 left-2 bg-white rounded-lg shadow-md p-2 border">
+                    <div className="text-xs font-medium mb-1 flex items-center gap-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                      Progress
                     </div>
-                    <Progress value={labState.reactionProgress} className="w-32 h-2 mb-1" />
-                    <div className="text-sm text-gray-600">{Math.round(labState.reactionProgress)}%</div>
+                    <Progress value={labState.reactionProgress} className="w-20 h-1 mb-1" />
+                    <div className="text-xs text-gray-600">{Math.round(labState.reactionProgress)}%</div>
                   </div>
                 )}
               </div>
@@ -387,24 +387,23 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
         </div>
 
         {/* Right Sidebar - 1/4 width */}
-        <div className="col-span-1 space-y-4">
+        <div className="col-span-1 space-y-3">
           
-          {/* Control Panel Row 1 */}
+          {/* Control Panel Row 1 - Smaller */}
           <div className="grid grid-cols-2 gap-2">
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="p-3">
                 <div className="text-center">
-                  <div className="text-lg font-bold mb-2">HEAT</div>
+                  <div className="text-sm font-bold mb-2">HEAT</div>
                   <Button 
                     size="sm" 
                     variant={labState.isHeating ? "destructive" : "outline"}
                     onClick={labState.isHeating ? stopHeating : startHeating}
-                    className="w-full"
+                    className="w-full text-xs"
                   >
-                    <Flame className="h-4 w-4 mr-2" />
                     {labState.isHeating ? "Stop" : "Heat"}
                   </Button>
-                  <div className="text-sm text-gray-600 mt-2">
+                  <div className="text-xs text-gray-600 mt-1">
                     {Math.round(labState.temperature)}°C
                   </div>
                 </div>
@@ -412,19 +411,18 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
             </Card>
             
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="p-3">
                 <div className="text-center">
-                  <div className="text-lg font-bold mb-2">STIR/SPIN</div>
+                  <div className="text-sm font-bold mb-2">STIR/SPIN</div>
                   <Button 
                     size="sm" 
                     variant={labState.stirringSpeed > 0 ? "default" : "outline"}
                     onClick={() => startStirring(labState.stirringSpeed > 0 ? 0 : 50)}
-                    className="w-full"
+                    className="w-full text-xs"
                   >
-                    <RotateCcw className="h-4 w-4 mr-2" />
                     {labState.stirringSpeed > 0 ? "Stop" : "Stir"}
                   </Button>
-                  <div className="text-sm text-gray-600 mt-2">
+                  <div className="text-xs text-gray-600 mt-1">
                     {labState.stirringSpeed}%
                   </div>
                 </div>
@@ -432,43 +430,43 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
             </Card>
           </div>
           
-          {/* Experiment Steps/Procedure */}
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold text-center">EXPERIMENT STEPS/PROCEDURE</CardTitle>
+          {/* Experiment Steps/Procedure - Compact */}
+          <Card className="flex-1" style={{ height: 'calc(100% - 120px)' }}>
+            <CardHeader className="py-2">
+              <CardTitle className="text-sm font-bold text-center">EXPERIMENT STEPS/PROCEDURE</CardTitle>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-3 overflow-y-auto" style={{ height: 'calc(100% - 60px)' }}>
               
-              {/* Timer */}
-              <div className="text-center mb-4">
-                <div className="text-xl font-mono font-bold text-blue-600">
+              {/* Timer - Compact */}
+              <div className="text-center mb-3">
+                <div className="text-lg font-mono font-bold text-blue-600">
                   {formatTime(labState.timer)}
                 </div>
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-1 mt-1">
                   <Button 
                     size="sm" 
                     variant={labState.isTimerRunning ? "secondary" : "default"}
                     onClick={labState.isTimerRunning ? pauseTimer : startTimer}
-                    className="flex-1"
+                    className="flex-1 text-xs px-2"
                   >
                     {labState.isTimerRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
                   </Button>
-                  <Button size="sm" variant="outline" onClick={resetTimer}>
+                  <Button size="sm" variant="outline" onClick={resetTimer} className="text-xs px-2">
                     <Square className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
               
-              {/* Chemicals */}
-              <div className="mb-4">
-                <div className="text-sm font-medium mb-2">Chemicals</div>
-                <div className="space-y-2">
+              {/* Chemicals - Compact */}
+              <div className="mb-3">
+                <div className="text-xs font-medium mb-1">Chemicals</div>
+                <div className="space-y-1">
                   {chemicals.map(chemical => (
                     <div
                       key={chemical.id}
                       draggable={!chemical.added}
                       onDragStart={() => setDraggedItem({ type: 'chemical', id: chemical.id })}
-                      className={`p-2 rounded border cursor-pointer transition-all text-xs ${
+                      className={`p-1.5 rounded border cursor-pointer transition-all text-xs ${
                         chemical.added 
                           ? 'bg-green-50 border-green-200 cursor-not-allowed opacity-60' 
                           : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm'
@@ -476,13 +474,12 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                     >
                       <div className="flex justify-between items-center">
                         <div>
-                          <div className="font-medium">{chemical.name}</div>
-                          <div className="text-gray-500">{chemical.formula}</div>
+                          <div className="font-medium text-xs">{chemical.name}</div>
+                          <div className="text-gray-500 text-xs">{chemical.formula}</div>
                         </div>
                         <div className="text-right">
-                          <div className="font-medium">{chemical.amount}{chemical.unit}</div>
-                          {chemical.added && <CheckCircle className="h-3 w-3 text-green-600 ml-auto mt-1" />}
-                          {chemical.required && !chemical.added && <Badge variant="outline" className="text-xs">Required</Badge>}
+                          <div className="font-medium text-xs">{chemical.amount}{chemical.unit}</div>
+                          {chemical.added && <CheckCircle className="h-2.5 w-2.5 text-green-600 ml-auto mt-0.5" />}
                         </div>
                       </div>
                     </div>
@@ -490,10 +487,10 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                 </div>
               </div>
               
-              {/* Requirements */}
-              <div className="mb-4">
-                <div className="text-sm font-medium mb-2">Requirements</div>
-                <div className="space-y-2 text-xs">
+              {/* Requirements - Compact */}
+              <div className="mb-3">
+                <div className="text-xs font-medium mb-1">Requirements</div>
+                <div className="space-y-1 text-xs">
                   {(() => {
                     const stepTitle = step.title.toLowerCase();
                     const requirements = [];
@@ -509,14 +506,12 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                       requirements.push(
                         { text: `Heat to 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
                         { text: `Start stirring`, completed: labState.stirringSpeed > 0 },
-                        { text: `React for 2+ min (${labState.timer}s)`, completed: labState.timer >= 120 },
-                        { text: `Complete reaction (${Math.round(labState.reactionProgress)}%)`, completed: labState.reactionProgress >= 80 }
+                        { text: `React for 2+ min (${labState.timer}s)`, completed: labState.timer >= 120 }
                       );
                     } else if (stepTitle.includes('heat')) {
                       requirements.push(
                         { text: `Activate heating`, completed: labState.isHeating },
-                        { text: `Reach 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 },
-                        { text: `Heat for 90s (${labState.timer}s)`, completed: labState.timer >= 90 }
+                        { text: `Reach 60°C (${Math.round(labState.temperature)}°C)`, completed: labState.temperature >= 60 }
                       );
                     } else {
                       requirements.push(
@@ -525,14 +520,14 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                     }
                     
                     return requirements.map((req, index) => (
-                      <div key={index} className={`p-2 rounded border ${req.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
-                        <div className="flex items-center gap-2">
+                      <div key={index} className={`p-1.5 rounded border ${req.completed ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                        <div className="flex items-center gap-1.5">
                           {req.completed ? (
-                            <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                            <CheckCircle className="h-2.5 w-2.5 text-green-600 flex-shrink-0" />
                           ) : (
-                            <div className="w-3 h-3 border border-gray-300 rounded-full flex-shrink-0" />
+                            <div className="w-2.5 h-2.5 border border-gray-300 rounded-full flex-shrink-0" />
                           )}
-                          <span className={req.completed ? 'text-green-700' : 'text-gray-700'}>{req.text}</span>
+                          <span className={`text-xs ${req.completed ? 'text-green-700' : 'text-gray-700'}`}>{req.text}</span>
                         </div>
                       </div>
                     ));
@@ -540,16 +535,16 @@ export default function SimpleVirtualLab({ step, onStepComplete, isActive, stepN
                 </div>
               </div>
               
-              {/* Step Completion */}
+              {/* Step Completion - Compact */}
               <div className="text-center">
-                <div className="text-xs text-gray-600 mb-2">
+                <div className="text-xs text-gray-600 mb-1">
                   {labState.canProceed ? "✅ All requirements completed" : "⏳ Complete all requirements to proceed"}
                 </div>
                 <Button 
                   onClick={onStepComplete}
                   disabled={!labState.canProceed}
                   size="sm"
-                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 text-xs"
                 >
                   {labState.canProceed ? "Proceed to Next Step" : "Complete Requirements First"}
                 </Button>
