@@ -82,6 +82,14 @@ function VirtualLabApp({
   const [results, setResults] = useState<Result[]>([]);
   const [showSteps, setShowSteps] = useState(true);
   const [currentStep, setCurrentStep] = useState(stepNumber);
+  const [measurements, setMeasurements] = useState({
+    volume: 0,
+    concentration: 0,
+    ph: 7,
+    molarity: 0,
+    moles: 0,
+    temperature: 25,
+  });
 
   // Use dynamic experiment steps from allSteps prop
   const experimentSteps = allSteps.map((stepData, index) => ({
