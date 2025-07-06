@@ -365,25 +365,6 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               />
             </div>
 
-            {/* Status Indicators - Floating overlay */}
-            <div className="absolute top-6 right-6 space-y-2 z-10">
-              {isStirring && (
-                <div className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
-                  🌀 Stirring Active
-                </div>
-              )}
-              {isDropping && (
-                <div className="bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
-                  💧 Adding Titrant
-                </div>
-              )}
-              {bubbling && (
-                <div className="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
-                  ⚗️ Reaction Occurring
-                </div>
-              )}
-            </div>
-
             {/* Equipment placement area with more generous spacing */}
             <div className="absolute inset-0 p-12">{children}</div>
           </div>
