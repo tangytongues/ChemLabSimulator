@@ -1,22 +1,28 @@
-import React, { useState, useCallback } from 'react';
-import { Equipment, equipmentList } from './Equipment';
-import { WorkBench } from './WorkBench';
-import { Chemical, chemicalsList } from './Chemical';
-import { Controls } from './Controls';
-import { ResultsPanel } from './ResultsPanel';
-import { FlaskConical, Atom, BookOpen } from 'lucide-react';
-import type { ExperimentStep } from '@shared/schema';
+import React, { useState, useCallback } from "react";
+import { Equipment, equipmentList } from "./Equipment";
+import { WorkBench } from "./WorkBench";
+import { Chemical, chemicalsList } from "./Chemical";
+import { Controls } from "./Controls";
+import { ResultsPanel } from "./ResultsPanel";
+import { FlaskConical, Atom, BookOpen } from "lucide-react";
+import type { ExperimentStep } from "@shared/schema";
 
 interface EquipmentPosition {
   id: string;
   x: number;
   y: number;
-  chemicals: Array<{id: string, name: string, color: string, amount: number, concentration: string}>;
+  chemicals: Array<{
+    id: string;
+    name: string;
+    color: string;
+    amount: number;
+    concentration: string;
+  }>;
 }
 
 interface Result {
   id: string;
-  type: 'success' | 'warning' | 'error' | 'reaction';
+  type: "success" | "warning" | "error" | "reaction";
   title: string;
   description: string;
   timestamp: string;
@@ -49,38 +55,53 @@ interface VirtualLabProps {
   totalSteps: number;
 }
 
-function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps }: VirtualLabProps) {
-  const [equipmentPositions, setEquipmentPositions] = useState<EquipmentPosition[]>([]);
+function VirtualLabApp({
+  step,
+  onStepComplete,
+  isActive,
+  stepNumber,
+  totalSteps,
+}: VirtualLabProps) {
+  const [equipmentPositions, setEquipmentPositions] = useState<
+    EquipmentPosition[]
+  >([]);
   const [selectedChemical, setSelectedChemical] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
 
-  const handleEquipmentDrop = useCallback((id: string, x: number, y: number) => {
-    setEquipmentPositions(prev => {
-      const existing = prev.find(pos => pos.id === id);
-      if (existing) {
-        return prev.map(pos => pos.id === id ? { ...pos, x, y } : pos);
-      }
-      return [...prev, { id, x, y, chemicals: [] }];
-    });
-  }, []);
+  const handleEquipmentDrop = useCallback(
+    (id: string, x: number, y: number) => {
+      setEquipmentPositions((prev) => {
+        const existing = prev.find((pos) => pos.id === id);
+        if (existing) {
+          return prev.map((pos) => (pos.id === id ? { ...pos, x, y } : pos));
+        }
+        return [...prev, { id, x, y, chemicals: [] }];
+      });
+    },
+    [],
+  );
 
-  const calculateChemicalProperties = (chemical: any, amount: number, totalVolume: number) => {
+  const calculateChemicalProperties = (
+    chemical: any,
+    amount: number,
+    totalVolume: number,
+  ) => {
     const concentrations: { [key: string]: number } = {
-      'hcl': 0.1,    // 0.1 M HCl
-      'naoh': 0.1,   // 0.1 M NaOH
-      'phenol': 0,   // Indicator (no molarity)
+      hcl: 0.1, // 0.1 M HCl
+      naoh: 0.1, // 0.1 M NaOH
+      phenol: 0, // Indicator (no molarity)
     };
 
     const molarity = concentrations[chemical.id] || 0;
     const volumeInL = amount / 1000; // Convert mL to L
     const moles = molarity * volumeInL;
-    
+
     // Calculate pH for acids and bases
     let ph = 7; // neutral
-    if (chemical.id === 'hcl') {
+    if (chemical.id === "hcl") {
       ph = -Math.log10(molarity * (amount / totalVolume)); // Acidic
-    } else if (chemical.id === 'naoh') {
+    } else if (chemical.id === "naoh") {
       const poh = -Math.log10(molarity * (amount / totalVolume));
       ph = 14 - poh; // Basic
     }
@@ -88,7 +109,7 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
     return {
       molarity: molarity * (amount / totalVolume),
       moles,
-      ph: Math.max(0, Math.min(14, ph))
+      ph: Math.max(0, Math.min(14, ph)),
     };
   };
 
@@ -96,57 +117,69 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
     setSelectedChemical(selectedChemical === id ? null : id);
   };
 
-  const handleChemicalDrop = (chemicalId: string, equipmentId: string, amount: number) => {
-    const chemical = chemicalsList.find(c => c.id === chemicalId);
+  const handleChemicalDrop = (
+    chemicalId: string,
+    equipmentId: string,
+    amount: number,
+  ) => {
+    const chemical = chemicalsList.find((c) => c.id === chemicalId);
     if (!chemical) return;
 
-    setEquipmentPositions(prev => prev.map(pos => {
-      if (pos.id === equipmentId) {
-        const newChemicals = [...pos.chemicals, {
-          id: chemicalId,
-          name: chemical.name,
-          color: chemical.color,
-          amount,
-          concentration: chemical.concentration
-        }];
-        
-        // Calculate reaction if chemicals are mixed
-        if (newChemicals.length >= 2) {
-          const totalVolume = newChemicals.reduce((sum, c) => sum + c.amount, 0);
-          handleReaction(newChemicals, totalVolume);
+    setEquipmentPositions((prev) =>
+      prev.map((pos) => {
+        if (pos.id === equipmentId) {
+          const newChemicals = [
+            ...pos.chemicals,
+            {
+              id: chemicalId,
+              name: chemical.name,
+              color: chemical.color,
+              amount,
+              concentration: chemical.concentration,
+            },
+          ];
+
+          // Calculate reaction if chemicals are mixed
+          if (newChemicals.length >= 2) {
+            const totalVolume = newChemicals.reduce(
+              (sum, c) => sum + c.amount,
+              0,
+            );
+            handleReaction(newChemicals, totalVolume);
+          }
+
+          return { ...pos, chemicals: newChemicals };
         }
-        
-        return { ...pos, chemicals: newChemicals };
-      }
-      return pos;
-    }));
+        return pos;
+      }),
+    );
 
     setSelectedChemical(null);
   };
 
   const handleReaction = (chemicals: any[], totalVolume: number) => {
     // Simplified reaction detection
-    const hasAcid = chemicals.some(c => c.id === 'hcl');
-    const hasBase = chemicals.some(c => c.id === 'naoh');
-    const hasIndicator = chemicals.some(c => c.id === 'phenol');
+    const hasAcid = chemicals.some((c) => c.id === "hcl");
+    const hasBase = chemicals.some((c) => c.id === "naoh");
+    const hasIndicator = chemicals.some((c) => c.id === "phenol");
 
     if (hasAcid && hasBase) {
       const result: Result = {
         id: Date.now().toString(),
-        type: 'reaction',
-        title: 'Acid-Base Neutralization Detected',
-        description: 'HCl + NaOH → NaCl + H₂O',
+        type: "reaction",
+        title: "Acid-Base Neutralization Detected",
+        description: "HCl + NaOH → NaCl + H₂O",
         timestamp: new Date().toLocaleTimeString(),
         calculation: {
-          reaction: 'HCl + NaOH → NaCl + H₂O',
-          reactionType: 'Acid-Base Neutralization',
-          balancedEquation: 'HCl(aq) + NaOH(aq) → NaCl(aq) + H₂O(l)',
-          products: ['Sodium Chloride (NaCl)', 'Water (H₂O)'],
-          yield: 95
-        }
+          reaction: "HCl + NaOH → NaCl + H₂O",
+          reactionType: "Acid-Base Neutralization",
+          balancedEquation: "HCl(aq) + NaOH(aq) → NaCl(aq) + H₂O(l)",
+          products: ["Sodium Chloride (NaCl)", "Water (H₂O)"],
+          yield: 95,
+        },
       };
-      
-      setResults(prev => [...prev, result]);
+
+      setResults((prev) => [...prev, result]);
     }
   };
 
@@ -160,85 +193,81 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg overflow-hidden min-h-screen">
-      <div className="p-6 h-full">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-600 rounded-lg">
-                <FlaskConical className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900">Virtual Chemistry Laboratory</h3>
-                <p className="text-gray-600">Interactive Acid-Base Titration Simulation</p>
-              </div>
+    <div className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden">
+      <div className="flex h-full" style={{ minHeight: "75vh" }}>
+        {/* Compact Sidebar - Equipment and Chemicals */}
+        <div className="w-80 bg-white/80 backdrop-blur-sm border-r border-gray-200 p-4 space-y-4 overflow-y-auto">
+          {/* Equipment Panel */}
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-800 text-sm flex items-center">
+              <Atom className="w-4 h-4 mr-2 text-blue-600" />
+              Equipment
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              {equipmentList.map((equipment) => (
+                <Equipment
+                  key={equipment.id}
+                  id={equipment.id}
+                  name={equipment.name}
+                  icon={equipment.icon}
+                  onDrag={handleEquipmentDrop}
+                  position={null}
+                  chemicals={[]}
+                  onChemicalDrop={handleChemicalDrop}
+                />
+              ))}
             </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-500">Step {stepNumber} of {totalSteps}</span>
+          </div>
+
+          {/* Chemicals Panel */}
+          <div className="space-y-3">
+            <h4 className="font-semibold text-gray-800 text-sm flex items-center">
+              <BookOpen className="w-4 h-4 mr-2 text-blue-600" />
+              Reagents
+            </h4>
+            <div className="space-y-2">
+              {chemicalsList.map((chemical) => (
+                <Chemical
+                  key={chemical.id}
+                  id={chemical.id}
+                  name={chemical.name}
+                  formula={chemical.formula}
+                  color={chemical.color}
+                  concentration={chemical.concentration}
+                  volume={chemical.volume}
+                  onSelect={handleChemicalSelect}
+                  selected={selectedChemical === chemical.id}
+                />
+              ))}
             </div>
+          </div>
+
+          {/* Compact Controls */}
+          <div className="pt-4 border-t border-gray-200">
+            <Controls
+              isRunning={isRunning}
+              onStart={handleStartExperiment}
+              onStop={() => setIsRunning(false)}
+              onReset={() => {
+                setEquipmentPositions([]);
+                setResults([]);
+                setIsRunning(false);
+              }}
+            />
           </div>
         </div>
 
-        {/* Main Lab Interface - Full height layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full" style={{ minHeight: 'calc(100vh - 200px)' }}>
-          {/* Sidebar - Equipment and Chemicals */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Equipment Panel */}
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <Atom className="w-4 h-4 mr-2" />
-                Laboratory Equipment
-              </h4>
-              <div className="grid grid-cols-1 gap-3">
-                {equipmentList.map((equipment) => (
-                  <Equipment
-                    key={equipment.id}
-                    id={equipment.id}
-                    name={equipment.name}
-                    icon={equipment.icon}
-                    onDrag={handleEquipmentDrop}
-                    position={null}
-                    chemicals={[]}
-                    onChemicalDrop={handleChemicalDrop}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Chemicals Panel */}
-            <div className="bg-white rounded-lg shadow-sm border p-4">
-              <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
-                <BookOpen className="w-4 h-4 mr-2" />
-                Chemical Reagents
-              </h4>
-              <div className="space-y-3">
-                {chemicalsList.map((chemical) => (
-                  <Chemical
-                    key={chemical.id}
-                    id={chemical.id}
-                    name={chemical.name}
-                    formula={chemical.formula}
-                    color={chemical.color}
-                    concentration={chemical.concentration}
-                    volume={chemical.volume}
-                    onSelect={handleChemicalSelect}
-                    selected={selectedChemical === chemical.id}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Main Work Area - Much larger */}
-          <div className="lg:col-span-4 h-full">
-            <WorkBench 
+        {/* Main Work Area - Much Larger and More Prominent */}
+        <div className="flex-1 flex flex-col">
+          {/* Lab Work Surface */}
+          <div className="flex-1 p-6">
+            <WorkBench
               onDrop={handleEquipmentDrop}
               selectedChemical={selectedChemical}
               isRunning={isRunning}
             >
               {equipmentPositions.map((pos) => {
-                const equipment = equipmentList.find(eq => eq.id === pos.id);
+                const equipment = equipmentList.find((eq) => eq.id === pos.id);
                 return equipment ? (
                   <Equipment
                     key={pos.id}
@@ -254,25 +283,13 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
               })}
             </WorkBench>
           </div>
-        </div>
 
-        {/* Controls - Fixed at bottom */}
-        <div className="mt-6">
-          <Controls 
-            isRunning={isRunning}
-            onStart={handleStartExperiment}
-            onStop={() => setIsRunning(false)}
-            onReset={() => {
-              setEquipmentPositions([]);
-              setResults([]);
-              setIsRunning(false);
-            }}
-          />
-        </div>
-
-        {/* Results Panel */}
-        <div className="mt-6">
-          <ResultsPanel results={results} onClear={handleClearResults} />
+          {/* Compact Results Panel - Bottom of work area */}
+          {results.length > 0 && (
+            <div className="border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+              <ResultsPanel results={results} onClear={handleClearResults} />
+            </div>
+          )}
         </div>
       </div>
     </div>
