@@ -184,6 +184,26 @@ function VirtualLabApp({
               0,
             );
             handleReaction(newChemicals, totalVolume);
+
+            // Update measurements for experiments 2 and 3
+            if (
+              experimentTitle.includes("Acid-Base") ||
+              experimentTitle.includes("Equilibrium")
+            ) {
+              const calculations = calculateChemicalProperties(
+                newChemicals[0],
+                newChemicals[0].amount,
+                totalVolume,
+              );
+              setMeasurements((prev) => ({
+                ...prev,
+                volume: totalVolume,
+                concentration: calculations.molarity,
+                ph: calculations.ph,
+                molarity: calculations.molarity,
+                moles: calculations.moles,
+              }));
+            }
           }
 
           return { ...pos, chemicals: newChemicals };
