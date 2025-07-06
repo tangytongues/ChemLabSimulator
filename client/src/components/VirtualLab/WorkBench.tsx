@@ -318,13 +318,13 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
             onDrop={handleDrop}
             className="relative w-full overflow-hidden"
             style={{
-              height: "calc(75vh - 80px)", // Much larger height
-              minHeight: "600px",
+              height: "calc(75vh - 160px)", // Adjusted for top/bottom bars
+              minHeight: "500px",
               backgroundImage: `
                 linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
                 linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px)
               `,
-              backgroundSize: "30px 30px",
+              backgroundSize: "25px 25px",
             }}
           >
             {/* Lab Bench Surface - More prominent */}
