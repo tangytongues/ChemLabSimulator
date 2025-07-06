@@ -500,6 +500,123 @@ function VirtualLabApp({
             ))}
           </div>
         </div>
+
+        {/* Calculator and pH Meter Bar - For Experiments 2 & 3 */}
+        {(experimentTitle.includes("Acid-Base") ||
+          experimentTitle.includes("Equilibrium")) && (
+          <div className="bg-gray-900 text-white p-3 border-t border-gray-600">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                {/* pH Meter Section */}
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium">pH Meter</span>
+                  </div>
+                  <div className="bg-black px-3 py-1 rounded font-mono text-lg">
+                    {measurements.ph.toFixed(2)}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {measurements.ph < 7
+                      ? "Acidic"
+                      : measurements.ph > 7
+                        ? "Basic"
+                        : "Neutral"}
+                  </div>
+                </div>
+
+                {/* Volume Tracker */}
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm font-medium">Volume</span>
+                  <div className="bg-black px-3 py-1 rounded font-mono text-lg">
+                    {measurements.volume.toFixed(1)} mL
+                  </div>
+                </div>
+
+                {/* Molarity Calculator */}
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm font-medium">Molarity</span>
+                  <div className="bg-black px-3 py-1 rounded font-mono text-lg">
+                    {measurements.molarity.toFixed(3)} M
+                  </div>
+                </div>
+              </div>
+
+              {/* Calculator Actions */}
+              <div className="flex items-center space-x-3">
+                {experimentTitle.includes("Acid-Base") && (
+                  <button
+                    onClick={() => {
+                      const equivalencePoint = 25.0; // mL for 0.1M solutions
+                      const percentComplete =
+                        (measurements.volume / equivalencePoint) * 100;
+                      console.log(
+                        `Titration ${percentComplete.toFixed(1)}% complete`,
+                      );
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm font-medium transition-colors"
+                  >
+                    Calculate Endpoint
+                  </button>
+                )}
+
+                {experimentTitle.includes("Equilibrium") && (
+                  <button
+                    onClick={() => {
+                      const kc = Math.pow(10, -measurements.ph); // Simplified equilibrium constant
+                      console.log(
+                        `Equilibrium constant: ${kc.toExponential(2)}`,
+                      );
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded text-sm font-medium transition-colors"
+                  >
+                    Calculate Kc
+                  </button>
+                )}
+
+                <button
+                  onClick={() => {
+                    // Reset calculations
+                    setMeasurements((prev) => ({
+                      ...prev,
+                      volume: 0,
+                      concentration: 0,
+                      ph: 7,
+                      molarity: 0,
+                      moles: 0,
+                    }));
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm font-medium transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Additional calculation info */}
+            {measurements.volume > 0 && (
+              <div className="mt-2 pt-2 border-t border-gray-700">
+                <div className="flex items-center justify-between text-xs text-gray-300">
+                  <div className="flex items-center space-x-4">
+                    <span>Moles: {measurements.moles.toFixed(4)} mol</span>
+                    {experimentTitle.includes("Acid-Base") && (
+                      <span>
+                        Endpoint:{" "}
+                        {measurements.ph > 8.5 ? "✓ Reached" : "○ Not reached"}
+                      </span>
+                    )}
+                    {experimentTitle.includes("Equilibrium") && (
+                      <span>Temperature: {measurements.temperature}°C</span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span>Last updated: {new Date().toLocaleTimeString()}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
