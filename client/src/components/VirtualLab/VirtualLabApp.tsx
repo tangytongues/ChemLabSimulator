@@ -193,57 +193,18 @@ function VirtualLabApp({
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden">
-      <div className="flex h-full" style={{ minHeight: "75vh" }}>
-        {/* Compact Sidebar - Equipment and Chemicals */}
-        <div className="w-80 bg-white/80 backdrop-blur-sm border-r border-gray-200 p-4 space-y-4 overflow-y-auto">
-          {/* Equipment Panel */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-gray-800 text-sm flex items-center">
-              <Atom className="w-4 h-4 mr-2 text-blue-600" />
-              Equipment
-            </h4>
-            <div className="grid grid-cols-1 gap-2">
-              {equipmentList.map((equipment) => (
-                <Equipment
-                  key={equipment.id}
-                  id={equipment.id}
-                  name={equipment.name}
-                  icon={equipment.icon}
-                  onDrag={handleEquipmentDrop}
-                  position={null}
-                  chemicals={[]}
-                  onChemicalDrop={handleChemicalDrop}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Chemicals Panel */}
-          <div className="space-y-3">
-            <h4 className="font-semibold text-gray-800 text-sm flex items-center">
-              <BookOpen className="w-4 h-4 mr-2 text-blue-600" />
-              Reagents
-            </h4>
-            <div className="space-y-2">
-              {chemicalsList.map((chemical) => (
-                <Chemical
-                  key={chemical.id}
-                  id={chemical.id}
-                  name={chemical.name}
-                  formula={chemical.formula}
-                  color={chemical.color}
-                  concentration={chemical.concentration}
-                  volume={chemical.volume}
-                  onSelect={handleChemicalSelect}
-                  selected={selectedChemical === chemical.id}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Compact Controls */}
-          <div className="pt-4 border-t border-gray-200">
+    <div
+      className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden flex flex-col"
+      style={{ minHeight: "75vh" }}
+    >
+      {/* Equipment Bar - Top Horizontal */}
+      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200 p-3">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold text-gray-800 text-sm flex items-center">
+            <Atom className="w-4 h-4 mr-2 text-blue-600" />
+            Laboratory Equipment
+          </h4>
+          <div className="flex items-center space-x-2">
             <Controls
               isRunning={isRunning}
               onStart={handleStartExperiment}
@@ -256,40 +217,79 @@ function VirtualLabApp({
             />
           </div>
         </div>
-
-        {/* Main Work Area - Much Larger and More Prominent */}
-        <div className="flex-1 flex flex-col">
-          {/* Lab Work Surface */}
-          <div className="flex-1 p-6">
-            <WorkBench
-              onDrop={handleEquipmentDrop}
-              selectedChemical={selectedChemical}
-              isRunning={isRunning}
-            >
-              {equipmentPositions.map((pos) => {
-                const equipment = equipmentList.find((eq) => eq.id === pos.id);
-                return equipment ? (
-                  <Equipment
-                    key={pos.id}
-                    id={pos.id}
-                    name={equipment.name}
-                    icon={equipment.icon}
-                    onDrag={handleEquipmentDrop}
-                    position={pos}
-                    chemicals={pos.chemicals}
-                    onChemicalDrop={handleChemicalDrop}
-                  />
-                ) : null;
-              })}
-            </WorkBench>
-          </div>
-
-          {/* Compact Results Panel - Bottom of work area */}
-          {results.length > 0 && (
-            <div className="border-t border-gray-200 bg-white/90 backdrop-blur-sm">
-              <ResultsPanel results={results} onClear={handleClearResults} />
+        <div className="flex items-center space-x-3 mt-2 overflow-x-auto pb-2">
+          {equipmentList.map((equipment) => (
+            <div key={equipment.id} className="flex-shrink-0">
+              <Equipment
+                id={equipment.id}
+                name={equipment.name}
+                icon={equipment.icon}
+                onDrag={handleEquipmentDrop}
+                position={null}
+                chemicals={[]}
+                onChemicalDrop={handleChemicalDrop}
+              />
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+
+      {/* Main Work Area - Expanded */}
+      <div className="flex-1 flex flex-col">
+        {/* Lab Work Surface */}
+        <div className="flex-1 p-6">
+          <WorkBench
+            onDrop={handleEquipmentDrop}
+            selectedChemical={selectedChemical}
+            isRunning={isRunning}
+          >
+            {equipmentPositions.map((pos) => {
+              const equipment = equipmentList.find((eq) => eq.id === pos.id);
+              return equipment ? (
+                <Equipment
+                  key={pos.id}
+                  id={pos.id}
+                  name={equipment.name}
+                  icon={equipment.icon}
+                  onDrag={handleEquipmentDrop}
+                  position={pos}
+                  chemicals={pos.chemicals}
+                  onChemicalDrop={handleChemicalDrop}
+                />
+              ) : null;
+            })}
+          </WorkBench>
+        </div>
+
+        {/* Results Panel - When present */}
+        {results.length > 0 && (
+          <div className="border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+            <ResultsPanel results={results} onClear={handleClearResults} />
+          </div>
+        )}
+      </div>
+
+      {/* Reagents Bar - Bottom Horizontal */}
+      <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3">
+        <h4 className="font-semibold text-gray-800 text-sm flex items-center mb-2">
+          <BookOpen className="w-4 h-4 mr-2 text-blue-600" />
+          Chemical Reagents
+        </h4>
+        <div className="flex items-center space-x-3 overflow-x-auto pb-2">
+          {chemicalsList.map((chemical) => (
+            <div key={chemical.id} className="flex-shrink-0">
+              <Chemical
+                id={chemical.id}
+                name={chemical.name}
+                formula={chemical.formula}
+                color={chemical.color}
+                concentration={chemical.concentration}
+                volume={chemical.volume}
+                onSelect={handleChemicalSelect}
+                selected={selectedChemical === chemical.id}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
