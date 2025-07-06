@@ -246,6 +246,8 @@ export default function Experiment() {
                 isActive={isActive}
                 stepNumber={currentStep + 1}
                 totalSteps={experiment.stepDetails.length}
+                experimentTitle={experiment.title}
+                allSteps={experiment.stepDetails}
               />
             </CardContent>
           </Card>
