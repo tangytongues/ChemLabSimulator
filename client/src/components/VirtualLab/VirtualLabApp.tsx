@@ -61,6 +61,8 @@ interface VirtualLabProps {
   isActive: boolean;
   stepNumber: number;
   totalSteps: number;
+  experimentTitle: string;
+  allSteps: ExperimentStep[];
 }
 
 function VirtualLabApp({
