@@ -281,7 +281,7 @@ function VirtualLabApp({
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-gray-800 text-sm flex items-center">
               <Atom className="w-4 h-4 mr-2 text-blue-600" />
-              Laboratory Equipment
+              {experimentTitle} - Equipment
             </h4>
             <div className="flex items-center space-x-2">
               <div className="text-xs text-gray-600 mr-3">
