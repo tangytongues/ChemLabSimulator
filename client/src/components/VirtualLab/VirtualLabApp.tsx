@@ -79,122 +79,28 @@ function VirtualLabApp({
   const [showSteps, setShowSteps] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
 
-  // Experiment steps data
-  const experimentSteps = [
-    {
-      id: 1,
-      title: "Setup Equipment",
+  // Use dynamic experiment steps from the step prop
+  const experimentSteps = Array.from({ length: totalSteps }, (_, index) => {
+    const stepData = step; // This represents the current step data
+    return {
+      id: index + 1,
+      title: `Step ${index + 1}`,
       description:
-        "Arrange burette, conical flask, and magnetic stirrer on the lab bench",
-      duration: 2,
-      status:
-        currentStep === 1
-          ? "active"
-          : currentStep > 1
-            ? "completed"
-            : "pending",
-      requirements: [
-        "Burette with clamp",
-        "250mL conical flask",
-        "Magnetic stirrer",
-      ],
-    },
-    {
-      id: 2,
-      title: "Prepare Solutions",
-      description: "Fill burette with NaOH solution and add HCl to flask",
-      duration: 3,
-      status:
-        currentStep === 2
-          ? "active"
-          : currentStep > 2
-            ? "completed"
-            : "pending",
-      requirements: [
-        "0.1M NaOH solution",
-        "25mL 0.1M HCl",
-        "Phenolphthalein indicator",
-      ],
-    },
-    {
-      id: 3,
-      title: "Add Indicator",
-      description: "Add 2-3 drops of phenolphthalein to the acid solution",
-      duration: 1,
-      status:
-        currentStep === 3
-          ? "active"
-          : currentStep > 3
-            ? "completed"
-            : "pending",
-      requirements: ["Phenolphthalein indicator"],
-    },
-    {
-      id: 4,
-      title: "Begin Titration",
-      description: "Start adding NaOH dropwise while stirring continuously",
-      duration: 8,
-      status:
-        currentStep === 4
-          ? "active"
-          : currentStep > 4
-            ? "completed"
-            : "pending",
-      requirements: ["Continuous stirring", "Slow addition of base"],
-    },
-    {
-      id: 5,
-      title: "Approach End Point",
-      description: "Add base drop by drop as color changes become visible",
-      duration: 5,
-      status:
-        currentStep === 5
-          ? "active"
-          : currentStep > 5
-            ? "completed"
-            : "pending",
-      requirements: ["Very slow addition", "Careful observation"],
-    },
-    {
-      id: 6,
-      title: "Detect End Point",
-      description: "Stop when permanent pink color appears",
-      duration: 2,
-      status:
-        currentStep === 6
-          ? "active"
-          : currentStep > 6
-            ? "completed"
-            : "pending",
-      requirements: ["Permanent color change"],
-    },
-    {
-      id: 7,
-      title: "Record Results",
-      description: "Note the volume of NaOH used and calculate concentration",
-      duration: 3,
-      status:
-        currentStep === 7
-          ? "active"
-          : currentStep > 7
-            ? "completed"
-            : "pending",
-      requirements: ["Accurate volume reading"],
-    },
-    {
-      id: 8,
-      title: "Repeat Titration",
-      description: "Perform 2-3 more titrations for accuracy",
-      duration: 15,
-      status:
-        currentStep === 8
-          ? "active"
-          : currentStep > 8
-            ? "completed"
-            : "pending",
-      requirements: ["Fresh solutions", "Clean equipment"],
-    },
-  ] as const;
+        index + 1 === stepNumber
+          ? stepData.description
+          : `Step ${index + 1} procedure`,
+      duration: parseInt(stepData.duration?.replace(/\D/g, "") || "5"),
+      status: (index + 1 === currentStep
+        ? "active"
+        : index + 1 < currentStep
+          ? "completed"
+          : "pending") as "active" | "completed" | "pending",
+      requirements:
+        index + 1 === stepNumber
+          ? [stepData.title]
+          : [`Step ${index + 1} requirements`],
+    };
+  });
 
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
