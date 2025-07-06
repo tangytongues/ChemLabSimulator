@@ -4,7 +4,15 @@ import { WorkBench } from "./WorkBench";
 import { Chemical, chemicalsList } from "./Chemical";
 import { Controls } from "./Controls";
 import { ResultsPanel } from "./ResultsPanel";
-import { FlaskConical, Atom, BookOpen } from "lucide-react";
+import { ExperimentSteps } from "./ExperimentSteps";
+import {
+  FlaskConical,
+  Atom,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  List,
+} from "lucide-react";
 import type { ExperimentStep } from "@shared/schema";
 
 interface EquipmentPosition {
