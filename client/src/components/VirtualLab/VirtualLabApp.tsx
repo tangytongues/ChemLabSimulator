@@ -71,6 +71,8 @@ function VirtualLabApp({
   isActive,
   stepNumber,
   totalSteps,
+  experimentTitle,
+  allSteps,
 }: VirtualLabProps) {
   const [equipmentPositions, setEquipmentPositions] = useState<
     EquipmentPosition[]
@@ -79,30 +81,23 @@ function VirtualLabApp({
   const [isRunning, setIsRunning] = useState(false);
   const [results, setResults] = useState<Result[]>([]);
   const [showSteps, setShowSteps] = useState(true);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(stepNumber);
 
-  // Use dynamic experiment steps from the step prop
-  const experimentSteps = Array.from({ length: totalSteps }, (_, index) => {
-    const stepData = step; // This represents the current step data
-    return {
-      id: index + 1,
-      title: `Step ${index + 1}`,
-      description:
-        index + 1 === stepNumber
-          ? stepData.description
-          : `Step ${index + 1} procedure`,
-      duration: parseInt(stepData.duration?.replace(/\D/g, "") || "5"),
-      status: (index + 1 === currentStep
-        ? "active"
-        : index + 1 < currentStep
-          ? "completed"
-          : "pending") as "active" | "completed" | "pending",
-      requirements:
-        index + 1 === stepNumber
-          ? [stepData.title]
-          : [`Step ${index + 1} requirements`],
-    };
-  });
+  // Use dynamic experiment steps from allSteps prop
+  const experimentSteps = allSteps.map((stepData, index) => ({
+    id: stepData.id,
+    title: stepData.title,
+    description: stepData.description,
+    duration: parseInt(stepData.duration?.replace(/\D/g, "") || "5"),
+    status: (stepData.id === currentStep
+      ? "active"
+      : stepData.id < currentStep
+        ? "completed"
+        : "pending") as "active" | "completed" | "pending",
+    requirements: stepData.safety
+      ? [stepData.safety]
+      : [`${stepData.title} requirements`],
+  }));
 
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
