@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useExperiment, useExperimentProgress, useUpdateProgress } from "@/hooks/use-experiments";
 import { getUserId } from "@/lib/utils";
 import Header from "@/components/header";
-import EnhancedVirtualLab from "@/components/enhanced-virtual-lab";
+import VirtualLabApp from "@/components/VirtualLab/VirtualLabApp";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -206,7 +206,7 @@ export default function Experiment() {
                 </div>
 
                 {/* Interactive Virtual Lab */}
-                <EnhancedVirtualLab 
+                <VirtualLabApp 
                   step={currentStepData} 
                   onStepComplete={handleCompleteStep}
                   isActive={isActive}
