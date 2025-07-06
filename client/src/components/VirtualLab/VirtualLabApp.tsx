@@ -325,102 +325,152 @@ function VirtualLabApp({
 
   return (
     <div
-      className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden flex flex-col"
+      className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden flex"
       style={{ minHeight: "75vh" }}
     >
-      {/* Equipment Bar - Top Horizontal */}
-      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200 p-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-gray-800 text-sm flex items-center">
-            <Atom className="w-4 h-4 mr-2 text-blue-600" />
-            Laboratory Equipment
-          </h4>
-          <div className="flex items-center space-x-2">
-            <Controls
-              isRunning={isRunning}
-              onStart={handleStartExperiment}
-              onStop={() => setIsRunning(false)}
-              onReset={() => {
-                setEquipmentPositions([]);
-                setResults([]);
-                setIsRunning(false);
-              }}
-            />
-          </div>
-        </div>
-        <div className="flex items-center space-x-3 mt-2 overflow-x-auto pb-2">
-          {equipmentList.map((equipment) => (
-            <div key={equipment.id} className="flex-shrink-0">
-              <Equipment
-                id={equipment.id}
-                name={equipment.name}
-                icon={equipment.icon}
-                onDrag={handleEquipmentDrop}
-                position={null}
-                chemicals={[]}
-                onChemicalDrop={handleChemicalDrop}
+      {/* Step Procedure Side Panel */}
+      <div
+        className={`transition-all duration-300 ${showSteps ? "w-80" : "w-12"} flex-shrink-0`}
+      >
+        {showSteps ? (
+          <div className="h-full bg-white/95 backdrop-blur-sm border-r border-gray-200 flex flex-col">
+            <div className="p-3 border-b bg-gradient-to-r from-indigo-500 to-purple-600 text-white flex items-center justify-between">
+              <div className="flex items-center">
+                <List className="w-4 h-4 mr-2" />
+                <span className="font-semibold text-sm">Procedure</span>
+              </div>
+              <button
+                onClick={() => setShowSteps(false)}
+                className="text-white/80 hover:text-white"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <ExperimentSteps
+                currentStep={currentStep}
+                steps={experimentSteps}
+                onStepClick={handleStepClick}
               />
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Main Work Area - Expanded */}
-      <div className="flex-1 flex flex-col">
-        {/* Lab Work Surface */}
-        <div className="flex-1 p-6">
-          <WorkBench
-            onDrop={handleEquipmentDrop}
-            selectedChemical={selectedChemical}
-            isRunning={isRunning}
-          >
-            {equipmentPositions.map((pos) => {
-              const equipment = equipmentList.find((eq) => eq.id === pos.id);
-              return equipment ? (
-                <Equipment
-                  key={pos.id}
-                  id={pos.id}
-                  name={equipment.name}
-                  icon={equipment.icon}
-                  onDrag={handleEquipmentDrop}
-                  position={pos}
-                  chemicals={pos.chemicals}
-                  onChemicalDrop={handleChemicalDrop}
-                />
-              ) : null;
-            })}
-          </WorkBench>
-        </div>
-
-        {/* Results Panel - When present */}
-        {results.length > 0 && (
-          <div className="border-t border-gray-200 bg-white/90 backdrop-blur-sm">
-            <ResultsPanel results={results} onClear={handleClearResults} />
+          </div>
+        ) : (
+          <div className="h-full bg-white/95 backdrop-blur-sm border-r border-gray-200 flex flex-col items-center">
+            <button
+              onClick={() => setShowSteps(true)}
+              className="p-3 text-gray-600 hover:text-blue-600 border-b border-gray-200"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <div className="flex-1 flex items-center">
+              <div className="transform -rotate-90 text-xs font-medium text-gray-500 whitespace-nowrap">
+                Procedure
+              </div>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Reagents Bar - Bottom Horizontal */}
-      <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3">
-        <h4 className="font-semibold text-gray-800 text-sm flex items-center mb-2">
-          <BookOpen className="w-4 h-4 mr-2 text-blue-600" />
-          Chemical Reagents
-        </h4>
-        <div className="flex items-center space-x-3 overflow-x-auto pb-2">
-          {chemicalsList.map((chemical) => (
-            <div key={chemical.id} className="flex-shrink-0">
-              <Chemical
-                id={chemical.id}
-                name={chemical.name}
-                formula={chemical.formula}
-                color={chemical.color}
-                concentration={chemical.concentration}
-                volume={chemical.volume}
-                onSelect={handleChemicalSelect}
-                selected={selectedChemical === chemical.id}
+      {/* Main Lab Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Equipment Bar - Top Horizontal */}
+        <div className="bg-white/90 backdrop-blur-sm border-b border-gray-200 p-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold text-gray-800 text-sm flex items-center">
+              <Atom className="w-4 h-4 mr-2 text-blue-600" />
+              Laboratory Equipment
+            </h4>
+            <div className="flex items-center space-x-2">
+              <div className="text-xs text-gray-600 mr-3">
+                Step {currentStep} of {experimentSteps.length}
+              </div>
+              <Controls
+                isRunning={isRunning}
+                onStart={handleStartExperiment}
+                onStop={() => setIsRunning(false)}
+                onReset={() => {
+                  setEquipmentPositions([]);
+                  setResults([]);
+                  setIsRunning(false);
+                  setCurrentStep(1);
+                }}
               />
             </div>
-          ))}
+          </div>
+          <div className="flex items-center space-x-3 mt-2 overflow-x-auto pb-2">
+            {equipmentList.map((equipment) => (
+              <div key={equipment.id} className="flex-shrink-0">
+                <Equipment
+                  id={equipment.id}
+                  name={equipment.name}
+                  icon={equipment.icon}
+                  onDrag={handleEquipmentDrop}
+                  position={null}
+                  chemicals={[]}
+                  onChemicalDrop={handleChemicalDrop}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Work Area - Expanded */}
+        <div className="flex-1 flex flex-col">
+          {/* Lab Work Surface */}
+          <div className="flex-1 p-6">
+            <WorkBench
+              onDrop={handleEquipmentDrop}
+              selectedChemical={selectedChemical}
+              isRunning={isRunning}
+            >
+              {equipmentPositions.map((pos) => {
+                const equipment = equipmentList.find((eq) => eq.id === pos.id);
+                return equipment ? (
+                  <Equipment
+                    key={pos.id}
+                    id={pos.id}
+                    name={equipment.name}
+                    icon={equipment.icon}
+                    onDrag={handleEquipmentDrop}
+                    position={pos}
+                    chemicals={pos.chemicals}
+                    onChemicalDrop={handleChemicalDrop}
+                  />
+                ) : null;
+              })}
+            </WorkBench>
+          </div>
+
+          {/* Results Panel - When present */}
+          {results.length > 0 && (
+            <div className="border-t border-gray-200 bg-white/90 backdrop-blur-sm">
+              <ResultsPanel results={results} onClear={handleClearResults} />
+            </div>
+          )}
+        </div>
+
+        {/* Reagents Bar - Bottom Horizontal */}
+        <div className="bg-white/90 backdrop-blur-sm border-t border-gray-200 p-3">
+          <h4 className="font-semibold text-gray-800 text-sm flex items-center mb-2">
+            <BookOpen className="w-4 h-4 mr-2 text-blue-600" />
+            Chemical Reagents
+          </h4>
+          <div className="flex items-center space-x-3 overflow-x-auto pb-2">
+            {chemicalsList.map((chemical) => (
+              <div key={chemical.id} className="flex-shrink-0">
+                <Chemical
+                  id={chemical.id}
+                  name={chemical.name}
+                  formula={chemical.formula}
+                  color={chemical.color}
+                  concentration={chemical.concentration}
+                  volume={chemical.volume}
+                  onSelect={handleChemicalSelect}
+                  selected={selectedChemical === chemical.id}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
