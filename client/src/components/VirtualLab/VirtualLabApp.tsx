@@ -160,8 +160,8 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg overflow-hidden">
-      <div className="p-6">
+    <div className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg overflow-hidden min-h-screen">
+      <div className="p-6 h-full">
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -180,17 +180,17 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
           </div>
         </div>
 
-        {/* Main Lab Interface */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Main Lab Interface - Full height layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full" style={{ minHeight: 'calc(100vh - 200px)' }}>
           {/* Sidebar - Equipment and Chemicals */}
-          <div className="space-y-6">
+          <div className="lg:col-span-1 space-y-6">
             {/* Equipment Panel */}
             <div className="bg-white rounded-lg shadow-sm border p-4">
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                 <Atom className="w-4 h-4 mr-2" />
                 Laboratory Equipment
               </h4>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 gap-3">
                 {equipmentList.map((equipment) => (
                   <Equipment
                     key={equipment.id}
@@ -212,7 +212,7 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
                 <BookOpen className="w-4 h-4 mr-2" />
                 Chemical Reagents
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {chemicalsList.map((chemical) => (
                   <Chemical
                     key={chemical.id}
@@ -230,8 +230,8 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
             </div>
           </div>
 
-          {/* Main Work Area */}
-          <div className="lg:col-span-3">
+          {/* Main Work Area - Much larger */}
+          <div className="lg:col-span-4 h-full">
             <WorkBench 
               onDrop={handleEquipmentDrop}
               selectedChemical={selectedChemical}
@@ -256,7 +256,7 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
           </div>
         </div>
 
-        {/* Controls */}
+        {/* Controls - Fixed at bottom */}
         <div className="mt-6">
           <Controls 
             isRunning={isRunning}
@@ -271,7 +271,9 @@ function VirtualLabApp({ step, onStepComplete, isActive, stepNumber, totalSteps 
         </div>
 
         {/* Results Panel */}
-        <ResultsPanel results={results} onClear={handleClearResults} />
+        <div className="mt-6">
+          <ResultsPanel results={results} onClear={handleClearResults} />
+        </div>
       </div>
     </div>
   );

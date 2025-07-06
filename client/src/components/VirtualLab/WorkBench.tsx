@@ -214,9 +214,9 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Experiment Steps */}
-      <div className="lg:col-span-1">
+    <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 h-full">
+      {/* Experiment Steps - Smaller on larger screens */}
+      <div className="xl:col-span-1">
         <ExperimentSteps 
           currentStep={currentStep}
           steps={experimentSteps}
@@ -267,9 +267,9 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
         </div>
       </div>
 
-      {/* Main Lab Bench */}
-      <div className="lg:col-span-2">
-        <div className="bg-white rounded-lg shadow-lg border">
+      {/* Main Lab Bench - Much Larger */}
+      <div className="xl:col-span-3">
+        <div className="bg-white rounded-lg shadow-lg border h-full">
           <div className="p-4 border-b bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
             <h2 className="text-xl font-bold flex items-center">
               <FlaskConical className="mr-2" size={24} />
@@ -283,8 +283,10 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
           <div
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className="relative w-full h-[600px] bg-gradient-to-b from-blue-50 to-blue-100 overflow-hidden"
+            className="relative w-full overflow-hidden"
             style={{
+              height: 'calc(100vh - 300px)', // Dynamic height based on viewport
+              minHeight: '800px', // Increased minimum height
               backgroundImage: `
                 linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
                 linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px)
@@ -292,26 +294,38 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               backgroundSize: '20px 20px'
             }}
           >
-            {/* Lab Bench Surface */}
-            <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-amber-200 to-amber-100 border-t-2 border-amber-300">
+            {/* Lab Bench Surface - Positioned at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-amber-200 to-amber-100 border-t-2 border-amber-300">
               <div className="absolute inset-0 opacity-30 bg-gradient-to-r from-amber-300 to-amber-200"></div>
+              {/* Lab bench texture */}
+              <div className="absolute inset-0 opacity-20" style={{
+                backgroundImage: `repeating-linear-gradient(
+                  90deg,
+                  transparent,
+                  transparent 2px,
+                  rgba(0,0,0,0.1) 2px,
+                  rgba(0,0,0,0.1) 4px
+                )`
+              }}></div>
             </div>
 
-            {/* Animated Equipment */}
-            <AnimatedEquipment
-              isStirring={isStirring}
-              isDropping={isDropping}
-              temperature={temperature}
-              solutionColor={solutionColor}
-              volume={volume}
-              bubbling={bubbling}
-            />
+            {/* Animated Equipment - Scaled and positioned better */}
+            <div className="absolute inset-0" style={{ transform: 'scale(1.2)', transformOrigin: 'center center' }}>
+              <AnimatedEquipment
+                isStirring={isStirring}
+                isDropping={isDropping}
+                temperature={temperature}
+                solutionColor={solutionColor}
+                volume={volume}
+                bubbling={bubbling}
+              />
+            </div>
 
-            {/* Manual Controls Overlay */}
-            <div className="absolute bottom-4 left-4 space-y-2">
+            {/* Manual Controls Overlay - Better positioned */}
+            <div className="absolute bottom-8 left-6 space-y-3 z-10">
               <button
                 onClick={() => setIsStirring(!isStirring)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors shadow-lg ${
                   isStirring ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
@@ -320,7 +334,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               
               <button
                 onClick={() => setIsDropping(!isDropping)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors shadow-lg ${
                   isDropping ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
@@ -328,7 +342,10 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               </button>
             </div>
 
-            {children}
+            {/* Equipment placement area with better spacing */}
+            <div className="absolute inset-0 p-8">
+              {children}
+            </div>
           </div>
         </div>
       </div>
