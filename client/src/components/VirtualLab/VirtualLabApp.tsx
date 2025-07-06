@@ -319,6 +319,10 @@ function VirtualLabApp({
     setResults([]);
   };
 
+  const handleStepClick = (stepId: number) => {
+    setCurrentStep(stepId);
+  };
+
   return (
     <div
       className="w-full bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg overflow-hidden flex flex-col"
