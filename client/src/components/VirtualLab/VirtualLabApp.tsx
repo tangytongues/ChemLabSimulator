@@ -263,6 +263,55 @@ function VirtualLabApp({
     return [];
   }, [experimentTitle]);
 
+  // Guided steps for Aspirin Synthesis
+  const aspirinGuidedSteps = [
+    {
+      id: 1,
+      title: "Set up Erlenmeyer Flask",
+      instruction: "Drag the 125mL Erlenmeyer Flask to the workbench",
+      requiredEquipment: "erlenmeyer_flask",
+      completed: false,
+    },
+    {
+      id: 2,
+      title: "Add Salicylic Acid",
+      instruction: "Drag 2.0g of Salicylic Acid into the Erlenmeyer Flask",
+      requiredChemical: "salicylic_acid",
+      targetEquipment: "erlenmeyer_flask",
+      completed: false,
+    },
+    {
+      id: 3,
+      title: "Add Acetic Anhydride",
+      instruction:
+        "Add 5mL of Acetic Anhydride to the flask using the graduated cylinder",
+      requiredChemical: "acetic_anhydride",
+      targetEquipment: "erlenmeyer_flask",
+      completed: false,
+    },
+    {
+      id: 4,
+      title: "Add Catalyst",
+      instruction: "Add 2-3 drops of Phosphoric Acid as catalyst",
+      requiredChemical: "phosphoric_acid",
+      targetEquipment: "erlenmeyer_flask",
+      completed: false,
+    },
+    {
+      id: 5,
+      title: "Set up Water Bath",
+      instruction: "Drag the Water Bath to the workbench and heat to 85°C",
+      requiredEquipment: "water_bath",
+      completed: false,
+    },
+    {
+      id: 6,
+      title: "Heat Reaction",
+      instruction: "Place the flask in the water bath and heat for 15 minutes",
+      completed: false,
+    },
+  ];
+
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
       setEquipmentPositions((prev) => {
