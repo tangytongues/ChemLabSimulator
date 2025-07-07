@@ -95,6 +95,10 @@ function VirtualLabApp({
     moles: 0,
     temperature: 25,
   });
+  const [isHeating, setIsHeating] = useState(false);
+  const [heatingTime, setHeatingTime] = useState(0);
+  const [targetTemperature, setTargetTemperature] = useState(25);
+  const [actualTemperature, setActualTemperature] = useState(25);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
 
