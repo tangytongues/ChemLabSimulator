@@ -606,7 +606,9 @@ function VirtualLabApp({
               isRunning={isRunning}
             >
               {equipmentPositions.map((pos) => {
-                const equipment = equipmentList.find((eq) => eq.id === pos.id);
+                const equipment = experimentEquipment.find(
+                  (eq) => eq.id === pos.id,
+                );
                 return equipment ? (
                   <Equipment
                     key={pos.id}
