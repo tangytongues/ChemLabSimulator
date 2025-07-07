@@ -500,6 +500,19 @@ function VirtualLabApp({
           );
           setTimeout(() => setToastMessage(null), 3000);
 
+          // Check if this completes a guided step for Aspirin Synthesis
+          if (experimentTitle.includes("Aspirin")) {
+            const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+            if (
+              currentStep?.requiredChemical === chemicalId &&
+              currentStep?.targetEquipment === equipmentId
+            ) {
+              setCurrentGuidedStep((prev) => prev + 1);
+              setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
+              setTimeout(() => setToastMessage(null), 3000);
+            }
+          }
+
           // Calculate reaction if chemicals are mixed
           if (newChemicals.length >= 2) {
             const totalVolume = newChemicals.reduce(
