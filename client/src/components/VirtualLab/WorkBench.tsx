@@ -27,6 +27,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
   selectedChemical,
   isRunning,
   experimentTitle,
+  currentGuidedStep = 1,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [temperature, setTemperature] = useState(22);
