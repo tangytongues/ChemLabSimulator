@@ -21,6 +21,7 @@ export const Chemical: React.FC<ChemicalProps> = ({
   concentration,
   volume,
 }) => {
+  const [dragAmount, setDragAmount] = React.useState(volume || 25);
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData(
       "chemical",
