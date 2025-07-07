@@ -951,6 +951,12 @@ function VirtualLabApp({
                     position={pos}
                     chemicals={pos.chemicals}
                     onChemicalDrop={handleChemicalDrop}
+                    isHeating={isHeating && pos.id === "water_bath"}
+                    actualTemperature={actualTemperature}
+                    targetTemperature={targetTemperature}
+                    heatingTime={heatingTime}
+                    onStartHeating={handleStartHeating}
+                    onStopHeating={handleStopHeating}
                   />
                 ) : null;
               })}
