@@ -392,14 +392,21 @@ export const Equipment: React.FC<EquipmentProps> = ({
       {/* Enhanced drop zone indicator */}
       {isContainer && isOnWorkbench && (
         <div
-          className={`absolute -top-3 -right-3 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
-            isDragOver ? "bg-green-500 scale-110" : "bg-blue-500"
+          className={`absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+            isDragOver ? "bg-green-500 scale-125 shadow-lg" : "bg-blue-500"
           }`}
         >
-          <Droplet size={12} className="text-white" />
+          <Droplet size={14} className="text-white" />
           {isDragOver && (
             <div className="absolute inset-0 bg-green-400 rounded-full animate-ping"></div>
           )}
+        </div>
+      )}
+
+      {/* Drop hint text */}
+      {isContainer && isOnWorkbench && isDragOver && (
+        <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-medium animate-bounce whitespace-nowrap shadow-lg">
+          Drop chemical here!
         </div>
       )}
 
