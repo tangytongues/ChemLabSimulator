@@ -377,6 +377,31 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               </div>
             )}
 
+            {/* Helpful hints for Aspirin Synthesis */}
+            {experimentTitle.includes("Aspirin") && (
+              <div className="absolute top-6 left-6 bg-blue-100 border-2 border-blue-300 rounded-lg p-4 max-w-sm z-20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="font-semibold text-blue-800 text-sm">
+                    Step {currentGuidedStep}
+                  </span>
+                </div>
+                <div className="text-xs text-blue-700">
+                  {currentGuidedStep === 1 &&
+                    "Drag the Erlenmeyer Flask to the workbench to begin"}
+                  {currentGuidedStep === 2 && "Add Salicylic Acid to the flask"}
+                  {currentGuidedStep === 3 &&
+                    "Add Acetic Anhydride to the flask"}
+                  {currentGuidedStep === 4 && "Add Phosphoric Acid catalyst"}
+                  {currentGuidedStep === 5 &&
+                    "Set up the Water Bath for heating"}
+                  {currentGuidedStep === 6 && "Heat the reaction mixture"}
+                  {currentGuidedStep > 6 &&
+                    "Aspirin synthesis steps completed!"}
+                </div>
+              </div>
+            )}
+
             {/* Equipment placement area with more generous spacing */}
             <div className="absolute inset-0 p-12">{children}</div>
           </div>
