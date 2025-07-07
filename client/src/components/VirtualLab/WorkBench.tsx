@@ -255,11 +255,16 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const id = e.dataTransfer.getData("text/plain");
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    onDrop(id, x, y);
+    // Try to get equipment data first, then fallback to text/plain
+    const equipmentId = e.dataTransfer.getData("equipment");
+    const id = equipmentId || e.dataTransfer.getData("text/plain");
+
+    if (id) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      onDrop(id, x, y);
+    }
   };
 
   return (
