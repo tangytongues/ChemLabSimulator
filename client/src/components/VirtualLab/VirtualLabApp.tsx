@@ -580,7 +580,7 @@ function VirtualLabApp({
             </div>
           </div>
           <div className="flex items-center space-x-3 mt-2 overflow-x-auto pb-2">
-            {equipmentList.map((equipment) => (
+            {experimentEquipment.map((equipment) => (
               <div key={equipment.id} className="flex-shrink-0">
                 <Equipment
                   id={equipment.id}
