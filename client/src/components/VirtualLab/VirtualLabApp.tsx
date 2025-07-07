@@ -600,6 +600,66 @@ function VirtualLabApp({
     onStepComplete();
   };
 
+  const handleStartHeating = () => {
+    if (!isHeating) {
+      setIsHeating(true);
+      setTargetTemperature(85);
+      setHeatingTime(0);
+      setToastMessage("🔥 Water bath heating started - Target: 85°C");
+      setTimeout(() => setToastMessage(null), 3000);
+
+      // Simulate temperature increase over time
+      const heatingInterval = setInterval(() => {
+        setActualTemperature((temp) => {
+          const newTemp = Math.min(85, temp + 2);
+          if (newTemp >= 85) {
+            setToastMessage(
+              "✓ Target temperature reached! Heat for 15 minutes.",
+            );
+            setTimeout(() => setToastMessage(null), 4000);
+          }
+          return newTemp;
+        });
+      }, 1000);
+
+      // Track heating time
+      const timeInterval = setInterval(() => {
+        setHeatingTime((time) => {
+          const newTime = time + 1;
+          if (newTime >= 15 * 60) {
+            // 15 minutes
+            clearInterval(heatingInterval);
+            clearInterval(timeInterval);
+            setIsHeating(false);
+            setCurrentGuidedStep((prev) => prev + 1);
+            setToastMessage("✅ Heating step completed!");
+            setTimeout(() => setToastMessage(null), 3000);
+            return 15 * 60;
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      // Store intervals for cleanup
+      setTimeout(
+        () => {
+          if (heatingInterval) clearInterval(heatingInterval);
+          if (timeInterval) clearInterval(timeInterval);
+        },
+        16 * 60 * 1000,
+      ); // Cleanup after 16 minutes
+    }
+  };
+
+  const handleStopHeating = () => {
+    setIsHeating(false);
+    setTargetTemperature(25);
+    setActualTemperature(25);
+    setHeatingTime(0);
+    setToastMessage("🔥 Heating stopped");
+    setTimeout(() => setToastMessage(null), 2000);
+  };
+
   const handleClearResults = () => {
     setResults([]);
   };
