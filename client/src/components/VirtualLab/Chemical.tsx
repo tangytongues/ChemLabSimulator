@@ -132,6 +132,24 @@ export const Chemical: React.FC<ChemicalProps> = ({
         </div>
       )}
 
+      {/* Volume Control */}
+      {selected && (
+        <div className="mt-3 bg-gray-50 rounded-lg p-2">
+          <label className="text-xs text-gray-600 font-medium block mb-1">
+            Amount (mL)
+          </label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={dragAmount}
+            onChange={(e) => setDragAmount(Number(e.target.value))}
+            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:border-purple-500 focus:outline-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       {/* Drag instruction */}
       <div
         className={`text-xs text-center mt-2 transition-opacity ${selected ? "opacity-100" : "opacity-0"}`}
