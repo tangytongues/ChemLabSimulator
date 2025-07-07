@@ -158,6 +158,162 @@ export const Equipment: React.FC<EquipmentProps> = ({
   };
 
   const getEquipmentSpecificRendering = () => {
+    if (id === "water_bath" && isOnWorkbench) {
+      return (
+        <div className="relative">
+          {/* Enhanced Water Bath with Heating Controls */}
+          <div
+            className={`cursor-pointer transition-all duration-300 ${
+              isHeating ? "scale-105" : ""
+            }`}
+            onClick={isHeating ? onStopHeating : onStartHeating}
+          >
+            <svg
+              width="120"
+              height="80"
+              viewBox="0 0 120 80"
+              className="drop-shadow-lg"
+            >
+              {/* Water bath container */}
+              <rect
+                x="10"
+                y="25"
+                width="100"
+                height="40"
+                rx="5"
+                fill={
+                  isHeating
+                    ? "rgba(249, 115, 22, 0.2)"
+                    : "rgba(59, 130, 246, 0.1)"
+                }
+                stroke={isHeating ? "#f97316" : "#2563eb"}
+                strokeWidth="3"
+              />
+
+              {/* Water in bath with bubbles when heating */}
+              <rect
+                x="15"
+                y="30"
+                width="90"
+                height="30"
+                rx="3"
+                fill={isHeating ? "#fbbf24" : "#93c5fd"}
+                opacity="0.7"
+              />
+
+              {/* Heating element at bottom */}
+              <rect
+                x="25"
+                y="60"
+                width="70"
+                height="3"
+                rx="1.5"
+                fill={isHeating ? "#dc2626" : "#6b7280"}
+                className={isHeating ? "animate-pulse" : ""}
+              />
+
+              {/* Temperature probe */}
+              <rect x="95" y="20" width="2" height="30" fill="#374151" />
+              <circle cx="96" cy="55" r="3" fill="#dc2626" />
+
+              {/* Steam/bubbles when heating */}
+              {isHeating && (
+                <g>
+                  {[...Array(8)].map((_, i) => (
+                    <circle
+                      key={i}
+                      cx={20 + i * 10}
+                      cy={35 + (i % 2) * 5}
+                      r="1.5"
+                      fill="rgba(255, 255, 255, 0.8)"
+                      className="animate-bounce"
+                      style={{
+                        animationDelay: `${i * 0.2}s`,
+                        animationDuration: "1s",
+                      }}
+                    />
+                  ))}
+                  {/* Steam vapors */}
+                  <path
+                    d="M30 25 Q35 20 40 25 T50 25"
+                    stroke="rgba(255, 255, 255, 0.6)"
+                    strokeWidth="2"
+                    fill="none"
+                    className="animate-pulse"
+                  />
+                  <path
+                    d="M60 25 Q65 20 70 25 T80 25"
+                    stroke="rgba(255, 255, 255, 0.6)"
+                    strokeWidth="2"
+                    fill="none"
+                    className="animate-pulse"
+                    style={{ animationDelay: "0.5s" }}
+                  />
+                </g>
+              )}
+
+              {/* Control panel */}
+              <rect x="75" y="5" width="35" height="15" rx="2" fill="#1f2937" />
+              <rect x="78" y="8" width="12" height="9" rx="1" fill="#000000" />
+              <text
+                x="82"
+                y="15"
+                fontSize="6"
+                fill="#22c55e"
+                fontFamily="monospace"
+              >
+                {Math.round(actualTemperature)}°C
+              </text>
+              <circle
+                cx="100"
+                cy="12"
+                r="3"
+                fill={isHeating ? "#ef4444" : "#6b7280"}
+                className={isHeating ? "animate-pulse" : ""}
+              />
+            </svg>
+
+            {/* Control buttons */}
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
+              <div className="bg-white border border-gray-300 rounded-lg px-3 py-2 shadow-lg">
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      isHeating ? onStopHeating?.() : onStartHeating?.();
+                    }}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      isHeating
+                        ? "bg-red-500 hover:bg-red-600 text-white"
+                        : "bg-green-500 hover:bg-green-600 text-white"
+                    }`}
+                  >
+                    {isHeating ? "Stop" : "Heat"}
+                  </button>
+                  <div className="text-xs text-gray-600">
+                    Target: {targetTemperature}°C
+                  </div>
+                  {isHeating && (
+                    <div className="text-xs text-blue-600">
+                      {Math.floor(heatingTime / 60)}:
+                      {String(heatingTime % 60).padStart(2, "0")}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            {!isHeating && (
+              <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 text-center">
+                Click to start heating
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     if (id === "burette" && isOnWorkbench) {
       return (
         <div className="relative">
