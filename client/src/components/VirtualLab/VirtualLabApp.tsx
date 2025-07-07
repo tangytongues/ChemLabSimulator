@@ -112,6 +112,155 @@ function VirtualLabApp({
       : [`${stepData.title} requirements`],
   }));
 
+  // Experiment-specific chemicals and equipment
+  const experimentChemicals = useMemo(() => {
+    if (experimentTitle.includes("Aspirin")) {
+      return [
+        {
+          id: "salicylic_acid",
+          name: "Salicylic Acid",
+          formula: "C₇H₆O₃",
+          color: "#FFFFFF",
+          concentration: "2.0 g",
+          volume: 25,
+        },
+        {
+          id: "acetic_anhydride",
+          name: "Acetic Anhydride",
+          formula: "(CH₃CO)₂O",
+          color: "#E6E6FA",
+          concentration: "5 mL",
+          volume: 50,
+        },
+        {
+          id: "phosphoric_acid",
+          name: "Phosphoric Acid",
+          formula: "H₃PO₄",
+          color: "#FFE4B5",
+          concentration: "Catalyst",
+          volume: 10,
+        },
+        {
+          id: "distilled_water",
+          name: "Distilled Water",
+          formula: "H₂O",
+          color: "#87CEEB",
+          concentration: "Pure",
+          volume: 100,
+        },
+      ];
+    } else if (experimentTitle.includes("Acid-Base")) {
+      return [
+        {
+          id: "hcl",
+          name: "Hydrochloric Acid",
+          formula: "HCl",
+          color: "#FFE135",
+          concentration: "0.1 M",
+          volume: 25,
+        },
+        {
+          id: "naoh",
+          name: "Sodium Hydroxide",
+          formula: "NaOH",
+          color: "#87CEEB",
+          concentration: "0.1 M",
+          volume: 50,
+        },
+        {
+          id: "phenol",
+          name: "Phenolphthalein",
+          formula: "C₂₀H₁₄O₄",
+          color: "#FFB6C1",
+          concentration: "Indicator",
+          volume: 10,
+        },
+      ];
+    } else if (experimentTitle.includes("Equilibrium")) {
+      return [
+        {
+          id: "cocl2",
+          name: "Cobalt(II) Chloride",
+          formula: "CoCl₂",
+          color: "#FFB6C1",
+          concentration: "0.1 M",
+          volume: 30,
+        },
+        {
+          id: "hcl_conc",
+          name: "Concentrated HCl",
+          formula: "HCl",
+          color: "#FFFF99",
+          concentration: "12 M",
+          volume: 20,
+        },
+        {
+          id: "water",
+          name: "Distilled Water",
+          formula: "H₂O",
+          color: "#87CEEB",
+          concentration: "Pure",
+          volume: 100,
+        },
+        {
+          id: "ice",
+          name: "Ice Bath",
+          formula: "H₂O(s)",
+          color: "#E0F6FF",
+          concentration: "0°C",
+          volume: 50,
+        },
+      ];
+    }
+    return [];
+  }, [experimentTitle]);
+
+  const experimentEquipment = useMemo(() => {
+    if (experimentTitle.includes("Aspirin")) {
+      return [
+        {
+          id: "erlenmeyer_flask",
+          name: "125mL Erlenmeyer Flask",
+          icon: <FlaskConical size={36} />,
+        },
+        {
+          id: "thermometer",
+          name: "Thermometer",
+          icon: <Thermometer size={36} />,
+        },
+        {
+          id: "graduated_cylinder",
+          name: "Graduated Cylinder",
+          icon: <TestTube size={36} />,
+        },
+        { id: "water_bath", name: "Water Bath", icon: <Beaker size={36} /> },
+      ];
+    } else if (experimentTitle.includes("Acid-Base")) {
+      return [
+        { id: "burette", name: "50mL Burette", icon: <TestTube size={36} /> },
+        {
+          id: "conical_flask",
+          name: "250mL Conical Flask",
+          icon: <FlaskConical size={36} />,
+        },
+        { id: "pipette", name: "25mL Pipette", icon: <Droplets size={36} /> },
+        { id: "beaker", name: "Beaker", icon: <Beaker size={36} /> },
+      ];
+    } else if (experimentTitle.includes("Equilibrium")) {
+      return [
+        { id: "test_tubes", name: "Test Tubes", icon: <TestTube size={36} /> },
+        { id: "beakers", name: "Beakers", icon: <Beaker size={36} /> },
+        {
+          id: "hot_water_bath",
+          name: "Hot Water Bath",
+          icon: <Thermometer size={36} />,
+        },
+        { id: "ice_bath", name: "Ice Bath", icon: <FlaskConical size={36} /> },
+      ];
+    }
+    return [];
+  }, [experimentTitle]);
+
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
       setEquipmentPositions((prev) => {
