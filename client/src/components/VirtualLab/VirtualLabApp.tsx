@@ -344,9 +344,11 @@ function VirtualLabApp({
               experimentTitle.includes("Acid-Base") ||
               experimentTitle.includes("Equilibrium")
             ) {
+              // Use the most recent chemical for calculations
+              const recentChemical = newChemicals[newChemicals.length - 1];
               const calculations = calculateChemicalProperties(
-                newChemicals[0],
-                newChemicals[0].amount,
+                recentChemical,
+                recentChemical.amount,
                 totalVolume,
               );
               setMeasurements((prev) => ({
