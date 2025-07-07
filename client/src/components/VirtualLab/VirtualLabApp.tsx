@@ -613,6 +613,7 @@ function VirtualLabApp({
               onDrop={handleEquipmentDrop}
               selectedChemical={selectedChemical}
               isRunning={isRunning}
+              experimentTitle={experimentTitle}
             >
               {equipmentPositions.map((pos) => {
                 const equipment = experimentEquipment.find(
