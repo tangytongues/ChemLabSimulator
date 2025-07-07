@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ChemicalProps {
   id: string;
@@ -11,24 +11,37 @@ interface ChemicalProps {
   volume?: number;
 }
 
-export const Chemical: React.FC<ChemicalProps> = ({ 
-  id, 
-  name, 
-  formula, 
-  color, 
-  onSelect, 
+export const Chemical: React.FC<ChemicalProps> = ({
+  id,
+  name,
+  formula,
+  color,
+  onSelect,
   selected,
   concentration,
-  volume 
+  volume,
 }) => {
+  const [dragAmount, setDragAmount] = React.useState(volume || 25);
   const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('chemical', JSON.stringify({ id, name, formula, color, concentration }));
-    e.dataTransfer.effectAllowed = 'copy';
-    
+    e.dataTransfer.setData(
+      "chemical",
+      JSON.stringify({
+        id,
+        name,
+        formula,
+        color,
+        concentration,
+        volume: dragAmount,
+      }),
+    );
+    e.dataTransfer.effectAllowed = "copy";
+
     // Add visual feedback during drag
     const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
-    dragImage.style.transform = 'rotate(5deg) scale(1.1)';
-    dragImage.style.opacity = '0.8';
+    dragImage.style.transform = "rotate(5deg) scale(1.1)";
+    dragImage.style.opacity = "0.8";
+    dragImage.style.border = "2px solid #7C3AED";
+    dragImage.style.borderRadius = "8px";
     document.body.appendChild(dragImage);
     e.dataTransfer.setDragImage(dragImage, 50, 50);
     setTimeout(() => document.body.removeChild(dragImage), 0);
@@ -36,7 +49,7 @@ export const Chemical: React.FC<ChemicalProps> = ({
 
   const handleDragEnd = (e: React.DragEvent) => {
     // Reset any drag styling
-    e.currentTarget.classList.remove('dragging');
+    e.currentTarget.classList.remove("dragging");
   };
 
   return (
@@ -47,8 +60,8 @@ export const Chemical: React.FC<ChemicalProps> = ({
       onClick={() => onSelect(id)}
       className={`p-4 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200 border-2 transform hover:scale-105 ${
         selected
-          ? 'border-purple-500 bg-purple-50 shadow-lg scale-105'
-          : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+          ? "border-purple-500 bg-purple-50 shadow-lg scale-105 ring-2 ring-purple-300"
+          : "border-gray-200 bg-white hover:border-purple-300 hover:shadow-md"
       }`}
     >
       <div className="flex items-center space-x-3">
@@ -58,27 +71,32 @@ export const Chemical: React.FC<ChemicalProps> = ({
             style={{ backgroundColor: color }}
           >
             {/* Liquid animation effect */}
-            <div className="absolute inset-1 rounded-full opacity-60 animate-pulse"
-                 style={{ backgroundColor: color }}>
-            </div>
+            <div
+              className="absolute inset-1 rounded-full opacity-60 animate-pulse"
+              style={{ backgroundColor: color }}
+            ></div>
           </div>
-          
+
           {/* Chemical drop animation when selected */}
           {selected && (
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full border-2 border-purple-500 flex items-center justify-center animate-bounce">
-              <div 
+              <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: color }}
               ></div>
             </div>
           )}
         </div>
-        
+
         <div className="flex-1">
-          <div className={`font-semibold text-lg ${selected ? 'text-purple-900' : 'text-gray-900'}`}>
+          <div
+            className={`font-semibold text-lg ${selected ? "text-purple-900" : "text-gray-900"}`}
+          >
             {name}
           </div>
-          <div className={`text-sm font-mono ${selected ? 'text-purple-700' : 'text-gray-500'}`}>
+          <div
+            className={`text-sm font-mono ${selected ? "text-purple-700" : "text-gray-500"}`}
+          >
             {formula}
           </div>
           {concentration && (
@@ -87,62 +105,87 @@ export const Chemical: React.FC<ChemicalProps> = ({
             </div>
           )}
         </div>
-        
+
         {selected && (
           <div className="flex flex-col items-center">
             <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-            <div className="text-xs text-purple-600 font-medium mt-1">SELECTED</div>
+            <div className="text-xs text-purple-600 font-medium mt-1">
+              SELECTED
+            </div>
           </div>
         )}
       </div>
-      
+
       {/* Volume indicator with animation */}
       {volume && (
         <div className="mt-3 bg-gray-100 rounded-full h-3 overflow-hidden">
-          <div 
+          <div
             className="h-full transition-all duration-500 ease-out rounded-full"
-            style={{ 
+            style={{
               width: `${Math.min(100, (volume / 100) * 100)}%`,
               backgroundColor: color,
-              boxShadow: `inset 0 1px 2px rgba(0,0,0,0.1)`
+              boxShadow: `inset 0 1px 2px rgba(0,0,0,0.1)`,
             }}
           >
             <div className="h-full w-full bg-gradient-to-r from-transparent to-white opacity-30 rounded-full"></div>
           </div>
         </div>
       )}
-      
-      {/* Drag instruction */}
-      <div className={`text-xs text-center mt-2 transition-opacity ${selected ? 'opacity-100' : 'opacity-0'}`}>
-        <span className="text-purple-600 font-medium">Drag to equipment →</span>
+
+      {/* Volume Control */}
+      {selected && (
+        <div className="mt-3 bg-gray-50 rounded-lg p-2">
+          <label className="text-xs text-gray-600 font-medium block mb-1">
+            Amount (mL)
+          </label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={dragAmount}
+            onChange={(e) => setDragAmount(Number(e.target.value))}
+            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:border-purple-500 focus:outline-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
+      {/* Drag instruction with animation */}
+      <div
+        className={`text-xs text-center mt-2 transition-all ${selected ? "opacity-100 animate-pulse" : "opacity-0"}`}
+      >
+        <div className="flex items-center justify-center space-x-1">
+          <span className="text-purple-600 font-medium">Drag to equipment</span>
+          <span className="text-purple-500 animate-bounce">→</span>
+        </div>
       </div>
     </div>
   );
 };
 
 export const chemicalsList = [
-  { 
-    id: 'hcl', 
-    name: 'Hydrochloric Acid', 
-    formula: 'HCl', 
-    color: '#FFE135',
-    concentration: '0.1 M',
-    volume: 25
+  {
+    id: "hcl",
+    name: "Hydrochloric Acid",
+    formula: "HCl",
+    color: "#FFE135",
+    concentration: "0.1 M",
+    volume: 25,
   },
-  { 
-    id: 'naoh', 
-    name: 'Sodium Hydroxide', 
-    formula: 'NaOH', 
-    color: '#87CEEB',
-    concentration: '0.1 M',
-    volume: 50
+  {
+    id: "naoh",
+    name: "Sodium Hydroxide",
+    formula: "NaOH",
+    color: "#87CEEB",
+    concentration: "0.1 M",
+    volume: 50,
   },
-  { 
-    id: 'phenol', 
-    name: 'Phenolphthalein', 
-    formula: 'C₂₀H₁₄O₄', 
-    color: '#FFB6C1',
-    concentration: 'Indicator',
-    volume: 10
-  }
+  {
+    id: "phenol",
+    name: "Phenolphthalein",
+    formula: "C₂₀H₁₄O₄",
+    color: "#FFB6C1",
+    concentration: "Indicator",
+    volume: 10,
+  },
 ];

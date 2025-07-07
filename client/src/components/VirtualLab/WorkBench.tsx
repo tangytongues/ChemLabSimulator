@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { FlaskConical, Play, Pause, RotateCcw } from 'lucide-react';
-import { AnimatedEquipment } from './AnimatedEquipment';
-import { ExperimentSteps } from './ExperimentSteps';
+import React, { useState, useEffect } from "react";
+import { FlaskConical, Play, Pause, RotateCcw } from "lucide-react";
+import { AnimatedEquipment } from "./AnimatedEquipment";
+import { ExperimentSteps } from "./ExperimentSteps";
 
 interface WorkBenchProps {
   onDrop: (id: string, x: number, y: number) => void;
   children: React.ReactNode;
   selectedChemical: string | null;
   isRunning: boolean;
+  experimentTitle: string;
+  currentGuidedStep?: number;
 }
 
 interface Step {
@@ -15,20 +17,22 @@ interface Step {
   title: string;
   description: string;
   duration: number;
-  status: 'pending' | 'active' | 'completed' | 'warning';
+  status: "pending" | "active" | "completed" | "warning";
   requirements?: string[];
 }
 
-export const WorkBench: React.FC<WorkBenchProps> = ({ 
-  onDrop, 
-  children, 
-  selectedChemical, 
-  isRunning 
+export const WorkBench: React.FC<WorkBenchProps> = ({
+  onDrop,
+  children,
+  selectedChemical,
+  isRunning,
+  experimentTitle,
+  currentGuidedStep = 1,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [temperature, setTemperature] = useState(22);
   const [volume, setVolume] = useState(0);
-  const [solutionColor, setSolutionColor] = useState('#E3F2FD');
+  const [solutionColor, setSolutionColor] = useState("#E3F2FD");
   const [isStirring, setIsStirring] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
   const [bubbling, setBubbling] = useState(false);
@@ -41,65 +45,113 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
       title: "Setup Equipment",
       description: "Arrange burette, conical flask, and magnetic stirrer",
       duration: 2,
-      status: currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : 'pending',
-      requirements: ["Burette with clamp", "250mL conical flask", "Magnetic stirrer"]
+      status:
+        currentStep === 1
+          ? "active"
+          : currentStep > 1
+            ? "completed"
+            : "pending",
+      requirements: [
+        "Burette with clamp",
+        "250mL conical flask",
+        "Magnetic stirrer",
+      ],
     },
     {
       id: 2,
       title: "Prepare Solutions",
       description: "Fill burette with NaOH solution and add HCl to flask",
       duration: 3,
-      status: currentStep === 2 ? 'active' : currentStep > 2 ? 'completed' : 'pending',
-      requirements: ["0.1M NaOH solution", "25mL 0.1M HCl", "Phenolphthalein indicator"]
+      status:
+        currentStep === 2
+          ? "active"
+          : currentStep > 2
+            ? "completed"
+            : "pending",
+      requirements: [
+        "0.1M NaOH solution",
+        "25mL 0.1M HCl",
+        "Phenolphthalein indicator",
+      ],
     },
     {
       id: 3,
       title: "Add Indicator",
       description: "Add 2-3 drops of phenolphthalein to the acid solution",
       duration: 1,
-      status: currentStep === 3 ? 'active' : currentStep > 3 ? 'completed' : 'pending',
-      requirements: ["Phenolphthalein indicator"]
+      status:
+        currentStep === 3
+          ? "active"
+          : currentStep > 3
+            ? "completed"
+            : "pending",
+      requirements: ["Phenolphthalein indicator"],
     },
     {
       id: 4,
       title: "Begin Titration",
       description: "Start adding NaOH dropwise while stirring continuously",
       duration: 8,
-      status: currentStep === 4 ? 'active' : currentStep > 4 ? 'completed' : 'pending',
-      requirements: ["Continuous stirring", "Slow addition of base"]
+      status:
+        currentStep === 4
+          ? "active"
+          : currentStep > 4
+            ? "completed"
+            : "pending",
+      requirements: ["Continuous stirring", "Slow addition of base"],
     },
     {
       id: 5,
       title: "Approach End Point",
       description: "Add base drop by drop as color changes become visible",
       duration: 5,
-      status: currentStep === 5 ? 'active' : currentStep > 5 ? 'completed' : 'pending',
-      requirements: ["Very slow addition", "Careful observation"]
+      status:
+        currentStep === 5
+          ? "active"
+          : currentStep > 5
+            ? "completed"
+            : "pending",
+      requirements: ["Very slow addition", "Careful observation"],
     },
     {
       id: 6,
       title: "Detect End Point",
       description: "Stop when permanent pink color appears",
       duration: 2,
-      status: currentStep === 6 ? 'active' : currentStep > 6 ? 'completed' : 'pending',
-      requirements: ["Permanent color change"]
+      status:
+        currentStep === 6
+          ? "active"
+          : currentStep > 6
+            ? "completed"
+            : "pending",
+      requirements: ["Permanent color change"],
     },
     {
       id: 7,
       title: "Record Results",
       description: "Note the volume of NaOH used and calculate concentration",
       duration: 3,
-      status: currentStep === 7 ? 'active' : currentStep > 7 ? 'completed' : 'pending',
-      requirements: ["Accurate volume reading"]
+      status:
+        currentStep === 7
+          ? "active"
+          : currentStep > 7
+            ? "completed"
+            : "pending",
+      requirements: ["Accurate volume reading"],
     },
     {
       id: 8,
       title: "Repeat Titration",
       description: "Perform 2-3 more titrations for accuracy",
       duration: 15,
-      status: currentStep === 8 ? 'active' : currentStep > 8 ? 'completed' : 'pending',
-      requirements: ["Fresh solutions", "Clean equipment"]
-    }
+      status:
+        currentStep === 8
+          ? "active"
+          : currentStep > 8
+            ? "completed"
+            : "pending",
+      requirements: ["Fresh solutions", "Clean equipment"],
+    },
   ];
 
   // Auto-progress through experiment steps
@@ -107,12 +159,13 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
     if (isRunning && autoProgress) {
       const stepDuration = experimentSteps[currentStep - 1]?.duration || 5;
       const interval = setInterval(() => {
-        setTimer(prev => prev + 1);
-        
+        setTimer((prev) => prev + 1);
+
         // Progress to next step based on duration
-        if (timer >= stepDuration * 60) { // Convert minutes to seconds
+        if (timer >= stepDuration * 60) {
+          // Convert minutes to seconds
           if (currentStep < experimentSteps.length) {
-            setCurrentStep(prev => prev + 1);
+            setCurrentStep((prev) => prev + 1);
             setTimer(0);
           }
         }
@@ -132,17 +185,17 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
         break;
       case 2: // Prepare solutions
         setVolume(0);
-        setSolutionColor('#FFE135'); // HCl color
+        setSolutionColor("#FFE135"); // HCl color
         break;
       case 3: // Add indicator
-        setSolutionColor('#FFCCCB'); // Slight pink tint
+        setSolutionColor("#FFCCCB"); // Slight pink tint
         break;
       case 4: // Begin titration
         setIsStirring(true);
         setIsDropping(true);
         // Gradually increase volume
         const volumeInterval = setInterval(() => {
-          setVolume(prev => {
+          setVolume((prev) => {
             if (prev < 20) return prev + 0.5;
             return prev;
           });
@@ -151,12 +204,12 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
         break;
       case 5: // Approach end point
         setIsDropping(true);
-        setSolutionColor('#FFB6C1'); // Light pink
+        setSolutionColor("#FFB6C1"); // Light pink
         setBubbling(true);
         break;
       case 6: // End point
         setIsDropping(false);
-        setSolutionColor('#FF69B4'); // Bright pink
+        setSolutionColor("#FF69B4"); // Bright pink
         setBubbling(false);
         break;
       case 7: // Record results
@@ -166,7 +219,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
         // Reset for next titration
         setTimeout(() => {
           setVolume(0);
-          setSolutionColor('#FFE135');
+          setSolutionColor("#FFE135");
           setCurrentStep(2);
         }, 3000);
         break;
@@ -187,7 +240,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
     setTimer(0);
     setTemperature(22);
     setVolume(0);
-    setSolutionColor('#E3F2FD');
+    setSolutionColor("#E3F2FD");
     setIsStirring(false);
     setIsDropping(false);
     setBubbling(false);
@@ -197,7 +250,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -206,146 +259,151 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain');
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    onDrop(id, x, y);
+    // Try to get equipment data first, then fallback to text/plain
+    const equipmentId = e.dataTransfer.getData("equipment");
+    const id = equipmentId || e.dataTransfer.getData("text/plain");
+
+    if (id) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      onDrop(id, x, y);
+    }
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 h-full">
-      {/* Experiment Steps - Smaller on larger screens */}
-      <div className="xl:col-span-1">
-        <ExperimentSteps 
-          currentStep={currentStep}
-          steps={experimentSteps}
-          onStepClick={handleStepClick}
-        />
-        
-        {/* Experiment Controls */}
-        <div className="mt-4 bg-white rounded-lg shadow-lg border p-4">
-          <h3 className="font-semibold text-gray-900 mb-3">Experiment Controls</h3>
-          
-          <div className="space-y-3">
-            <button
-              onClick={handleAutoProgress}
-              className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                autoProgress
-                  ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                  : 'bg-green-500 hover:bg-green-600 text-white'
-              }`}
-            >
-              {autoProgress ? <Pause size={20} /> : <Play size={20} />}
-              <span>{autoProgress ? 'Pause' : 'Auto Progress'}</span>
-            </button>
-            
-            <button
-              onClick={handleReset}
-              className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
-            >
-              <RotateCcw size={20} />
-              <span>Reset Experiment</span>
-            </button>
-          </div>
-          
-          {/* Timer */}
-          <div className="mt-4 bg-blue-600 text-white p-3 rounded-lg text-center">
-            <div className="text-sm opacity-90 mb-1">Step Timer</div>
-            <div className="text-xl font-mono font-bold">{formatTime(timer)}</div>
-          </div>
-          
-          {/* Current Step Info */}
-          <div className="mt-4 bg-indigo-50 border border-indigo-200 p-3 rounded-lg">
-            <div className="text-sm font-medium text-indigo-900">
-              Current: Step {currentStep}
-            </div>
-            <div className="text-sm text-indigo-700">
-              {experimentSteps[currentStep - 1]?.title}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Lab Bench - Much Larger */}
-      <div className="xl:col-span-3">
+    <div className="w-full h-full">
+      {/* Main Lab Bench - Full Width and Much Larger */}
+      <div className="w-full h-full">
         <div className="bg-white rounded-lg shadow-lg border h-full">
           <div className="p-4 border-b bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
-            <h2 className="text-xl font-bold flex items-center">
-              <FlaskConical className="mr-2" size={24} />
-              Virtual Lab Bench - Acid-Base Titration
-            </h2>
-            <p className="text-sm opacity-90">
-              Step {currentStep}: {experimentSteps[currentStep - 1]?.title}
-            </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <FlaskConical className="mr-3" size={28} />
+                <div>
+                  <h2 className="text-2xl font-bold">Virtual Chemistry Lab</h2>
+                  <p className="text-sm opacity-90">
+                    Interactive Titration Workspace
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Controls in Header */}
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setIsStirring(!isStirring)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isStirring
+                      ? "bg-white/20 text-white"
+                      : "bg-white/10 text-white/80 hover:bg-white/20"
+                  }`}
+                >
+                  {isStirring ? "Stop Stirring" : "Start Stirring"}
+                </button>
+
+                <button
+                  onClick={() => setIsDropping(!isDropping)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isDropping
+                      ? "bg-white/20 text-white"
+                      : "bg-white/10 text-white/80 hover:bg-white/20"
+                  }`}
+                >
+                  {isDropping ? "Stop Titrant" : "Start Titrant"}
+                </button>
+
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
           </div>
-          
+
           <div
             onDragOver={handleDragOver}
             onDrop={handleDrop}
             className="relative w-full overflow-hidden"
             style={{
-              height: 'calc(100vh - 300px)', // Dynamic height based on viewport
-              minHeight: '800px', // Increased minimum height
+              height: "calc(75vh - 160px)", // Adjusted for top/bottom bars
+              minHeight: "500px",
               backgroundImage: `
-                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px)
               `,
-              backgroundSize: '20px 20px'
+              backgroundSize: "25px 25px",
             }}
           >
-            {/* Lab Bench Surface - Positioned at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-amber-200 to-amber-100 border-t-2 border-amber-300">
-              <div className="absolute inset-0 opacity-30 bg-gradient-to-r from-amber-300 to-amber-200"></div>
-              {/* Lab bench texture */}
-              <div className="absolute inset-0 opacity-20" style={{
-                backgroundImage: `repeating-linear-gradient(
+            {/* Lab Bench Surface - More prominent */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-amber-200 via-amber-150 to-amber-100 border-t-2 border-amber-300">
+              <div className="absolute inset-0 opacity-40 bg-gradient-to-r from-amber-300 to-amber-200"></div>
+              {/* Enhanced lab bench texture */}
+              <div
+                className="absolute inset-0 opacity-25"
+                style={{
+                  backgroundImage: `repeating-linear-gradient(
                   90deg,
                   transparent,
-                  transparent 2px,
-                  rgba(0,0,0,0.1) 2px,
-                  rgba(0,0,0,0.1) 4px
-                )`
-              }}></div>
+                  transparent 3px,
+                  rgba(0,0,0,0.1) 3px,
+                  rgba(0,0,0,0.1) 6px
+                )`,
+                }}
+              ></div>
+              {/* Lab bench edge highlight */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400 opacity-60"></div>
             </div>
 
-            {/* Animated Equipment - Scaled and positioned better */}
-            <div className="absolute inset-0" style={{ transform: 'scale(1.2)', transformOrigin: 'center center' }}>
-              <AnimatedEquipment
-                isStirring={isStirring}
-                isDropping={isDropping}
-                temperature={temperature}
-                solutionColor={solutionColor}
-                volume={volume}
-                bubbling={bubbling}
-              />
-            </div>
-
-            {/* Manual Controls Overlay - Better positioned */}
-            <div className="absolute bottom-8 left-6 space-y-3 z-10">
-              <button
-                onClick={() => setIsStirring(!isStirring)}
-                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors shadow-lg ${
-                  isStirring ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+            {/* Animated Equipment - Only for experiments 2 and 3 */}
+            {(experimentTitle.includes("Acid-Base") ||
+              experimentTitle.includes("Equilibrium")) && (
+              <div
+                className="absolute inset-0"
+                style={{
+                  transform: "scale(1.4)",
+                  transformOrigin: "center bottom",
+                }}
               >
-                {isStirring ? 'Stop Stirring' : 'Start Stirring'}
-              </button>
-              
-              <button
-                onClick={() => setIsDropping(!isDropping)}
-                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors shadow-lg ${
-                  isDropping ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {isDropping ? 'Stop Dropping' : 'Start Dropping'}
-              </button>
-            </div>
+                <AnimatedEquipment
+                  isStirring={isStirring}
+                  isDropping={isDropping}
+                  temperature={temperature}
+                  solutionColor={solutionColor}
+                  volume={volume}
+                  bubbling={bubbling}
+                />
+              </div>
+            )}
 
-            {/* Equipment placement area with better spacing */}
-            <div className="absolute inset-0 p-8">
-              {children}
-            </div>
+            {/* Helpful hints for Aspirin Synthesis */}
+            {experimentTitle.includes("Aspirin") && (
+              <div className="absolute top-6 left-6 bg-blue-100 border-2 border-blue-300 rounded-lg p-4 max-w-sm z-20">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span className="font-semibold text-blue-800 text-sm">
+                    Step {currentGuidedStep}
+                  </span>
+                </div>
+                <div className="text-xs text-blue-700">
+                  {currentGuidedStep === 1 &&
+                    "Drag the Erlenmeyer Flask to the workbench to begin"}
+                  {currentGuidedStep === 2 && "Add Salicylic Acid to the flask"}
+                  {currentGuidedStep === 3 &&
+                    "Add Acetic Anhydride to the flask"}
+                  {currentGuidedStep === 4 && "Add Phosphoric Acid catalyst"}
+                  {currentGuidedStep === 5 &&
+                    "Set up the Water Bath for heating"}
+                  {currentGuidedStep === 6 && "Heat the reaction mixture"}
+                  {currentGuidedStep > 6 &&
+                    "Aspirin synthesis steps completed!"}
+                </div>
+              </div>
+            )}
+
+            {/* Equipment placement area with more generous spacing */}
+            <div className="absolute inset-0 p-12">{children}</div>
           </div>
         </div>
       </div>
