@@ -951,7 +951,10 @@ function VirtualLabApp({
                     position={pos}
                     chemicals={pos.chemicals}
                     onChemicalDrop={handleChemicalDrop}
-                    isHeating={isHeating && pos.id === "water_bath"}
+                    isHeating={
+                      isHeating &&
+                      (pos.id === "water_bath" || pos.id === "erlenmeyer_flask")
+                    }
                     actualTemperature={actualTemperature}
                     targetTemperature={targetTemperature}
                     heatingTime={heatingTime}
