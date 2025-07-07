@@ -316,50 +316,53 @@ export const Equipment: React.FC<EquipmentProps> = ({
       <div className="relative">
         {icon}
 
-        {/* Solution visualization for containers */}
-        {isContainer && chemicals.length > 0 && isOnWorkbench && (
-          <div className="absolute inset-0 flex items-end justify-center">
-            <div
-              className="rounded-b-lg transition-all duration-500 opacity-80"
-              style={{
-                backgroundColor: getMixedColor(),
-                height: `${getSolutionHeight()}%`,
-                width: id === "beaker" ? "70%" : "60%",
-                minHeight: "8px",
-              }}
-            >
-              {/* Enhanced liquid effects */}
-              <div className="relative w-full h-full overflow-hidden rounded-b-lg">
-                {/* Surface shimmer */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-white opacity-40 animate-pulse"></div>
+        {/* Solution visualization for other containers */}
+        {isContainer &&
+          chemicals.length > 0 &&
+          isOnWorkbench &&
+          id !== "erlenmeyer_flask" && (
+            <div className="absolute inset-0 flex items-end justify-center">
+              <div
+                className="rounded-b-lg transition-all duration-500 opacity-80"
+                style={{
+                  backgroundColor: getMixedColor(),
+                  height: `${getSolutionHeight()}%`,
+                  width: id === "beaker" ? "70%" : "60%",
+                  minHeight: "8px",
+                }}
+              >
+                {/* Enhanced liquid effects */}
+                <div className="relative w-full h-full overflow-hidden rounded-b-lg">
+                  {/* Surface shimmer */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-white opacity-40 animate-pulse"></div>
 
-                {/* Bubbling animation for reactions */}
-                {chemicals.length > 1 && (
-                  <div className="absolute inset-0">
-                    {[...Array(4)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="absolute w-1 h-1 bg-white opacity-70 rounded-full animate-bounce"
-                        style={{
-                          left: `${15 + i * 20}%`,
-                          bottom: `${5 + (i % 2) * 15}px`,
-                          animationDelay: `${i * 0.3}s`,
-                          animationDuration: "1.5s",
-                        }}
-                      ></div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Color change animation */}
-                {chemicals.some((c) => c.id === "phenol") &&
-                  chemicals.some((c) => c.id === "naoh") && (
-                    <div className="absolute inset-0 bg-pink-300 opacity-50 animate-pulse rounded-b-lg"></div>
+                  {/* Bubbling animation for reactions */}
+                  {chemicals.length > 1 && (
+                    <div className="absolute inset-0">
+                      {[...Array(4)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute w-1 h-1 bg-white opacity-70 rounded-full animate-bounce"
+                          style={{
+                            left: `${15 + i * 20}%`,
+                            bottom: `${5 + (i % 2) * 15}px`,
+                            animationDelay: `${i * 0.3}s`,
+                            animationDuration: "1.5s",
+                          }}
+                        ></div>
+                      ))}
+                    </div>
                   )}
+
+                  {/* Color change animation */}
+                  {chemicals.some((c) => c.id === "phenol") &&
+                    chemicals.some((c) => c.id === "naoh") && (
+                      <div className="absolute inset-0 bg-pink-300 opacity-50 animate-pulse rounded-b-lg"></div>
+                    )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
     );
   };
