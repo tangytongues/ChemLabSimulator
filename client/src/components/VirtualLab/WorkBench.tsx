@@ -8,6 +8,7 @@ interface WorkBenchProps {
   children: React.ReactNode;
   selectedChemical: string | null;
   isRunning: boolean;
+  experimentTitle: string;
 }
 
 interface Step {
