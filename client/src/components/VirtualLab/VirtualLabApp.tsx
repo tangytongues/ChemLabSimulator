@@ -620,6 +620,12 @@ function VirtualLabApp({
           }
           return newTemp;
         });
+
+        // Update measurements temperature too
+        setMeasurements((prev) => ({
+          ...prev,
+          temperature: Math.min(85, prev.temperature + 2),
+        }));
       }, 1000);
 
       // Track heating time
