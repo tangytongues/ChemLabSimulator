@@ -9,6 +9,7 @@ interface WorkBenchProps {
   selectedChemical: string | null;
   isRunning: boolean;
   experimentTitle: string;
+  currentGuidedStep?: number;
 }
 
 interface Step {
