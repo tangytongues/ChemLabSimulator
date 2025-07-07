@@ -77,7 +77,15 @@ export const Equipment: React.FC<EquipmentProps> = ({
   };
 
   const isOnWorkbench = position && (position.x !== 0 || position.y !== 0);
-  const isContainer = ["beaker", "flask", "burette"].includes(id);
+  const isContainer = [
+    "beaker",
+    "flask",
+    "burette",
+    "erlenmeyer_flask",
+    "conical_flask",
+    "test_tubes",
+    "beakers",
+  ].includes(id);
 
   // Calculate mixed color from all chemicals
   const getMixedColor = () => {
