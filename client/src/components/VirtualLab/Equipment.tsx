@@ -193,6 +193,125 @@ export const Equipment: React.FC<EquipmentProps> = ({
       );
     }
 
+    if (id === "erlenmeyer_flask" && isOnWorkbench) {
+      return (
+        <div className="relative">
+          {/* Enhanced Erlenmeyer Flask Illustration */}
+          <svg
+            width="80"
+            height="100"
+            viewBox="0 0 80 100"
+            className="drop-shadow-lg"
+          >
+            {/* Flask body */}
+            <path
+              d="M25 20 L25 35 L10 70 L70 70 L55 35 L55 20 Z"
+              fill="rgba(59, 130, 246, 0.1)"
+              stroke="#2563eb"
+              strokeWidth="2"
+            />
+            {/* Flask neck */}
+            <rect
+              x="30"
+              y="10"
+              width="20"
+              height="15"
+              fill="rgba(59, 130, 246, 0.1)"
+              stroke="#2563eb"
+              strokeWidth="2"
+              rx="2"
+            />
+            {/* Flask opening */}
+            <ellipse
+              cx="40"
+              cy="10"
+              rx="10"
+              ry="2"
+              fill="none"
+              stroke="#2563eb"
+              strokeWidth="2"
+            />
+
+            {/* Solution in flask */}
+            {chemicals.length > 0 && (
+              <path
+                d={`M${15 + chemicals.length * 2} ${70 - getSolutionHeight() * 0.4} L${65 - chemicals.length * 2} ${70 - getSolutionHeight() * 0.4} L70 70 L10 70 Z`}
+                fill={getMixedColor()}
+                opacity="0.8"
+                className="transition-all duration-500"
+              />
+            )}
+
+            {/* Volume markings */}
+            <g stroke="#6b7280" strokeWidth="1" fill="#6b7280">
+              <line x1="72" y1="50" x2="75" y2="50" />
+              <text x="78" y="53" fontSize="6">
+                100mL
+              </text>
+              <line x1="72" y1="60" x2="75" y2="60" />
+              <text x="78" y="63" fontSize="6">
+                50mL
+              </text>
+            </g>
+
+            {/* Bubbling animation for reactions */}
+            {chemicals.length > 1 && (
+              <g>
+                {[...Array(6)].map((_, i) => (
+                  <circle
+                    key={i}
+                    cx={25 + i * 8}
+                    cy={65 - (i % 2) * 5}
+                    r="1.5"
+                    fill="rgba(255, 255, 255, 0.7)"
+                    className="animate-bounce"
+                    style={{
+                      animationDelay: `${i * 0.3}s`,
+                      animationDuration: "1.5s",
+                    }}
+                  />
+                ))}
+              </g>
+            )}
+
+            {/* Flask label */}
+            <text
+              x="40"
+              y="85"
+              textAnchor="middle"
+              fontSize="8"
+              fill="#374151"
+              fontWeight="bold"
+            >
+              125mL Erlenmeyer
+            </text>
+          </svg>
+
+          {/* Chemical composition display */}
+          {chemicals.length > 0 && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded px-2 py-1 text-xs shadow-lg">
+              <div className="text-gray-800 font-medium text-center">
+                {chemicals.map((c) => c.name.split(" ")[0]).join(" + ")}
+              </div>
+              <div className="text-gray-600 text-center">
+                {chemicals.reduce((sum, c) => sum + c.amount, 0).toFixed(1)} mL
+                total
+              </div>
+            </div>
+          )}
+
+          {/* Drop success animation */}
+          {isDropping && (
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+                ✓ Added!
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div className="relative">
         {icon}
