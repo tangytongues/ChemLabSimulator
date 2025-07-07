@@ -859,6 +859,7 @@ function VirtualLabApp({
               selectedChemical={selectedChemical}
               isRunning={isRunning}
               experimentTitle={experimentTitle}
+              currentGuidedStep={currentGuidedStep}
             >
               {equipmentPositions.map((pos) => {
                 const equipment = experimentEquipment.find(
