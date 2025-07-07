@@ -41,6 +41,12 @@ export const Equipment: React.FC<EquipmentProps> = ({
   position,
   chemicals = [],
   onChemicalDrop,
+  isHeating = false,
+  actualTemperature = 25,
+  targetTemperature = 25,
+  heatingTime = 0,
+  onStartHeating,
+  onStopHeating,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
