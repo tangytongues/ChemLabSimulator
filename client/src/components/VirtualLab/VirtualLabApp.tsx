@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from "react";
-import { Equipment, equipmentList } from "./Equipment";
+import React, { useState, useCallback, useMemo } from "react";
+import { Equipment } from "./Equipment";
 import { WorkBench } from "./WorkBench";
-import { Chemical, chemicalsList } from "./Chemical";
+import { Chemical } from "./Chemical";
 import { Controls } from "./Controls";
 import { ResultsPanel } from "./ResultsPanel";
 import { ExperimentSteps } from "./ExperimentSteps";
@@ -12,6 +12,11 @@ import {
   ChevronLeft,
   ChevronRight,
   List,
+  Beaker,
+  TestTube,
+  Thermometer,
+  Droplets,
+  Erlenmeyer,
 } from "lucide-react";
 import type { ExperimentStep } from "@shared/schema";
 
