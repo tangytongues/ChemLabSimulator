@@ -362,102 +362,249 @@ export const Equipment: React.FC<EquipmentProps> = ({
     }
 
     if (id === "erlenmeyer_flask" && isOnWorkbench) {
+      const isBeingHeated = isHeating && actualTemperature > 30;
+
       return (
         <div className="relative">
           {/* Enhanced Erlenmeyer Flask Illustration */}
           <svg
-            width="80"
-            height="100"
-            viewBox="0 0 80 100"
+            width="100"
+            height="120"
+            viewBox="0 0 100 120"
             className="drop-shadow-lg"
           >
+            {/* Flask body with glass shine effect */}
+            <defs>
+              <linearGradient
+                id="glassGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
+                <stop offset="100%" stopColor="rgba(59, 130, 246, 0.1)" />
+              </linearGradient>
+              <linearGradient
+                id="heatingGlow"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop offset="0%" stopColor="rgba(249, 115, 22, 0.2)" />
+                <stop offset="100%" stopColor="rgba(239, 68, 68, 0.1)" />
+              </linearGradient>
+            </defs>
+
             {/* Flask body */}
             <path
-              d="M25 20 L25 35 L10 70 L70 70 L55 35 L55 20 Z"
-              fill="rgba(59, 130, 246, 0.1)"
-              stroke="#2563eb"
-              strokeWidth="2"
-            />
-            {/* Flask neck */}
-            <rect
-              x="30"
-              y="10"
-              width="20"
-              height="15"
-              fill="rgba(59, 130, 246, 0.1)"
-              stroke="#2563eb"
-              strokeWidth="2"
-              rx="2"
-            />
-            {/* Flask opening */}
-            <ellipse
-              cx="40"
-              cy="10"
-              rx="10"
-              ry="2"
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="2"
+              d="M30 25 L30 40 L15 85 L85 85 L70 40 L70 25 Z"
+              fill={isBeingHeated ? "url(#heatingGlow)" : "url(#glassGradient)"}
+              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
+              strokeWidth="2.5"
+              className={isBeingHeated ? "animate-pulse" : ""}
             />
 
-            {/* Solution in flask */}
+            {/* Flask neck */}
+            <rect
+              x="40"
+              y="12"
+              width="20"
+              height="18"
+              fill={
+                isBeingHeated
+                  ? "rgba(249, 115, 22, 0.1)"
+                  : "rgba(59, 130, 246, 0.1)"
+              }
+              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
+              strokeWidth="2.5"
+              rx="3"
+            />
+
+            {/* Flask opening */}
+            <ellipse
+              cx="50"
+              cy="12"
+              rx="12"
+              ry="3"
+              fill="none"
+              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
+              strokeWidth="2.5"
+            />
+
+            {/* Solution in flask with enhanced visual */}
             {chemicals.length > 0 && (
-              <path
-                d={`M${15 + chemicals.length * 2} ${70 - getSolutionHeight() * 0.4} L${65 - chemicals.length * 2} ${70 - getSolutionHeight() * 0.4} L70 70 L10 70 Z`}
-                fill={getMixedColor()}
-                opacity="0.8"
-                className="transition-all duration-500"
-              />
+              <g>
+                {/* Main solution */}
+                <path
+                  d={`M${20 + chemicals.length * 1.5} ${85 - getSolutionHeight() * 0.5} L${80 - chemicals.length * 1.5} ${85 - getSolutionHeight() * 0.5} L85 85 L15 85 Z`}
+                  fill={getMixedColor()}
+                  opacity="0.9"
+                  className="transition-all duration-500"
+                />
+
+                {/* Solution surface with reflection */}
+                <ellipse
+                  cx="50"
+                  cy={85 - getSolutionHeight() * 0.5}
+                  rx={32 - chemicals.length * 1.5}
+                  ry="2"
+                  fill="rgba(255, 255, 255, 0.4)"
+                  className="animate-pulse"
+                />
+
+                {/* Heat distortion effect when heating */}
+                {isBeingHeated && (
+                  <g>
+                    <path
+                      d="M25 75 Q30 70 35 75 T45 75"
+                      stroke="rgba(255, 255, 255, 0.6)"
+                      strokeWidth="1"
+                      fill="none"
+                      className="animate-bounce"
+                    />
+                    <path
+                      d="M55 75 Q60 70 65 75 T75 75"
+                      stroke="rgba(255, 255, 255, 0.6)"
+                      strokeWidth="1"
+                      fill="none"
+                      className="animate-bounce"
+                      style={{ animationDelay: "0.3s" }}
+                    />
+                  </g>
+                )}
+              </g>
             )}
 
             {/* Volume markings */}
             <g stroke="#6b7280" strokeWidth="1" fill="#6b7280">
-              <line x1="72" y1="50" x2="75" y2="50" />
-              <text x="78" y="53" fontSize="6">
+              <line x1="87" y1="55" x2="92" y2="55" />
+              <text x="94" y="58" fontSize="7" fontWeight="bold">
+                125mL
+              </text>
+              <line x1="87" y1="65" x2="90" y2="65" />
+              <text x="94" y="68" fontSize="6">
                 100mL
               </text>
-              <line x1="72" y1="60" x2="75" y2="60" />
-              <text x="78" y="63" fontSize="6">
+              <line x1="87" y1="75" x2="90" y2="75" />
+              <text x="94" y="78" fontSize="6">
                 50mL
               </text>
             </g>
 
-            {/* Bubbling animation for reactions */}
-            {chemicals.length > 1 && (
+            {/* Enhanced bubbling animation for reactions */}
+            {(chemicals.length > 1 || isBeingHeated) && (
               <g>
-                {[...Array(6)].map((_, i) => (
+                {[...Array(isBeingHeated ? 12 : 6)].map((_, i) => (
                   <circle
                     key={i}
-                    cx={25 + i * 8}
-                    cy={65 - (i % 2) * 5}
-                    r="1.5"
-                    fill="rgba(255, 255, 255, 0.7)"
+                    cx={25 + (i % 6) * 9}
+                    cy={80 - (i % 3) * 8 - Math.floor(i / 6) * 5}
+                    r={isBeingHeated ? "2" : "1.5"}
+                    fill="rgba(255, 255, 255, 0.8)"
                     className="animate-bounce"
                     style={{
-                      animationDelay: `${i * 0.3}s`,
-                      animationDuration: "1.5s",
+                      animationDelay: `${i * 0.2}s`,
+                      animationDuration: isBeingHeated ? "1s" : "1.5s",
                     }}
                   />
                 ))}
+
+                {/* Steam/vapor when heating */}
+                {isBeingHeated && (
+                  <g>
+                    <path
+                      d="M45 12 Q50 5 55 12"
+                      stroke="rgba(255, 255, 255, 0.7)"
+                      strokeWidth="2"
+                      fill="none"
+                      className="animate-pulse"
+                    />
+                    <path
+                      d="M42 10 Q47 3 52 10"
+                      stroke="rgba(255, 255, 255, 0.5)"
+                      strokeWidth="1.5"
+                      fill="none"
+                      className="animate-pulse"
+                      style={{ animationDelay: "0.5s" }}
+                    />
+                    <path
+                      d="M48 8 Q53 1 58 8"
+                      stroke="rgba(255, 255, 255, 0.5)"
+                      strokeWidth="1.5"
+                      fill="none"
+                      className="animate-pulse"
+                      style={{ animationDelay: "1s" }}
+                    />
+                  </g>
+                )}
+              </g>
+            )}
+
+            {/* Glass shine highlight */}
+            <path
+              d="M35 30 L38 32 L38 50 L35 52"
+              stroke="rgba(255, 255, 255, 0.6)"
+              strokeWidth="2"
+              fill="none"
+            />
+
+            {/* Temperature indicator when heating */}
+            {isBeingHeated && (
+              <g>
+                <rect
+                  x="5"
+                  y="45"
+                  width="8"
+                  height="25"
+                  rx="4"
+                  fill="#374151"
+                />
+                <rect
+                  x="6"
+                  y="46"
+                  width="6"
+                  height="23"
+                  rx="3"
+                  fill="#000000"
+                />
+                <rect
+                  x="7"
+                  y={69 - (actualTemperature - 25) * 0.4}
+                  width="4"
+                  height={(actualTemperature - 25) * 0.4}
+                  fill="#ef4444"
+                  className="transition-all duration-500"
+                />
+                <text
+                  x="2"
+                  y="42"
+                  fontSize="6"
+                  fill="#374151"
+                  fontWeight="bold"
+                >
+                  {Math.round(actualTemperature)}°C
+                </text>
               </g>
             )}
 
             {/* Flask label */}
             <text
-              x="40"
-              y="85"
+              x="50"
+              y="105"
               textAnchor="middle"
-              fontSize="8"
+              fontSize="9"
               fill="#374151"
               fontWeight="bold"
             >
-              125mL Erlenmeyer
+              125mL Erlenmeyer Flask
             </text>
           </svg>
 
-          {/* Chemical composition display */}
+          {/* Enhanced chemical composition display */}
           {chemicals.length > 0 && (
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white border border-gray-300 rounded px-2 py-1 text-xs shadow-lg">
+            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white border-2 border-gray-300 rounded-lg px-3 py-2 text-xs shadow-lg">
               <div className="text-gray-800 font-medium text-center">
                 {chemicals.map((c) => c.name.split(" ")[0]).join(" + ")}
               </div>
@@ -465,6 +612,16 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 {chemicals.reduce((sum, c) => sum + c.amount, 0).toFixed(1)} mL
                 total
               </div>
+              {isBeingHeated && (
+                <div className="text-orange-600 text-center font-medium">
+                  🔥 Heating: {Math.round(actualTemperature)}°C
+                </div>
+              )}
+              {/* Color indicator */}
+              <div
+                className="w-full h-2 rounded-full mt-1"
+                style={{ backgroundColor: getMixedColor() }}
+              ></div>
             </div>
           )}
 
@@ -475,6 +632,11 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 ✓ Added!
               </div>
             </div>
+          )}
+
+          {/* Heating glow effect */}
+          {isBeingHeated && (
+            <div className="absolute inset-0 rounded-full bg-orange-400 opacity-20 animate-pulse blur-sm"></div>
           )}
         </div>
       );
