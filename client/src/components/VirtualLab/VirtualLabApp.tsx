@@ -800,9 +800,26 @@ function VirtualLabApp({
               {experimentTitle} - Equipment
             </h4>
             <div className="flex items-center space-x-2">
-              <div className="text-xs text-gray-600 mr-3">
-                Step {currentStep} of {experimentSteps.length}
-              </div>
+              {experimentTitle.includes("Aspirin") ? (
+                <div className="text-xs text-gray-600 mr-3 flex items-center space-x-2">
+                  <span>
+                    Progress: {currentGuidedStep - 1}/
+                    {aspirinGuidedSteps.length}
+                  </span>
+                  <div className="w-20 bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${((currentGuidedStep - 1) / aspirinGuidedSteps.length) * 100}%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-xs text-gray-600 mr-3">
+                  Step {currentStep} of {experimentSteps.length}
+                </div>
+              )}
               <Controls
                 isRunning={isRunning}
                 onStart={handleStartExperiment}
