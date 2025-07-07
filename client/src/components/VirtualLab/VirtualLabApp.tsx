@@ -437,6 +437,14 @@ function VirtualLabApp({
             setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
             setTimeout(() => setToastMessage(null), 3000);
           }
+
+          // Auto-start heating when water bath is placed for heating step
+          if (id === "water_bath" && currentGuidedStep === 5) {
+            setTimeout(() => {
+              setToastMessage("💡 Click on the water bath to start heating!");
+              setTimeout(() => setToastMessage(null), 4000);
+            }, 1000);
+          }
         }
 
         return [...prev, { id, x, y, chemicals: [] }];
