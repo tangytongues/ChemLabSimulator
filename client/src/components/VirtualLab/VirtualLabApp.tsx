@@ -640,7 +640,7 @@ function VirtualLabApp({
             Chemical Reagents
           </h4>
           <div className="flex items-center space-x-3 overflow-x-auto pb-2">
-            {chemicalsList.map((chemical) => (
+            {experimentChemicals.map((chemical) => (
               <div key={chemical.id} className="flex-shrink-0">
                 <Chemical
                   id={chemical.id}
