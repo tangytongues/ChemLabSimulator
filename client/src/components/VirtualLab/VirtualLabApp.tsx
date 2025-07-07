@@ -412,8 +412,12 @@ function VirtualLabApp({
     {
       id: 6,
       title: "Heat Reaction",
-      instruction: "Place the flask in the water bath and heat for 15 minutes",
+      instruction:
+        "Place the flask in the water bath and heat for 15 minutes at 85°C",
       completed: false,
+      requiresHeating: true,
+      targetTemp: 85,
+      duration: 15,
     },
   ];
 
