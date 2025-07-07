@@ -314,7 +314,7 @@ function VirtualLabApp({
     equipmentId: string,
     amount: number,
   ) => {
-    const chemical = chemicalsList.find((c) => c.id === chemicalId);
+    const chemical = experimentChemicals.find((c) => c.id === chemicalId);
     if (!chemical) return;
 
     setEquipmentPositions((prev) =>
