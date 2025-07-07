@@ -592,11 +592,64 @@ function VirtualLabApp({
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-4">
-              <ExperimentSteps
-                currentStep={currentStep}
-                steps={experimentSteps}
-                onStepClick={handleStepClick}
-              />
+              {/* Guided Instructions for Aspirin Synthesis */}
+              {experimentTitle.includes("Aspirin") ? (
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-lg">
+                    <h3 className="font-bold text-sm">Step-by-Step Guide</h3>
+                    <p className="text-xs opacity-90">
+                      Follow instructions to synthesize aspirin
+                    </p>
+                  </div>
+
+                  {aspirinGuidedSteps.map((step, index) => (
+                    <div
+                      key={step.id}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        currentGuidedStep === step.id
+                          ? "border-blue-500 bg-blue-50 shadow-md"
+                          : currentGuidedStep > step.id
+                            ? "border-green-500 bg-green-50"
+                            : "border-gray-200 bg-gray-50 opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                            currentGuidedStep === step.id
+                              ? "bg-blue-500 text-white"
+                              : currentGuidedStep > step.id
+                                ? "bg-green-500 text-white"
+                                : "bg-gray-300 text-gray-600"
+                          }`}
+                        >
+                          {currentGuidedStep > step.id ? "✓" : step.id}
+                        </div>
+                        <h4 className="font-semibold text-sm text-gray-900">
+                          {step.title}
+                        </h4>
+                      </div>
+                      <p className="text-xs text-gray-700 ml-8">
+                        {step.instruction}
+                      </p>
+
+                      {currentGuidedStep === step.id && (
+                        <div className="mt-2 ml-8 p-2 bg-yellow-100 border border-yellow-300 rounded text-xs">
+                          <span className="font-medium text-yellow-800">
+                            👆 Current step
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <ExperimentSteps
+                  currentStep={currentStep}
+                  steps={experimentSteps}
+                  onStepClick={handleStepClick}
+                />
+              )}
 
               {/* Concentration Measurement Panel - For Experiments 2 & 3 */}
               {(experimentTitle.includes("Acid-Base") ||
