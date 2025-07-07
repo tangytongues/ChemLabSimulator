@@ -662,6 +662,10 @@ function VirtualLabApp({
     setTargetTemperature(25);
     setActualTemperature(25);
     setHeatingTime(0);
+    setMeasurements((prev) => ({
+      ...prev,
+      temperature: 25,
+    }));
     setToastMessage("🔥 Heating stopped");
     setTimeout(() => setToastMessage(null), 2000);
   };
