@@ -95,6 +95,7 @@ function VirtualLabApp({
     moles: 0,
     temperature: 25,
   });
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Use dynamic experiment steps from allSteps prop
   const experimentSteps = allSteps.map((stepData, index) => ({
