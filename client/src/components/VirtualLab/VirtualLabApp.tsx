@@ -332,6 +332,12 @@ function VirtualLabApp({
             },
           ];
 
+          // Show success toast
+          setToastMessage(
+            `Added ${amount}mL of ${chemical.name} to ${equipmentId}`,
+          );
+          setTimeout(() => setToastMessage(null), 3000);
+
           // Calculate reaction if chemicals are mixed
           if (newChemicals.length >= 2) {
             const totalVolume = newChemicals.reduce(
