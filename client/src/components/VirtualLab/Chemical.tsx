@@ -31,7 +31,7 @@ export const Chemical: React.FC<ChemicalProps> = ({
         formula,
         color,
         concentration,
-        volume: volume || 25,
+        volume: dragAmount,
       }),
     );
     e.dataTransfer.effectAllowed = "copy";
