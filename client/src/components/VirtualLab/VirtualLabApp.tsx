@@ -223,19 +223,120 @@ function VirtualLabApp({
         {
           id: "erlenmeyer_flask",
           name: "125mL Erlenmeyer Flask",
-          icon: <FlaskConical size={36} />,
+          icon: (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              className="text-blue-600"
+            >
+              <path
+                d="M12 6h12v8l4 12H8l4-12V6z"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="rgba(59, 130, 246, 0.1)"
+              />
+              <path d="M10 6h16" stroke="currentColor" strokeWidth="2" />
+              <circle cx="18" cy="20" r="2" fill="rgba(59, 130, 246, 0.3)" />
+            </svg>
+          ),
         },
         {
           id: "thermometer",
           name: "Thermometer",
-          icon: <Thermometer size={36} />,
+          icon: (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              className="text-red-600"
+            >
+              <rect
+                x="16"
+                y="4"
+                width="4"
+                height="20"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="rgba(239, 68, 68, 0.1)"
+              />
+              <circle cx="18" cy="28" r="4" fill="currentColor" />
+              <path d="M18 24v-16" stroke="currentColor" strokeWidth="1" />
+            </svg>
+          ),
         },
         {
           id: "graduated_cylinder",
           name: "Graduated Cylinder",
-          icon: <TestTube size={36} />,
+          icon: (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              className="text-green-600"
+            >
+              <rect
+                x="12"
+                y="6"
+                width="12"
+                height="24"
+                rx="1"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="rgba(34, 197, 94, 0.1)"
+              />
+              <path
+                d="M14 12h8M14 16h8M14 20h8M14 24h8"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
+              <rect
+                x="10"
+                y="4"
+                width="16"
+                height="4"
+                rx="1"
+                stroke="currentColor"
+                strokeWidth="1"
+              />
+            </svg>
+          ),
         },
-        { id: "water_bath", name: "Water Bath", icon: <Beaker size={36} /> },
+        {
+          id: "water_bath",
+          name: "Water Bath",
+          icon: (
+            <svg
+              width="36"
+              height="36"
+              viewBox="0 0 36 36"
+              fill="none"
+              className="text-orange-600"
+            >
+              <rect
+                x="4"
+                y="12"
+                width="28"
+                height="16"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="rgba(249, 115, 22, 0.1)"
+              />
+              <path
+                d="M8 20c2-2 4-2 6 0s4 2 6 0s4-2 6 0s4 2 6 0"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
+              <circle cx="18" cy="8" r="2" fill="rgba(249, 115, 22, 0.5)" />
+              <path d="M16 6l4 4" stroke="currentColor" strokeWidth="1" />
+            </svg>
+          ),
+        },
       ];
     } else if (experimentTitle.includes("Acid-Base")) {
       return [
