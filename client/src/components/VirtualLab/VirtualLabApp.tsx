@@ -420,10 +420,21 @@ function VirtualLabApp({
         if (existing) {
           return prev.map((pos) => (pos.id === id ? { ...pos, x, y } : pos));
         }
+
+        // Check if this completes a guided step for Aspirin Synthesis
+        if (experimentTitle.includes("Aspirin")) {
+          const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+          if (currentStep?.requiredEquipment === id) {
+            setCurrentGuidedStep((prev) => prev + 1);
+            setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
+            setTimeout(() => setToastMessage(null), 3000);
+          }
+        }
+
         return [...prev, { id, x, y, chemicals: [] }];
       });
     },
-    [],
+    [experimentTitle, currentGuidedStep, aspirinGuidedSteps],
   );
 
   const calculateChemicalProperties = (
