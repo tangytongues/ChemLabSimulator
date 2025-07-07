@@ -25,6 +25,12 @@ interface EquipmentProps {
     equipmentId: string,
     amount: number,
   ) => void;
+  isHeating?: boolean;
+  actualTemperature?: number;
+  targetTemperature?: number;
+  heatingTime?: number;
+  onStartHeating?: () => void;
+  onStopHeating?: () => void;
 }
 
 export const Equipment: React.FC<EquipmentProps> = ({
