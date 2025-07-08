@@ -16,7 +16,6 @@ import {
   TestTube,
   Thermometer,
   Droplets,
-  Erlenmeyer,
   Trophy,
   CheckCircle,
 } from "lucide-react";
