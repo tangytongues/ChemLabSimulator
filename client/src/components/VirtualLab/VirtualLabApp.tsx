@@ -474,16 +474,20 @@ function VirtualLabApp({
     checkExperimentCompletion();
   }, [checkExperimentCompletion]);
 
-  // Update progress when step changes
+  // Update progress when step changes (debounced to prevent excessive API calls)
   useEffect(() => {
     if (stepNumber > 1) {
-      const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
-      updateProgress.mutate({
-        experimentId,
-        currentStep: stepNumber,
-        completed: stepNumber >= totalSteps,
-        progressPercentage,
-      });
+      const timeoutId = setTimeout(() => {
+        const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: stepNumber,
+          completed: stepNumber >= totalSteps,
+          progressPercentage,
+        });
+      }, 1000); // Debounce for 1 second
+
+      return () => clearTimeout(timeoutId);
     }
   }, [stepNumber, totalSteps, experimentId]);
 
