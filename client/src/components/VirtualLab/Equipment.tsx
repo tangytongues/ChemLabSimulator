@@ -859,12 +859,12 @@ export const Equipment: React.FC<EquipmentProps> = ({
         onDrop={isContainer ? handleChemicalDrop : undefined}
         onDoubleClick={handleDoubleClick}
         onContextMenu={handleRightClick}
-        className={`flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-grab active:cursor-grabbing border-2 relative ${
+        className={`${
           isOnWorkbench
-            ? "border-blue-400 bg-blue-50"
-            : "border-gray-200 hover:border-blue-400"
-        } ${isContainer && isDragOver ? "border-green-500 bg-green-50 scale-105" : ""} ${
-          isDropping ? "animate-pulse" : ""
+            ? "cursor-grab active:cursor-grabbing relative"
+            : "flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-grab active:cursor-grabbing border-2 border-gray-200 hover:border-blue-400 relative"
+        } ${isContainer && isDragOver && isOnWorkbench ? "scale-110" : ""} ${
+          isDropping && isOnWorkbench ? "animate-pulse" : ""
         }`}
         style={{
           position: isOnWorkbench ? "absolute" : "relative",
