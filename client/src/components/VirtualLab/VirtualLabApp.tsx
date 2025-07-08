@@ -805,6 +805,19 @@ function VirtualLabApp({
     setTimeout(() => setToastMessage(null), 2000);
   };
 
+  const handleFastForward = () => {
+    if (isHeating && actualTemperature >= targetTemperature) {
+      const newMultiplier = speedMultiplier === 1 ? 60 : 1; // Toggle between 1x and 60x speed
+      setSpeedMultiplier(newMultiplier);
+      setToastMessage(
+        newMultiplier === 60
+          ? "⚡ Fast forward activated! (60x speed)"
+          : "🔥 Normal speed restored",
+      );
+      setTimeout(() => setToastMessage(null), 3000);
+    }
+  };
+
   const handleClearResults = () => {
     setResults([]);
   };
