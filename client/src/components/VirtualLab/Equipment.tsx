@@ -52,6 +52,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("equipment", id);
