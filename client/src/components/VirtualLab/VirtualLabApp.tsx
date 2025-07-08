@@ -595,11 +595,53 @@ function VirtualLabApp({
     [experimentTitle, currentGuidedStep, aspirinGuidedSteps],
   );
 
-  const handleEquipmentRemove = useCallback((id: string) => {
-    setEquipmentPositions((prev) => prev.filter((pos) => pos.id !== id));
-    setToastMessage(`${id} removed from workbench`);
-    setTimeout(() => setToastMessage(null), 2000);
-  }, []);
+  const handleEquipmentRemove = useCallback(
+    (id: string) => {
+      setEquipmentPositions((prev) => prev.filter((pos) => pos.id !== id));
+
+      // Reset step progress when key equipment is removed for Aspirin experiment
+      if (
+        experimentTitle.includes("Aspirin") &&
+        aspirinGuidedSteps &&
+        aspirinGuidedSteps.length > 0
+      ) {
+        try {
+          // Find which step this equipment belongs to
+          const stepWithEquipment = aspirinGuidedSteps.find(
+            (step) => step.requiredEquipment === id,
+          );
+
+          if (stepWithEquipment && currentGuidedStep > stepWithEquipment.id) {
+            // Reset to the step where this equipment was required
+            setCurrentGuidedStep(stepWithEquipment.id);
+            setToastMessage(
+              `📝 Progress reset to Step ${stepWithEquipment.id} because ${id} was removed`,
+            );
+            setTimeout(() => setToastMessage(null), 4000);
+
+            // Also reset heating if water bath is removed
+            if (id === "water_bath") {
+              setIsHeating(false);
+              setHeatingTime(0);
+              setTargetTemperature(25);
+              setActualTemperature(25);
+            }
+          } else {
+            setToastMessage(`${id} removed from workbench`);
+            setTimeout(() => setToastMessage(null), 2000);
+          }
+        } catch (error) {
+          console.warn("Error resetting step progress:", error);
+          setToastMessage(`${id} removed from workbench`);
+          setTimeout(() => setToastMessage(null), 2000);
+        }
+      } else {
+        setToastMessage(`${id} removed from workbench`);
+        setTimeout(() => setToastMessage(null), 2000);
+      }
+    },
+    [experimentTitle, aspirinGuidedSteps, currentGuidedStep],
+  );
 
   const calculateChemicalProperties = (
     chemical: any,
