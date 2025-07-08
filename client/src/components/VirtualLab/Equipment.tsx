@@ -283,7 +283,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 style={{
                   backgroundColor: getMixedColor(),
                   width: "75%",
-                  height: `${Math.min(120, getSolutionHeight() * 1.0)}px`,
+                  height: `${Math.min(160, getSolutionHeight() * 1.2)}px`,
                   opacity: 0.85,
                   borderRadius: "0 0 4px 4px",
                 }}
