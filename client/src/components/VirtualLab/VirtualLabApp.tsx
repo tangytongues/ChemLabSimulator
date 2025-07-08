@@ -558,6 +558,11 @@ function VirtualLabApp({
 
         // Check if this completes a guided step for Aspirin Synthesis
         if (experimentTitle.includes("Aspirin")) {
+          // Validate step sequence before allowing the action
+          if (!validateStepSequence("equipment", id)) {
+            return prev; // Prevent the equipment from being placed
+          }
+
           const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
           if (currentStep?.requiredEquipment === id) {
             setCurrentGuidedStep((prev) => prev + 1);
