@@ -215,8 +215,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 className="absolute bottom-2 left-1/2 transform -translate-x-1/2 rounded-b-full transition-all duration-700 ease-out"
                 style={{
                   backgroundColor: getMixedColor(),
-                  width: "60%",
-                  height: `${Math.min(40, getSolutionHeight() * 0.4)}px`,
+                  width: "65%",
+                  height: `${Math.min(60, getSolutionHeight() * 0.6)}px`,
                   opacity: 0.8,
                   boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.1)",
                 }}
