@@ -953,13 +953,13 @@ export const Equipment: React.FC<EquipmentProps> = ({
             : "Drag to workbench"
         }
       >
-        {/* Subtle drop zone indicator - only show on hover when dragging */}
-        {isContainer && isOnWorkbench && isDragOver && (
+        {/* Subtle drop zone indicator - only show during chemical drags, not equipment drags */}
+        {isContainer && isOnWorkbench && isDragOver && !isDragging && (
           <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full opacity-70 animate-pulse"></div>
         )}
 
-        {/* Subtle drag over effect */}
-        {isDragOver && isOnWorkbench && (
+        {/* Subtle drag over effect - only for chemical drops */}
+        {isDragOver && isOnWorkbench && !isDragging && (
           <div className="absolute inset-0 bg-green-200 opacity-20 rounded-lg animate-pulse"></div>
         )}
 
