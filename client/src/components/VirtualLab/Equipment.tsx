@@ -340,12 +340,22 @@ export const Equipment: React.FC<EquipmentProps> = ({
                   {/* Liquid movement animation */}
                   <div className="absolute inset-0">
                     <div
-                      className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.3s" }}
+                      className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full"
+                      style={{
+                        animationName: "pulse",
+                        animationDuration: "2s",
+                        animationIterationCount: "infinite",
+                        animationDelay: "0.3s",
+                      }}
                     ></div>
                     <div
-                      className="absolute top-2 right-1 w-1 h-1 bg-white opacity-30 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.7s" }}
+                      className="absolute top-2 right-1 w-1 h-1 bg-white opacity-30 rounded-full"
+                      style={{
+                        animationName: "pulse",
+                        animationDuration: "2s",
+                        animationIterationCount: "infinite",
+                        animationDelay: "0.7s",
+                      }}
                     ></div>
                   </div>
                 </div>
