@@ -923,6 +923,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
       <div
         draggable
         onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
         onDragOver={isContainer ? handleChemicalDragOver : undefined}
         onDragLeave={isContainer ? handleChemicalDragLeave : undefined}
         onDrop={isContainer ? handleChemicalDrop : undefined}
