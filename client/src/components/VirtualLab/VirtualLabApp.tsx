@@ -106,6 +106,8 @@ function VirtualLabApp({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
   const [experimentCompleted, setExperimentCompleted] = useState(false);
+  const [showWrongStepModal, setShowWrongStepModal] = useState(false);
+  const [wrongStepMessage, setWrongStepMessage] = useState("");
   const [completionTime, setCompletionTime] = useState<Date | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
