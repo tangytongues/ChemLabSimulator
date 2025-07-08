@@ -922,11 +922,6 @@ function VirtualLabApp({
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900 text-sm flex items-center">
                         🔥 Heating Status
-                        {speedMultiplier > 1 && (
-                          <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                            {speedMultiplier}x speed
-                          </span>
-                        )}
                       </h3>
                       <div className="flex items-center gap-2">
                         {isHeating &&
