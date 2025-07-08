@@ -1127,10 +1127,30 @@ function VirtualLabApp({
                 onStart={handleStartExperiment}
                 onStop={() => setIsRunning(false)}
                 onReset={() => {
+                  // Complete reset of all experiment states
                   setEquipmentPositions([]);
                   setResults([]);
                   setIsRunning(false);
                   setCurrentStep(1);
+                  setCurrentGuidedStep(1);
+                  setSelectedChemical(null);
+                  setExperimentCompleted(false);
+                  setCompletionTime(null);
+                  setShowCompletionModal(false);
+                  setIsHeating(false);
+                  setHeatingTime(0);
+                  setTargetTemperature(25);
+                  setActualTemperature(25);
+                  setMeasurements({
+                    volume: 0,
+                    concentration: 0,
+                    ph: 7,
+                    molarity: 0,
+                    moles: 0,
+                    temperature: 25,
+                  });
+                  setToastMessage("🔄 Experiment reset successfully");
+                  setTimeout(() => setToastMessage(null), 2000);
                 }}
               />
             </div>
