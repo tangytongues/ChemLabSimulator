@@ -928,16 +928,10 @@ function VirtualLabApp({
                           actualTemperature >= targetTemperature &&
                           heatingTime < 15 * 60 && (
                             <button
-                              onClick={handleFastForward}
-                              className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${
-                                speedMultiplier > 1
-                                  ? "bg-purple-600 hover:bg-purple-700 text-white"
-                                  : "bg-blue-500 hover:bg-blue-600 text-white"
-                              }`}
+                              onClick={handleSkipMinute}
+                              className="text-xs px-3 py-1 rounded-md font-medium transition-colors bg-blue-500 hover:bg-blue-600 text-white"
                             >
-                              {speedMultiplier > 1
-                                ? "⏸️ Normal"
-                                : "⚡ Fast Forward"}
+                              ⏩ Skip +1 min
                             </button>
                           )}
                         {isHeating && (
