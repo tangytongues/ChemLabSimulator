@@ -862,74 +862,63 @@ function VirtualLabApp({
     itemId: string,
     targetId?: string,
   ) => {
-    if (
-      !experimentTitle.includes("Aspirin") ||
-      !aspirinGuidedSteps ||
-      aspirinGuidedSteps.length === 0
-    )
-      return true; // Only validate for Aspirin experiment
+    try {
+      if (
+        !experimentTitle.includes("Aspirin") ||
+        !aspirinGuidedSteps ||
+        aspirinGuidedSteps.length === 0
+      )
+        return true; // Only validate for Aspirin experiment
 
-    const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
-    if (!currentStep) return true; // No more steps
+      const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+      if (!currentStep) return true; // No more steps
 
-    // Check if this action matches the current step
-    if (
-      actionType === "equipment" &&
-      currentStep.requiredEquipment === itemId
-    ) {
-      return true; // Correct equipment for current step
-    }
+      // Check if this action matches the current step
+      if (
+        actionType === "equipment" &&
+        currentStep.requiredEquipment === itemId
+      ) {
+        return true; // Correct equipment for current step
+      }
 
-    if (
-      actionType === "chemical" &&
-      currentStep.requiredChemical === itemId &&
-      currentStep.targetEquipment === targetId
-    ) {
-      return true; // Correct chemical for current step
-    }
+      if (
+        actionType === "chemical" &&
+        currentStep.requiredChemical === itemId &&
+        currentStep.targetEquipment === targetId
+      ) {
+        return true; // Correct chemical for current step
+      }
 
-    // Check if this action belongs to a future step
-    const futureStep = aspirinGuidedSteps.find(
-      (step) =>
-        step.id > currentGuidedStep &&
-        ((actionType === "equipment" && step.requiredEquipment === itemId) ||
-          (actionType === "chemical" &&
-            step.requiredChemical === itemId &&
-            step.targetEquipment === targetId)),
-    );
-
-    if (futureStep) {
-      setWrongStepMessage(
-        `You're trying to do Step ${futureStep.id}: "${futureStep.title}" but you should complete Step ${currentGuidedStep}: "${currentStep.title}" first.`,
+      // Check if this action belongs to a future step
+      const futureStep = aspirinGuidedSteps.find(
+        (step) =>
+          step &&
+          step.id > currentGuidedStep &&
+          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+            (actionType === "chemical" &&
+              step.requiredChemical === itemId &&
+              step.targetEquipment === targetId)),
       );
-      setShowWrongStepModal(true);
-      return false;
+
+      if (futureStep) {
+        try {
+          setWrongStepMessage(
+            `You're trying to do Step ${futureStep.id}: "${futureStep.title}" but you should complete Step ${currentGuidedStep}: "${currentStep.title}" first.`,
+          );
+          setShowWrongStepModal(true);
+        } catch (e) {
+          console.warn("Error setting wrong step message:", e);
+        }
+        return false;
+      }
+
+      // For out-of-order actions that don't match known steps, just allow them
+      // This prevents crashes while still providing guidance for known steps
+      return true;
+    } catch (error) {
+      console.warn("Error in step validation:", error);
+      return true; // Allow action if validation fails to prevent crashes
     }
-
-    // Check if this action was already done in a previous step
-    const pastStep = aspirinGuidedSteps.find(
-      (step) =>
-        step.id < currentGuidedStep &&
-        ((actionType === "equipment" && step.requiredEquipment === itemId) ||
-          (actionType === "chemical" &&
-            step.requiredChemical === itemId &&
-            step.targetEquipment === targetId)),
-    );
-
-    if (pastStep) {
-      setWrongStepMessage(
-        `Step ${pastStep.id}: "${pastStep.title}" was already completed. Please continue with Step ${currentGuidedStep}: "${currentStep.title}".`,
-      );
-      setShowWrongStepModal(true);
-      return false;
-    }
-
-    // Unknown action for this experiment
-    setWrongStepMessage(
-      `This action is not part of the current step. Please follow Step ${currentGuidedStep}: "${currentStep.title}".`,
-    );
-    setShowWrongStepModal(true);
-    return false;
   };
 
   const handleRestartExperiment = () => {
