@@ -228,12 +228,14 @@ export const Equipment: React.FC<EquipmentProps> = ({
                     {[...Array(8)].map((_, i) => (
                       <div
                         key={i}
-                        className="absolute w-1 h-1 bg-white rounded-full opacity-70 animate-bounce"
+                        className="absolute w-1 h-1 bg-white rounded-full opacity-70"
                         style={{
                           left: `${20 + (i % 4) * 20}%`,
                           top: `${40 + Math.floor(i / 4) * 20}%`,
-                          animationDelay: `${i * 0.2}s`,
+                          animationName: "bounce",
                           animationDuration: "1s",
+                          animationIterationCount: "infinite",
+                          animationDelay: `${i * 0.2}s`,
                         }}
                       />
                     ))}
