@@ -830,6 +830,101 @@ function VirtualLabApp({
     setResults([]);
   };
 
+  // Function to check if an action is valid for the current step
+  const validateStepSequence = (
+    actionType: "equipment" | "chemical",
+    itemId: string,
+    targetId?: string,
+  ) => {
+    if (!experimentTitle.includes("Aspirin")) return true; // Only validate for Aspirin experiment
+
+    const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+    if (!currentStep) return true; // No more steps
+
+    // Check if this action matches the current step
+    if (
+      actionType === "equipment" &&
+      currentStep.requiredEquipment === itemId
+    ) {
+      return true; // Correct equipment for current step
+    }
+
+    if (
+      actionType === "chemical" &&
+      currentStep.requiredChemical === itemId &&
+      currentStep.targetEquipment === targetId
+    ) {
+      return true; // Correct chemical for current step
+    }
+
+    // Check if this action belongs to a future step
+    const futureStep = aspirinGuidedSteps.find(
+      (step) =>
+        step.id > currentGuidedStep &&
+        ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+          (actionType === "chemical" &&
+            step.requiredChemical === itemId &&
+            step.targetEquipment === targetId)),
+    );
+
+    if (futureStep) {
+      setWrongStepMessage(
+        `You're trying to do Step ${futureStep.id}: "${futureStep.title}" but you should complete Step ${currentGuidedStep}: "${currentStep.title}" first.`,
+      );
+      setShowWrongStepModal(true);
+      return false;
+    }
+
+    // Check if this action was already done in a previous step
+    const pastStep = aspirinGuidedSteps.find(
+      (step) =>
+        step.id < currentGuidedStep &&
+        ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+          (actionType === "chemical" &&
+            step.requiredChemical === itemId &&
+            step.targetEquipment === targetId)),
+    );
+
+    if (pastStep) {
+      setWrongStepMessage(
+        `Step ${pastStep.id}: "${pastStep.title}" was already completed. Please continue with Step ${currentGuidedStep}: "${currentStep.title}".`,
+      );
+      setShowWrongStepModal(true);
+      return false;
+    }
+
+    // Unknown action for this experiment
+    setWrongStepMessage(
+      `This action is not part of the current step. Please follow Step ${currentGuidedStep}: "${currentStep.title}".`,
+    );
+    setShowWrongStepModal(true);
+    return false;
+  };
+
+  const handleRestartExperiment = () => {
+    setShowWrongStepModal(false);
+    setCurrentGuidedStep(1);
+    setEquipmentPositions([]);
+    setIsHeating(false);
+    setHeatingTime(0);
+    setTargetTemperature(25);
+    setActualTemperature(25);
+    setResults([]);
+    setMeasurements({
+      volume: 0,
+      concentration: 0,
+      ph: 7,
+      molarity: 0,
+      weight: 0,
+      moles: 0,
+      temperature: 25,
+    });
+    setExperimentCompleted(false);
+    setCompletionTime(null);
+    setToastMessage("🔄 Experiment restarted");
+    setTimeout(() => setToastMessage(null), 2000);
+  };
+
   const handleStepClick = (stepId: number) => {
     setCurrentStep(stepId);
   };
