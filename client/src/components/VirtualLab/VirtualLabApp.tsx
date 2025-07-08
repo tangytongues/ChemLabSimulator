@@ -82,6 +82,7 @@ function VirtualLabApp({
   totalSteps,
   experimentTitle,
   allSteps,
+  experimentId = 1,
 }: VirtualLabProps) {
   const [equipmentPositions, setEquipmentPositions] = useState<
     EquipmentPosition[]
