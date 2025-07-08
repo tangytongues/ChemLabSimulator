@@ -54,10 +54,36 @@ export const Equipment: React.FC<EquipmentProps> = ({
   const [isDropping, setIsDropping] = useState(false);
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartTime, setDragStartTime] = useState(0);
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("equipment", id);
     setShowContextMenu(false);
+    setIsDragging(true);
+    setDragStartTime(Date.now());
+
+    // Clear any existing dropping animations
+    setIsDropping(false);
+
+    // Set drag effect
+    e.dataTransfer.effectAllowed = "move";
+
+    // Create a cleaner drag image
+    const dragElement = e.currentTarget as HTMLElement;
+    dragElement.style.opacity = "0.8";
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    setIsDragging(false);
+    const dragElement = e.currentTarget as HTMLElement;
+    dragElement.style.opacity = "1";
+
+    // Reset any drag-related states after a short delay to ensure clean state
+    setTimeout(() => {
+      setIsDropping(false);
+      setIsDragOver(false);
+    }, 100);
   };
 
   const handleDoubleClick = () => {
