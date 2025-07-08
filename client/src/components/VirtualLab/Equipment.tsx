@@ -216,7 +216,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 style={{
                   backgroundColor: getMixedColor(),
                   width: "65%",
-                  height: `${Math.min(80, getSolutionHeight() * 0.8)}px`,
+                  height: `${Math.min(120, getSolutionHeight() * 1.2)}px`,
                   opacity: 0.8,
                   boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.1)",
                 }}
