@@ -288,36 +288,35 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
                 </div>
               </div>
 
-              {/* Quick Controls in Header */}
+              {/* Quick Controls in Header - Only show for relevant experiments */}
               <div className="flex items-center space-x-3">
-                <button
-                  onClick={() => setIsStirring(!isStirring)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isStirring
-                      ? "bg-white/20 text-white"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  {isStirring ? "Stop Stirring" : "Start Stirring"}
-                </button>
+                {experimentTitle.includes("Acid-Base") && (
+                  <>
+                    <button
+                      onClick={() => setIsStirring(!isStirring)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isStirring
+                          ? "bg-white/20 text-white"
+                          : "bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
+                    >
+                      {isStirring ? "Stop Stirring" : "Start Stirring"}
+                    </button>
 
-                <button
-                  onClick={() => setIsDropping(!isDropping)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isDropping
-                      ? "bg-white/20 text-white"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  {isDropping ? "Stop Titrant" : "Start Titrant"}
-                </button>
+                    <button
+                      onClick={() => setIsDropping(!isDropping)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isDropping
+                          ? "bg-white/20 text-white"
+                          : "bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
+                    >
+                      {isDropping ? "Stop Titrant" : "Start Titrant"}
+                    </button>
+                  </>
+                )}
 
-                <button
-                  onClick={handleReset}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors"
-                >
-                  Reset
-                </button>
+                <div className="text-xs text-white/80">{experimentTitle}</div>
               </div>
             </div>
           </div>
