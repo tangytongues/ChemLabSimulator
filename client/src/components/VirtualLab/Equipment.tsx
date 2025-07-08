@@ -57,7 +57,38 @@ export const Equipment: React.FC<EquipmentProps> = ({
 
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("equipment", id);
+    setShowContextMenu(false);
   };
+
+  const handleDoubleClick = () => {
+    if (isOnWorkbench && onRemove) {
+      onRemove(id);
+    }
+  };
+
+  const handleRightClick = (e: React.MouseEvent) => {
+    if (isOnWorkbench) {
+      e.preventDefault();
+      setContextMenuPos({ x: e.clientX, y: e.clientY });
+      setShowContextMenu(true);
+    }
+  };
+
+  const handleRemoveClick = () => {
+    if (onRemove) {
+      onRemove(id);
+    }
+    setShowContextMenu(false);
+  };
+
+  // Close context menu when clicking elsewhere
+  React.useEffect(() => {
+    const handleClickOutside = () => setShowContextMenu(false);
+    if (showContextMenu) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [showContextMenu]);
 
   const handleChemicalDragOver = (e: React.DragEvent) => {
     e.preventDefault();
