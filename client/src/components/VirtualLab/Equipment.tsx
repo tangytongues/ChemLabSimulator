@@ -355,7 +355,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
         return (
           <div className="relative">
             <div
-              className="w-24 h-24 bg-gradient-to-b from-transparent via-gray-50 to-gray-100 border-2 border-gray-300 rounded-b-lg relative overflow-hidden"
+              className="w-36 h-32 bg-gradient-to-b from-transparent via-gray-50 to-gray-100 border-2 border-gray-300 rounded-b-lg relative overflow-hidden"
               style={{
                 filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.15))",
                 background:
