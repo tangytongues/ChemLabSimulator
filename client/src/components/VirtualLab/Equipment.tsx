@@ -161,117 +161,82 @@ export const Equipment: React.FC<EquipmentProps> = ({
     if (id === "water_bath" && isOnWorkbench) {
       return (
         <div className="relative">
-          {/* Enhanced Water Bath with Heating Controls */}
+          {/* Realistic Water Bath with Enhanced Controls */}
           <div
             className={`cursor-pointer transition-all duration-300 ${
               isHeating ? "scale-105" : ""
             }`}
             onClick={isHeating ? onStopHeating : onStartHeating}
           >
-            <svg
-              width="120"
-              height="80"
-              viewBox="0 0 120 80"
-              className="drop-shadow-lg"
-            >
+            <div className="relative w-32 h-24 bg-gradient-to-b from-gray-300 to-gray-600 rounded-lg shadow-lg overflow-hidden">
               {/* Water bath container */}
-              <rect
-                x="10"
-                y="25"
-                width="100"
-                height="40"
-                rx="5"
-                fill={
+              <div
+                className={`absolute inset-2 rounded-md transition-all duration-500 ${
                   isHeating
-                    ? "rgba(249, 115, 22, 0.2)"
-                    : "rgba(59, 130, 246, 0.1)"
-                }
-                stroke={isHeating ? "#f97316" : "#2563eb"}
-                strokeWidth="3"
-              />
+                    ? "bg-gradient-to-b from-orange-200 to-orange-400"
+                    : "bg-gradient-to-b from-blue-100 to-blue-300"
+                }`}
+              >
+                {/* Water surface with realistic movement */}
+                <div
+                  className={`absolute top-1 left-1 right-1 h-3 rounded-t-md transition-colors duration-500 ${
+                    isHeating ? "bg-orange-300" : "bg-blue-200"
+                  }`}
+                >
+                  {/* Surface ripples */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+                </div>
 
-              {/* Water in bath with bubbles when heating */}
-              <rect
-                x="15"
-                y="30"
-                width="90"
-                height="30"
-                rx="3"
-                fill={isHeating ? "#fbbf24" : "#93c5fd"}
-                opacity="0.7"
-              />
+                {/* Bubbles when heating */}
+                {isHeating && (
+                  <div className="absolute inset-0">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-1 h-1 bg-white rounded-full opacity-70 animate-bounce"
+                        style={{
+                          left: `${20 + (i % 4) * 20}%`,
+                          top: `${40 + Math.floor(i / 4) * 20}%`,
+                          animationDelay: `${i * 0.2}s`,
+                          animationDuration: "1s",
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
 
-              {/* Heating element at bottom */}
-              <rect
-                x="25"
-                y="60"
-                width="70"
-                height="3"
-                rx="1.5"
-                fill={isHeating ? "#dc2626" : "#6b7280"}
-                className={isHeating ? "animate-pulse" : ""}
-              />
+              {/* Control panel */}
+              <div className="absolute top-1 right-1 bg-black rounded px-1 py-0.5">
+                <div className="text-[8px] text-green-400 font-mono">
+                  {Math.round(actualTemperature)}°C
+                </div>
+              </div>
 
-              {/* Temperature probe */}
-              <rect x="95" y="20" width="2" height="30" fill="#374151" />
-              <circle cx="96" cy="55" r="3" fill="#dc2626" />
+              {/* Heating indicator */}
+              <div
+                className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${
+                  isHeating ? "bg-red-500 animate-pulse" : "bg-gray-400"
+                }`}
+              ></div>
 
-              {/* Steam/bubbles when heating */}
+              {/* Steam effect when heating */}
               {isHeating && (
-                <g>
-                  {[...Array(8)].map((_, i) => (
-                    <circle
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  {[...Array(3)].map((_, i) => (
+                    <div
                       key={i}
-                      cx={20 + i * 10}
-                      cy={35 + (i % 2) * 5}
-                      r="1.5"
-                      fill="rgba(255, 255, 255, 0.8)"
-                      className="animate-bounce"
+                      className="absolute w-1 h-6 bg-white opacity-40 rounded-full animate-pulse"
                       style={{
-                        animationDelay: `${i * 0.2}s`,
-                        animationDuration: "1s",
+                        left: `${-4 + i * 4}px`,
+                        animationDelay: `${i * 0.3}s`,
+                        transform: `rotate(${-10 + i * 10}deg)`,
                       }}
                     />
                   ))}
-                  {/* Steam vapors */}
-                  <path
-                    d="M30 25 Q35 20 40 25 T50 25"
-                    stroke="rgba(255, 255, 255, 0.6)"
-                    strokeWidth="2"
-                    fill="none"
-                    className="animate-pulse"
-                  />
-                  <path
-                    d="M60 25 Q65 20 70 25 T80 25"
-                    stroke="rgba(255, 255, 255, 0.6)"
-                    strokeWidth="2"
-                    fill="none"
-                    className="animate-pulse"
-                    style={{ animationDelay: "0.5s" }}
-                  />
-                </g>
+                </div>
               )}
-
-              {/* Control panel */}
-              <rect x="75" y="5" width="35" height="15" rx="2" fill="#1f2937" />
-              <rect x="78" y="8" width="12" height="9" rx="1" fill="#000000" />
-              <text
-                x="82"
-                y="15"
-                fontSize="6"
-                fill="#22c55e"
-                fontFamily="monospace"
-              >
-                {Math.round(actualTemperature)}°C
-              </text>
-              <circle
-                cx="100"
-                cy="12"
-                r="3"
-                fill={isHeating ? "#ef4444" : "#6b7280"}
-                className={isHeating ? "animate-pulse" : ""}
-              />
-            </svg>
+            </div>
 
             {/* Control buttons */}
             <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
