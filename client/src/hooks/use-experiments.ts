@@ -1,16 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { getUserId } from "@/lib/utils";
 import type { Experiment, UserProgress } from "@shared/schema";
-
-// Generate a simple session-based user ID
-const getUserId = () => {
-  let userId = localStorage.getItem("chemlab_user_id");
-  if (!userId) {
-    userId = "user_" + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem("chemlab_user_id", userId);
-  }
-  return userId;
-};
 
 export function useExperiments() {
   return useQuery<Experiment[]>({
