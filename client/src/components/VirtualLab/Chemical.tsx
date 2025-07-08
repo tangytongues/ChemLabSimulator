@@ -65,8 +65,19 @@ export const Chemical: React.FC<ChemicalProps> = ({
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
-    // Reset any drag styling
-    e.currentTarget.classList.remove("dragging");
+    // Smoothly reset drag styling
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = "scale(1) rotate(0deg)";
+    target.style.opacity = "1";
+    target.style.transition = "all 0.3s ease-out";
+
+    // Remove any drag classes
+    target.classList.remove("dragging");
+
+    // Clean up any leftover styles after animation
+    setTimeout(() => {
+      target.style.transition = "";
+    }, 300);
   };
 
   return (
