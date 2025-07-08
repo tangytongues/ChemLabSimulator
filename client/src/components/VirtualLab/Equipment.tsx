@@ -336,7 +336,10 @@ export const Equipment: React.FC<EquipmentProps> = ({
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2Ff88985d180ee4381acf1ac1886943b8b?format=webp&width=800"
               alt="Thermometer"
-              className="w-6 h-20 object-contain drop-shadow-lg"
+              className="w-10 h-32 object-contain"
+              style={{
+                filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.15))",
+              }}
             />
 
             {/* Temperature reading overlay */}
