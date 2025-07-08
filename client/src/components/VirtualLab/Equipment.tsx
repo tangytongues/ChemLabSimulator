@@ -42,6 +42,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
   position,
   chemicals = [],
   onChemicalDrop,
+  onRemove,
   isHeating = false,
   actualTemperature = 25,
   targetTemperature = 25,
