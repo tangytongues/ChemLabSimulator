@@ -82,7 +82,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
   };
 
   // Close context menu when clicking elsewhere
-  React.useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = () => setShowContextMenu(false);
     if (showContextMenu) {
       document.addEventListener("click", handleClickOutside);
