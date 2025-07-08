@@ -106,6 +106,11 @@ function VirtualLabApp({
   const [actualTemperature, setActualTemperature] = useState(25);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
+  const [experimentCompleted, setExperimentCompleted] = useState(false);
+  const [completionTime, setCompletionTime] = useState<Date | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+
+  const updateProgress = useUpdateProgress();
 
   // Use dynamic experiment steps from allSteps prop
   const experimentSteps = allSteps.map((stepData, index) => ({
