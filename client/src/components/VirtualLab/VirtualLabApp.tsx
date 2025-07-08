@@ -662,7 +662,11 @@ function VirtualLabApp({
           setTimeout(() => setToastMessage(null), 3000);
 
           // Check if this completes a guided step for Aspirin Synthesis
-          if (experimentTitle.includes("Aspirin")) {
+          if (
+            experimentTitle.includes("Aspirin") &&
+            aspirinGuidedSteps &&
+            aspirinGuidedSteps.length > 0
+          ) {
             // Validate step sequence before allowing the action
             if (!validateStepSequence("chemical", chemicalId, equipmentId)) {
               return prev; // Prevent the chemical from being added
