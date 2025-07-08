@@ -711,8 +711,50 @@ export const Equipment: React.FC<EquipmentProps> = ({
 };
 
 export const equipmentList = [
-  { id: "beaker", name: "Beaker", icon: <Beaker size={36} /> },
-  { id: "flask", name: "Erlenmeyer Flask", icon: <FlaskConical size={36} /> },
-  { id: "burette", name: "Burette", icon: <TestTube size={36} /> },
-  { id: "thermometer", name: "Thermometer", icon: <Thermometer size={36} /> },
+  {
+    id: "beaker",
+    name: "Beaker",
+    icon: (
+      <div className="w-9 h-9 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-400 rounded-b-lg shadow-md relative overflow-hidden">
+        <div className="absolute top-1 left-1 w-1 h-4 bg-white opacity-50 rounded-full"></div>
+        <div className="absolute bottom-0 left-1 right-1 h-2 bg-blue-200 opacity-60 rounded-b-lg"></div>
+      </div>
+    ),
+  },
+  {
+    id: "flask",
+    name: "Erlenmeyer Flask",
+    icon: (
+      <div className="w-9 h-9 relative">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full border-2 border-gray-400 shadow-md">
+          <div className="absolute top-1 left-1 w-1 h-2 bg-white opacity-50 rounded-full"></div>
+        </div>
+        <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-400 rounded-t-lg"></div>
+      </div>
+    ),
+  },
+  {
+    id: "burette",
+    name: "Burette",
+    icon: (
+      <div className="w-9 h-9 flex items-center justify-center">
+        <div className="w-2 h-8 bg-gradient-to-b from-transparent to-gray-200 border-2 border-gray-400 rounded-b-lg shadow-md relative">
+          <div className="absolute bottom-0 left-0 right-0 h-3 bg-blue-200 opacity-60 rounded-b-lg"></div>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-gray-500 rounded-full"></div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "thermometer",
+    name: "Thermometer",
+    icon: (
+      <div className="w-9 h-9 flex items-center justify-center">
+        <div className="w-1 h-7 bg-gray-300 border border-gray-400 rounded-full relative shadow-sm">
+          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full -mb-0.5"></div>
+          <div className="absolute bottom-3 left-0 right-0 h-2 bg-red-400 rounded-full"></div>
+        </div>
+      </div>
+    ),
+  },
 ];
