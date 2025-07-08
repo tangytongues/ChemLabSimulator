@@ -1351,6 +1351,92 @@ function VirtualLabApp({
           </div>
         </div>
       )}
+
+      {/* Experiment Completion Modal */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <Trophy className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Experiment Completed!
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Congratulations! You have successfully completed the{" "}
+                {experimentTitle} experiment.
+              </p>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Completion Time:</span>
+                  <span className="font-medium">
+                    {completionTime?.toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm mt-2">
+                  <span className="text-gray-600">Progress:</span>
+                  <span className="font-medium text-green-600">100%</span>
+                </div>
+                {experimentTitle.includes("Aspirin") && (
+                  <div className="flex items-center justify-between text-sm mt-2">
+                    <span className="text-gray-600">Guided Steps:</span>
+                    <span className="font-medium">
+                      {aspirinGuidedSteps.length}/{aspirinGuidedSteps.length}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    // Trigger confetti or celebration animation
+                    setToastMessage(
+                      "🎉 Experiment completed! Check your progress.",
+                    );
+                    setTimeout(() => setToastMessage(null), 4000);
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  <CheckCircle className="w-4 h-4 inline mr-2" />
+                  View Results
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    // Reset experiment for another attempt
+                    setEquipmentPositions([]);
+                    setResults([]);
+                    setIsRunning(false);
+                    setCurrentStep(1);
+                    setCurrentGuidedStep(1);
+                    setExperimentCompleted(false);
+                    setCompletionTime(null);
+                    setIsHeating(false);
+                    setHeatingTime(0);
+                    setActualTemperature(25);
+                    setMeasurements({
+                      volume: 0,
+                      concentration: 0,
+                      ph: 7,
+                      molarity: 0,
+                      moles: 0,
+                      temperature: 25,
+                    });
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
