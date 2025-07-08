@@ -849,14 +849,83 @@ function VirtualLabApp({
   };
 
   // Function to check if an action is valid for the current step
-  // TEMPORARILY DISABLED TO PREVENT CRASHES
   const validateStepSequence = (
     actionType: "equipment" | "chemical",
     itemId: string,
     targetId?: string,
   ) => {
-    // Always return true to allow all actions and prevent crashes
-    return true;
+    try {
+      if (
+        !experimentTitle.includes("Aspirin") ||
+        !aspirinGuidedSteps ||
+        aspirinGuidedSteps.length === 0
+      )
+        return true; // Only validate for Aspirin experiment
+
+      const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+      if (!currentStep) return true; // No more steps
+
+      // Check if this action matches the current step
+      if (
+        actionType === "equipment" &&
+        currentStep.requiredEquipment === itemId
+      ) {
+        return true; // Correct equipment for current step
+      }
+
+      if (
+        actionType === "chemical" &&
+        currentStep.requiredChemical === itemId &&
+        currentStep.targetEquipment === targetId
+      ) {
+        return true; // Correct chemical for current step
+      }
+
+      // Check if this action belongs to a future step
+      const futureStep = aspirinGuidedSteps.find(
+        (step) =>
+          step &&
+          step.id > currentGuidedStep &&
+          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+            (actionType === "chemical" &&
+              step.requiredChemical === itemId &&
+              step.targetEquipment === targetId)),
+      );
+
+      if (futureStep) {
+        // Show warning toast instead of modal to prevent crashes
+        setToastMessage(
+          `⚠️ You're trying to do Step ${futureStep.id} early. Current step is ${currentGuidedStep}.`,
+        );
+        setTimeout(() => setToastMessage(null), 4000);
+        return true; // Allow the action but show warning
+      }
+
+      // Check if this action was already done in a previous step
+      const pastStep = aspirinGuidedSteps.find(
+        (step) =>
+          step &&
+          step.id < currentGuidedStep &&
+          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+            (actionType === "chemical" &&
+              step.requiredChemical === itemId &&
+              step.targetEquipment === targetId)),
+      );
+
+      if (pastStep) {
+        setToastMessage(
+          `ℹ️ Step ${pastStep.id} was already completed. Continue with Step ${currentGuidedStep}.`,
+        );
+        setTimeout(() => setToastMessage(null), 4000);
+        return true; // Allow the action but show info
+      }
+
+      // Allow unknown actions without warning
+      return true;
+    } catch (error) {
+      console.warn("Error in step validation:", error);
+      return true; // Allow action if validation fails to prevent crashes
+    }
   };
 
   const handleRestartExperiment = () => {
