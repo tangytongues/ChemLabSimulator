@@ -454,7 +454,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
                             style={{
                               left: `${15 + (i % 4) * 15}%`,
                               bottom: `${10 + (i % 3) * 15}px`,
-                              animation: `bounce ${isBeingHeated ? "1s" : "1.5s"} infinite`,
+                              animationName: "bounce",
+                              animationDuration: isBeingHeated ? "1s" : "1.5s",
+                              animationIterationCount: "infinite",
                               animationDelay: `${i * 0.15}s`,
                             }}
                           />
