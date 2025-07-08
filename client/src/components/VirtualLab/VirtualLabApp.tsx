@@ -565,27 +565,18 @@ function VirtualLabApp({
         }
 
         // Check if this completes a guided step for Aspirin Synthesis
-        try {
-          if (
-            experimentTitle.includes("Aspirin") &&
-            aspirinGuidedSteps &&
-            aspirinGuidedSteps.length > 0
-          ) {
-            // Validate step sequence before allowing the action
-            if (!validateStepSequence("equipment", id)) {
-              return prev; // Prevent the equipment from being placed
-            }
-
-            const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
-            if (currentStep?.requiredEquipment === id) {
-              setCurrentGuidedStep((prev) => prev + 1);
-              setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
-              setTimeout(() => setToastMessage(null), 3000);
-            }
+        // TEMPORARILY DISABLED TO PREVENT CRASHES
+        if (
+          experimentTitle.includes("Aspirin") &&
+          aspirinGuidedSteps &&
+          aspirinGuidedSteps.length > 0
+        ) {
+          const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+          if (currentStep?.requiredEquipment === id) {
+            setCurrentGuidedStep((prev) => prev + 1);
+            setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
+            setTimeout(() => setToastMessage(null), 3000);
           }
-        } catch (error) {
-          console.warn("Error in equipment drop validation:", error);
-          // Continue with the action even if validation fails
         }
 
         // Auto-start heating when water bath is placed for heating step
