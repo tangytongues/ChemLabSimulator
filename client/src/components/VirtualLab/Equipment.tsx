@@ -914,13 +914,12 @@ export const Equipment: React.FC<EquipmentProps> = ({
           {getEquipmentSpecificRendering()}
         </div>
 
-        <span
-          className={`text-sm font-semibold text-center transition-colors ${
-            isOnWorkbench ? "text-blue-800" : "text-gray-700"
-          } ${isDragOver ? "text-green-700" : ""}`}
-        >
-          {name}
-        </span>
+        {/* Only show name in sidebar, not on workbench for realistic look */}
+        {!isOnWorkbench && (
+          <span className="text-sm font-semibold text-center text-gray-700">
+            {name}
+          </span>
+        )}
 
         {/* Enhanced chemical composition display */}
         {chemicals.length > 0 && isOnWorkbench && (
