@@ -136,7 +136,7 @@ function VirtualLabApp({
         {
           id: "salicylic_acid",
           name: "Salicylic Acid",
-          formula: "C₇H₆O��",
+          formula: "C₇H₆O₃",
           color: "#F8F8FF",
           concentration: "2.0 g",
           volume: 25,
@@ -383,7 +383,8 @@ function VirtualLabApp({
   const checkExperimentCompletion = useCallback(() => {
     if (experimentTitle.includes("Aspirin")) {
       // Aspirin experiment completion: all guided steps completed + heating finished
-      const allStepsCompleted = currentGuidedStep > aspirinGuidedSteps.length;
+      const allStepsCompleted =
+        currentGuidedStep > (aspirinGuidedSteps?.length || 0);
       const heatingCompleted = heatingTime >= 15 * 60; // 15 minutes
       const hasRequiredChemicals = equipmentPositions.some(
         (pos) =>
