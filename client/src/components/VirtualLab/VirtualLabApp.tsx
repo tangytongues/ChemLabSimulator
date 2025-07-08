@@ -486,7 +486,7 @@ function VirtualLabApp({
         progressPercentage,
       });
     }
-  }, [stepNumber, totalSteps, experimentId, updateProgress]);
+  }, [stepNumber, totalSteps, experimentId]);
 
   // Guided steps for Aspirin Synthesis
   const aspirinGuidedSteps = [
