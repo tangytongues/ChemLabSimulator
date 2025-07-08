@@ -20,11 +20,7 @@ interface ProgressModalProps {
 
 export default function ProgressModal({ children }: ProgressModalProps) {
   const { data: experiments } = useExperiments();
-  const userId = getUserId();
-
-  const { data: userProgress } = useQuery({
-    queryKey: [`/api/progress/${userId}`],
-  });
+  const { data: userProgress } = useUserProgress();
 
   const getExperimentProgress = (experimentId: number) => {
     const progress = userProgress?.find(
