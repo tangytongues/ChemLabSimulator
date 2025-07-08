@@ -282,8 +282,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 className="absolute bottom-2 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out"
                 style={{
                   backgroundColor: getMixedColor(),
-                  width: "70%",
-                  height: `${Math.min(90, getSolutionHeight() * 0.85)}px`,
+                  width: "75%",
+                  height: `${Math.min(120, getSolutionHeight() * 1.0)}px`,
                   opacity: 0.85,
                   borderRadius: "0 0 4px 4px",
                 }}
