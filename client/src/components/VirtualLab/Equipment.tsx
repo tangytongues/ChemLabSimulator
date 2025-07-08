@@ -896,18 +896,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
             : "Drag to workbench"
         }
       >
-        {/* Enhanced drop zone indicator */}
-        {isContainer && isOnWorkbench && (
-          <div
-            className={`absolute -top-3 -right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
-              isDragOver ? "bg-green-500 scale-125 shadow-lg" : "bg-blue-500"
-            }`}
-          >
-            <Droplet size={14} className="text-white" />
-            {isDragOver && (
-              <div className="absolute inset-0 bg-green-400 rounded-full animate-ping"></div>
-            )}
-          </div>
+        {/* Subtle drop zone indicator - only show on hover when dragging */}
+        {isContainer && isOnWorkbench && isDragOver && (
+          <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full opacity-70 animate-pulse"></div>
         )}
 
         {/* Drop hint text */}
