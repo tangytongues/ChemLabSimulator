@@ -372,7 +372,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
                   className="absolute bottom-1 left-1 right-1 rounded-b-lg transition-all duration-700 ease-out"
                   style={{
                     backgroundColor: getMixedColor(),
-                    height: `${Math.min(50, getSolutionHeight() * 0.6)}px`,
+                    height: `${Math.min(150, getSolutionHeight() * 1.8)}px`,
                     opacity: 0.8,
                   }}
                 >
