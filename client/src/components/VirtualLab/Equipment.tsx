@@ -201,7 +201,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2F5a2c42e1b48244e886bf6dca231660fb?format=webp&width=800"
               alt="Erlenmeyer Flask"
-              className="w-48 h-56 object-contain"
+              className="w-72 h-84 object-contain"
               style={{
                 filter: isHeating
                   ? "brightness(1.1) saturate(1.2) drop-shadow(0 0 20px rgba(255,165,0,0.5))"
