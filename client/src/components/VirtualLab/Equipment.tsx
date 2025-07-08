@@ -117,35 +117,61 @@ export const Equipment: React.FC<EquipmentProps> = ({
   }, [showContextMenu]);
 
   const handleChemicalDragOver = (e: React.DragEvent) => {
+    // Only handle chemical drops, not equipment drags
+    const hasChemical =
+      e.dataTransfer.types.includes("chemical") ||
+      e.dataTransfer.getData("chemical");
+    const hasEquipment =
+      e.dataTransfer.types.includes("equipment") ||
+      e.dataTransfer.getData("equipment");
+
+    if (hasEquipment && !hasChemical) {
+      return; // Don't interfere with equipment dragging
+    }
+
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(true);
+
+    // Only show drag over state for chemicals, not during equipment dragging
+    if (!isDragging) {
+      setIsDragOver(true);
+    }
   };
 
   const handleChemicalDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
+
+    // Use a small delay to prevent flickering
+    setTimeout(() => {
+      if (!isDragging) {
+        setIsDragOver(false);
+      }
+    }, 50);
   };
 
   const handleChemicalDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragOver(false);
-    setIsDropping(true);
 
+    // Clear drag over state immediately
+    setIsDragOver(false);
+
+    // Only handle chemical drops
     const chemicalData = e.dataTransfer.getData("chemical");
-    if (chemicalData && onChemicalDrop) {
+    if (chemicalData && onChemicalDrop && !isDragging) {
+      setIsDropping(true);
+
       const chemical = JSON.parse(chemicalData);
       onChemicalDrop(chemical.id, id, chemical.volume || 25);
 
-      // Show success feedback
+      // Show success feedback briefly
       console.log(
         `Added ${chemical.volume || 25}mL of ${chemical.name} to ${name}`,
       );
 
-      // Reset dropping animation after a delay
-      setTimeout(() => setIsDropping(false), 2000);
+      // Reset dropping animation after a shorter delay
+      setTimeout(() => setIsDropping(false), 1500);
     }
   };
 
