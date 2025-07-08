@@ -663,30 +663,21 @@ function VirtualLabApp({
           setTimeout(() => setToastMessage(null), 3000);
 
           // Check if this completes a guided step for Aspirin Synthesis
-          try {
+          // TEMPORARILY DISABLED TO PREVENT CRASHES
+          if (
+            experimentTitle.includes("Aspirin") &&
+            aspirinGuidedSteps &&
+            aspirinGuidedSteps.length > 0
+          ) {
+            const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
             if (
-              experimentTitle.includes("Aspirin") &&
-              aspirinGuidedSteps &&
-              aspirinGuidedSteps.length > 0
+              currentStep?.requiredChemical === chemicalId &&
+              currentStep?.targetEquipment === equipmentId
             ) {
-              // Validate step sequence before allowing the action
-              if (!validateStepSequence("chemical", chemicalId, equipmentId)) {
-                return prev; // Prevent the chemical from being added
-              }
-
-              const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
-              if (
-                currentStep?.requiredChemical === chemicalId &&
-                currentStep?.targetEquipment === equipmentId
-              ) {
-                setCurrentGuidedStep((prev) => prev + 1);
-                setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
-                setTimeout(() => setToastMessage(null), 3000);
-              }
+              setCurrentGuidedStep((prev) => prev + 1);
+              setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
+              setTimeout(() => setToastMessage(null), 3000);
             }
-          } catch (error) {
-            console.warn("Error in chemical drop validation:", error);
-            // Continue with the action even if validation fails
           }
 
           // Calculate reaction if chemicals are mixed
