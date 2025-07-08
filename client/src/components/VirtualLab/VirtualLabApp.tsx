@@ -572,7 +572,7 @@ function VirtualLabApp({
           }
         }
 
-        return [...prev, { id, x, y, chemicals: [] }];
+        return [...prev, { id, x: validX, y: validY, chemicals: [] }];
       });
     },
     [experimentTitle, currentGuidedStep, aspirinGuidedSteps],
