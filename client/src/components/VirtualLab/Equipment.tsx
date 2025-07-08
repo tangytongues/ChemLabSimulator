@@ -480,10 +480,13 @@ export const Equipment: React.FC<EquipmentProps> = ({
                         {[...Array(4)].map((_, i) => (
                           <div
                             key={i}
-                            className="absolute w-6 h-px bg-white opacity-30 animate-pulse"
+                            className="absolute w-6 h-px bg-white opacity-30"
                             style={{
                               left: `${10 + i * 15}%`,
                               top: `${20 + i * 10}%`,
+                              animationName: "pulse",
+                              animationDuration: "2s",
+                              animationIterationCount: "infinite",
                               animationDelay: `${i * 0.3}s`,
                               transform: `rotate(${-5 + i * 3}deg)`,
                             }}
