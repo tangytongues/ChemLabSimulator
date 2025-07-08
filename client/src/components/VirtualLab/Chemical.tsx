@@ -95,21 +95,36 @@ export const Chemical: React.FC<ChemicalProps> = ({
       <div className="flex items-center space-x-3">
         <div className="relative">
           <div
-            className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md transition-all duration-200"
+            className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md transition-all duration-300 ease-out overflow-hidden"
             style={{ backgroundColor: color }}
           >
-            {/* Liquid animation effect */}
+            {/* Improved liquid animation effect */}
             <div
-              className="absolute inset-1 rounded-full opacity-60 animate-pulse"
-              style={{ backgroundColor: color }}
+              className="absolute inset-1 rounded-full opacity-50 transition-all duration-500"
+              style={{
+                backgroundColor: color,
+                animation: selected ? "pulse 2s ease-in-out infinite" : "none",
+              }}
+            ></div>
+
+            {/* Surface shimmer effect */}
+            <div className="absolute top-1 left-1 w-2 h-2 bg-white opacity-40 rounded-full transition-opacity duration-300"></div>
+
+            {/* Gentle liquid movement */}
+            <div
+              className="absolute bottom-1 left-1 right-1 h-2 rounded-b-full opacity-30 transition-all duration-700"
+              style={{
+                backgroundColor: color,
+                transform: selected ? "translateY(-1px)" : "translateY(0px)",
+              }}
             ></div>
           </div>
 
-          {/* Chemical drop animation when selected */}
+          {/* Smooth chemical drop animation when selected */}
           {selected && (
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full border-2 border-purple-500 flex items-center justify-center animate-bounce">
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full border-2 border-purple-500 flex items-center justify-center transition-all duration-300 ease-out animate-bounce shadow-sm">
               <div
-                className="w-2 h-2 rounded-full"
+                className="w-2 h-2 rounded-full transition-all duration-300"
                 style={{ backgroundColor: color }}
               ></div>
             </div>
