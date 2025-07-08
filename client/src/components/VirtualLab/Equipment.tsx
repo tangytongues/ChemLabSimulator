@@ -901,16 +901,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
           <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full opacity-70 animate-pulse"></div>
         )}
 
-        {/* Drop hint text */}
-        {isContainer && isOnWorkbench && isDragOver && (
-          <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-medium animate-bounce whitespace-nowrap shadow-lg">
-            Drop chemical here!
-          </div>
-        )}
-
-        {/* Drag over animation */}
-        {isDragOver && (
-          <div className="absolute inset-0 border-4 border-green-400 rounded-lg animate-pulse bg-green-100 opacity-50"></div>
+        {/* Subtle drag over effect */}
+        {isDragOver && isOnWorkbench && (
+          <div className="absolute inset-0 bg-green-200 opacity-20 rounded-lg animate-pulse"></div>
         )}
 
         <div
