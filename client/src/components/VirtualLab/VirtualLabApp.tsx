@@ -989,7 +989,7 @@ function VirtualLabApp({
                     </p>
                   </div>
 
-                  {aspirinGuidedSteps.map((step, index) => (
+                  {(aspirinGuidedSteps || []).map((step, index) => (
                     <div
                       key={step.id}
                       className={`p-3 rounded-lg border-2 transition-all ${
