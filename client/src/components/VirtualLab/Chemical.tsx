@@ -36,20 +36,48 @@ export const Chemical: React.FC<ChemicalProps> = ({
     );
     e.dataTransfer.effectAllowed = "copy";
 
-    // Add visual feedback during drag
-    const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
-    dragImage.style.transform = "rotate(5deg) scale(1.1)";
-    dragImage.style.opacity = "0.8";
-    dragImage.style.border = "2px solid #7C3AED";
-    dragImage.style.borderRadius = "8px";
-    document.body.appendChild(dragImage);
-    e.dataTransfer.setDragImage(dragImage, 50, 50);
-    setTimeout(() => document.body.removeChild(dragImage), 0);
+    // Add smooth visual feedback during drag
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = "scale(1.05) rotate(2deg)";
+    target.style.opacity = "0.9";
+    target.style.transition = "all 0.2s ease-out";
+
+    // Create custom drag image with better styling
+    setTimeout(() => {
+      const dragImage = target.cloneNode(true) as HTMLElement;
+      dragImage.style.transform = "rotate(3deg) scale(1.05)";
+      dragImage.style.opacity = "0.85";
+      dragImage.style.border = "2px solid #7C3AED";
+      dragImage.style.borderRadius = "12px";
+      dragImage.style.boxShadow = "0 8px 25px rgba(124, 58, 237, 0.3)";
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-1000px";
+      document.body.appendChild(dragImage);
+      e.dataTransfer.setDragImage(dragImage, 50, 50);
+
+      // Clean up drag image safely
+      requestAnimationFrame(() => {
+        if (document.body.contains(dragImage)) {
+          document.body.removeChild(dragImage);
+        }
+      });
+    }, 0);
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
-    // Reset any drag styling
-    e.currentTarget.classList.remove("dragging");
+    // Smoothly reset drag styling
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = "scale(1) rotate(0deg)";
+    target.style.opacity = "1";
+    target.style.transition = "all 0.3s ease-out";
+
+    // Remove any drag classes
+    target.classList.remove("dragging");
+
+    // Clean up any leftover styles after animation
+    setTimeout(() => {
+      target.style.transition = "";
+    }, 300);
   };
 
   return (
@@ -58,30 +86,45 @@ export const Chemical: React.FC<ChemicalProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={() => onSelect(id)}
-      className={`p-4 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200 border-2 transform hover:scale-105 ${
+      className={`p-4 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-300 ease-out border-2 transform hover:scale-[1.02] ${
         selected
-          ? "border-purple-500 bg-purple-50 shadow-lg scale-105 ring-2 ring-purple-300"
+          ? "border-purple-500 bg-purple-50 shadow-lg scale-[1.02] ring-2 ring-purple-300 ring-opacity-50"
           : "border-gray-200 bg-white hover:border-purple-300 hover:shadow-md"
       }`}
     >
       <div className="flex items-center space-x-3">
         <div className="relative">
           <div
-            className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md transition-all duration-200"
+            className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md transition-all duration-300 ease-out overflow-hidden"
             style={{ backgroundColor: color }}
           >
-            {/* Liquid animation effect */}
+            {/* Improved liquid animation effect */}
             <div
-              className="absolute inset-1 rounded-full opacity-60 animate-pulse"
-              style={{ backgroundColor: color }}
+              className="absolute inset-1 rounded-full opacity-50 transition-all duration-500"
+              style={{
+                backgroundColor: color,
+                animation: selected ? "pulse 2s ease-in-out infinite" : "none",
+              }}
+            ></div>
+
+            {/* Surface shimmer effect */}
+            <div className="absolute top-1 left-1 w-2 h-2 bg-white opacity-40 rounded-full transition-opacity duration-300"></div>
+
+            {/* Gentle liquid movement */}
+            <div
+              className="absolute bottom-1 left-1 right-1 h-2 rounded-b-full opacity-30 transition-all duration-700"
+              style={{
+                backgroundColor: color,
+                transform: selected ? "translateY(-1px)" : "translateY(0px)",
+              }}
             ></div>
           </div>
 
-          {/* Chemical drop animation when selected */}
+          {/* Smooth chemical drop animation when selected */}
           {selected && (
-            <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full border-2 border-purple-500 flex items-center justify-center animate-bounce">
+            <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full border-2 border-purple-500 flex items-center justify-center transition-all duration-300 ease-out animate-bounce shadow-sm">
               <div
-                className="w-2 h-2 rounded-full"
+                className="w-2 h-2 rounded-full transition-all duration-300"
                 style={{ backgroundColor: color }}
               ></div>
             </div>
@@ -116,18 +159,27 @@ export const Chemical: React.FC<ChemicalProps> = ({
         )}
       </div>
 
-      {/* Volume indicator with animation */}
+      {/* Volume indicator with smooth animation */}
       {volume && (
-        <div className="mt-3 bg-gray-100 rounded-full h-3 overflow-hidden">
+        <div className="mt-3 bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner">
           <div
-            className="h-full transition-all duration-500 ease-out rounded-full"
+            className="h-full transition-all duration-700 ease-out rounded-full relative"
             style={{
               width: `${Math.min(100, (volume / 100) * 100)}%`,
               backgroundColor: color,
-              boxShadow: `inset 0 1px 2px rgba(0,0,0,0.1)`,
+              boxShadow: `inset 0 1px 3px rgba(0,0,0,0.1)`,
             }}
           >
-            <div className="h-full w-full bg-gradient-to-r from-transparent to-white opacity-30 rounded-full"></div>
+            {/* Liquid surface effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 rounded-full"></div>
+
+            {/* Volume movement animation */}
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1 bg-white opacity-40 rounded-r-full transition-all duration-300"
+              style={{
+                transform: selected ? "scaleY(1.1)" : "scaleY(1)",
+              }}
+            ></div>
           </div>
         </div>
       )}

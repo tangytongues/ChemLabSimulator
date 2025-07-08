@@ -288,36 +288,35 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
                 </div>
               </div>
 
-              {/* Quick Controls in Header */}
+              {/* Quick Controls in Header - Only show for relevant experiments */}
               <div className="flex items-center space-x-3">
-                <button
-                  onClick={() => setIsStirring(!isStirring)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isStirring
-                      ? "bg-white/20 text-white"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  {isStirring ? "Stop Stirring" : "Start Stirring"}
-                </button>
+                {experimentTitle.includes("Acid-Base") && (
+                  <>
+                    <button
+                      onClick={() => setIsStirring(!isStirring)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isStirring
+                          ? "bg-white/20 text-white"
+                          : "bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
+                    >
+                      {isStirring ? "Stop Stirring" : "Start Stirring"}
+                    </button>
 
-                <button
-                  onClick={() => setIsDropping(!isDropping)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isDropping
-                      ? "bg-white/20 text-white"
-                      : "bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  {isDropping ? "Stop Titrant" : "Start Titrant"}
-                </button>
+                    <button
+                      onClick={() => setIsDropping(!isDropping)}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isDropping
+                          ? "bg-white/20 text-white"
+                          : "bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
+                    >
+                      {isDropping ? "Stop Titrant" : "Start Titrant"}
+                    </button>
+                  </>
+                )}
 
-                <button
-                  onClick={handleReset}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors"
-                >
-                  Reset
-                </button>
+                <div className="text-xs text-white/80">{experimentTitle}</div>
               </div>
             </div>
           </div>
@@ -356,26 +355,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400 opacity-60"></div>
             </div>
 
-            {/* Animated Equipment - Only for experiments 2 and 3 */}
-            {(experimentTitle.includes("Acid-Base") ||
-              experimentTitle.includes("Equilibrium")) && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: "scale(1.4)",
-                  transformOrigin: "center bottom",
-                }}
-              >
-                <AnimatedEquipment
-                  isStirring={isStirring}
-                  isDropping={isDropping}
-                  temperature={temperature}
-                  solutionColor={solutionColor}
-                  volume={volume}
-                  bubbling={bubbling}
-                />
-              </div>
-            )}
+            {/* Note: Equipment is now dynamically placed by user interaction */}
 
             {/* Helpful hints for Aspirin Synthesis */}
             {experimentTitle.includes("Aspirin") && (

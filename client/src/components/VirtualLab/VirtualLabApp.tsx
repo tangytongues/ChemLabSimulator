@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { Equipment } from "./Equipment";
 import { WorkBench } from "./WorkBench";
 import { Chemical } from "./Chemical";
@@ -16,9 +16,11 @@ import {
   TestTube,
   Thermometer,
   Droplets,
-  Erlenmeyer,
+  Trophy,
+  CheckCircle,
 } from "lucide-react";
 import type { ExperimentStep } from "@shared/schema";
+import { useUpdateProgress } from "@/hooks/use-experiments";
 
 interface EquipmentPosition {
   id: string;
@@ -68,6 +70,7 @@ interface VirtualLabProps {
   totalSteps: number;
   experimentTitle: string;
   allSteps: ExperimentStep[];
+  experimentId?: number;
 }
 
 function VirtualLabApp({
@@ -78,6 +81,7 @@ function VirtualLabApp({
   totalSteps,
   experimentTitle,
   allSteps,
+  experimentId = 1,
 }: VirtualLabProps) {
   const [equipmentPositions, setEquipmentPositions] = useState<
     EquipmentPosition[]
@@ -101,6 +105,11 @@ function VirtualLabApp({
   const [actualTemperature, setActualTemperature] = useState(25);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
+  const [experimentCompleted, setExperimentCompleted] = useState(false);
+  const [completionTime, setCompletionTime] = useState<Date | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+
+  const updateProgress = useUpdateProgress();
 
   // Use dynamic experiment steps from allSteps prop
   const experimentSteps = allSteps.map((stepData, index) => ({
@@ -368,6 +377,115 @@ function VirtualLabApp({
     return [];
   }, [experimentTitle]);
 
+  // Check for experiment completion
+  const checkExperimentCompletion = useCallback(() => {
+    if (experimentTitle.includes("Aspirin")) {
+      // Aspirin experiment completion: all guided steps completed + heating finished
+      const allStepsCompleted = currentGuidedStep > aspirinGuidedSteps.length;
+      const heatingCompleted = heatingTime >= 15 * 60; // 15 minutes
+      const hasRequiredChemicals = equipmentPositions.some(
+        (pos) =>
+          pos.chemicals.length >= 3 &&
+          pos.chemicals.some((c) => c.id === "salicylic_acid") &&
+          pos.chemicals.some((c) => c.id === "acetic_anhydride"),
+      );
+
+      if (
+        allStepsCompleted &&
+        heatingCompleted &&
+        hasRequiredChemicals &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    } else if (experimentTitle.includes("Acid-Base")) {
+      // Acid-Base titration completion: endpoint reached
+      const endpointReached = measurements.ph > 8.5;
+      const hasIndicator = equipmentPositions.some((pos) =>
+        pos.chemicals.some((c) => c.id === "phenol"),
+      );
+      const volumeAdded = measurements.volume > 20; // Reasonable titration volume
+
+      if (
+        endpointReached &&
+        hasIndicator &&
+        volumeAdded &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    } else if (experimentTitle.includes("Equilibrium")) {
+      // Equilibrium experiment completion: all color changes observed
+      const hasTemperatureChange = measurements.temperature !== 25;
+      const hasChemicalReactions = results.some((r) => r.type === "reaction");
+      const hasConcentrationChanges = equipmentPositions.some(
+        (pos) => pos.chemicals.length >= 2,
+      );
+
+      if (
+        hasTemperatureChange &&
+        hasChemicalReactions &&
+        hasConcentrationChanges &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    }
+  }, [
+    experimentTitle,
+    currentGuidedStep,
+    heatingTime,
+    equipmentPositions,
+    measurements,
+    results,
+    experimentCompleted,
+    totalSteps,
+    experimentId,
+    updateProgress,
+  ]);
+
+  // Monitor completion conditions
+  useEffect(() => {
+    checkExperimentCompletion();
+  }, [checkExperimentCompletion]);
+
+  // Update progress when step changes
+  useEffect(() => {
+    if (stepNumber > 1) {
+      const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
+      updateProgress.mutate({
+        experimentId,
+        currentStep: stepNumber,
+        completed: stepNumber >= totalSteps,
+        progressPercentage,
+      });
+    }
+  }, [stepNumber, totalSteps, experimentId, updateProgress]);
+
   // Guided steps for Aspirin Synthesis
   const aspirinGuidedSteps = [
     {
@@ -423,10 +541,17 @@ function VirtualLabApp({
 
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
+      // Ensure coordinates are valid numbers and within reasonable bounds
+      const validX = Math.max(50, Math.min(x, window.innerWidth - 200));
+      const validY = Math.max(50, Math.min(y, window.innerHeight - 200));
+
       setEquipmentPositions((prev) => {
         const existing = prev.find((pos) => pos.id === id);
         if (existing) {
-          return prev.map((pos) => (pos.id === id ? { ...pos, x, y } : pos));
+          // Smooth position update for existing equipment
+          return prev.map((pos) =>
+            pos.id === id ? { ...pos, x: validX, y: validY } : pos,
+          );
         }
 
         // Check if this completes a guided step for Aspirin Synthesis
@@ -447,11 +572,17 @@ function VirtualLabApp({
           }
         }
 
-        return [...prev, { id, x, y, chemicals: [] }];
+        return [...prev, { id, x: validX, y: validY, chemicals: [] }];
       });
     },
     [experimentTitle, currentGuidedStep, aspirinGuidedSteps],
   );
+
+  const handleEquipmentRemove = useCallback((id: string) => {
+    setEquipmentPositions((prev) => prev.filter((pos) => pos.id !== id));
+    setToastMessage(`${id} removed from workbench`);
+    setTimeout(() => setToastMessage(null), 2000);
+  }, []);
 
   const calculateChemicalProperties = (
     chemical: any,
@@ -1008,10 +1139,30 @@ function VirtualLabApp({
                 onStart={handleStartExperiment}
                 onStop={() => setIsRunning(false)}
                 onReset={() => {
+                  // Complete reset of all experiment states
                   setEquipmentPositions([]);
                   setResults([]);
                   setIsRunning(false);
                   setCurrentStep(1);
+                  setCurrentGuidedStep(1);
+                  setSelectedChemical(null);
+                  setExperimentCompleted(false);
+                  setCompletionTime(null);
+                  setShowCompletionModal(false);
+                  setIsHeating(false);
+                  setHeatingTime(0);
+                  setTargetTemperature(25);
+                  setActualTemperature(25);
+                  setMeasurements({
+                    volume: 0,
+                    concentration: 0,
+                    ph: 7,
+                    molarity: 0,
+                    moles: 0,
+                    temperature: 25,
+                  });
+                  setToastMessage("🔄 Experiment reset successfully");
+                  setTimeout(() => setToastMessage(null), 2000);
                 }}
               />
             </div>
@@ -1067,6 +1218,7 @@ function VirtualLabApp({
                     heatingTime={heatingTime}
                     onStartHeating={handleStartHeating}
                     onStopHeating={handleStopHeating}
+                    onRemove={handleEquipmentRemove}
                   />
                 ) : null;
               })}
@@ -1229,6 +1381,92 @@ function VirtualLabApp({
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-white rounded-full"></div>
             <span className="text-sm font-medium">{toastMessage}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Experiment Completion Modal */}
+      {showCompletionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <Trophy className="w-8 h-8 text-yellow-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Experiment Completed!
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Congratulations! You have successfully completed the{" "}
+                {experimentTitle} experiment.
+              </p>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Completion Time:</span>
+                  <span className="font-medium">
+                    {completionTime?.toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm mt-2">
+                  <span className="text-gray-600">Progress:</span>
+                  <span className="font-medium text-green-600">100%</span>
+                </div>
+                {experimentTitle.includes("Aspirin") && (
+                  <div className="flex items-center justify-between text-sm mt-2">
+                    <span className="text-gray-600">Guided Steps:</span>
+                    <span className="font-medium">
+                      {aspirinGuidedSteps.length}/{aspirinGuidedSteps.length}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    // Trigger confetti or celebration animation
+                    setToastMessage(
+                      "🎉 Experiment completed! Check your progress.",
+                    );
+                    setTimeout(() => setToastMessage(null), 4000);
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  <CheckCircle className="w-4 h-4 inline mr-2" />
+                  View Results
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowCompletionModal(false);
+                    // Reset experiment for another attempt
+                    setEquipmentPositions([]);
+                    setResults([]);
+                    setIsRunning(false);
+                    setCurrentStep(1);
+                    setCurrentGuidedStep(1);
+                    setExperimentCompleted(false);
+                    setCompletionTime(null);
+                    setIsHeating(false);
+                    setHeatingTime(0);
+                    setActualTemperature(25);
+                    setMeasurements({
+                      volume: 0,
+                      concentration: 0,
+                      ph: 7,
+                      molarity: 0,
+                      moles: 0,
+                      temperature: 25,
+                    });
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
