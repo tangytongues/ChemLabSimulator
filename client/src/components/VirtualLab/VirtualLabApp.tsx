@@ -467,7 +467,6 @@ function VirtualLabApp({
     experimentCompleted,
     totalSteps,
     experimentId,
-    updateProgress,
   ]);
 
   // Monitor completion conditions
