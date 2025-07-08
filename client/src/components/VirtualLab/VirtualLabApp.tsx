@@ -1276,7 +1276,7 @@ function VirtualLabApp({
                 <div className="text-xs text-gray-600 mr-3 flex items-center space-x-2">
                   <span>
                     Progress: {currentGuidedStep - 1}/
-                    {aspirinGuidedSteps.length}
+                    {aspirinGuidedSteps?.length || 0}
                   </span>
                   <div className="w-20 bg-gray-200 rounded-full h-2">
                     <div
