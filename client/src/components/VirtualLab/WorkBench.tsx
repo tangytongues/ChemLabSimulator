@@ -355,26 +355,7 @@ export const WorkBench: React.FC<WorkBenchProps> = ({
               <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400 opacity-60"></div>
             </div>
 
-            {/* Animated Equipment - Only for experiments 2 and 3 */}
-            {(experimentTitle.includes("Acid-Base") ||
-              experimentTitle.includes("Equilibrium")) && (
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: "scale(1.4)",
-                  transformOrigin: "center bottom",
-                }}
-              >
-                <AnimatedEquipment
-                  isStirring={isStirring}
-                  isDropping={isDropping}
-                  temperature={temperature}
-                  solutionColor={solutionColor}
-                  volume={volume}
-                  bubbling={bubbling}
-                />
-              </div>
-            )}
+            {/* Note: Equipment is now dynamically placed by user interaction */}
 
             {/* Helpful hints for Aspirin Synthesis */}
             {experimentTitle.includes("Aspirin") && (
