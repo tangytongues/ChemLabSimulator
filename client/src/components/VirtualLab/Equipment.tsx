@@ -85,8 +85,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
   React.useEffect(() => {
     const handleClickOutside = () => setShowContextMenu(false);
     if (showContextMenu) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [showContextMenu]);
 
@@ -231,7 +231,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
                         className="absolute w-1 h-1 bg-white rounded-full opacity-70 animate-bounce"
                         style={{
                           left: `${20 + (i % 4) * 20}%`,
-                          top: `${40 + Math.floor(i / 4) * 20}%`,
+                          top: `${40 + (Math.floor(i / 4)) * 20}%`,
                           animationDelay: `${i * 0.2}s`,
                           animationDuration: "1s",
                         }}
@@ -249,11 +249,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
               </div>
 
               {/* Heating indicator */}
-              <div
-                className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${
-                  isHeating ? "bg-red-500 animate-pulse" : "bg-gray-400"
-                }`}
-              ></div>
+              <div className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full transition-colors ${
+                isHeating ? "bg-red-500 animate-pulse" : "bg-gray-400"
+              }`}></div>
 
               {/* Steam effect when heating */}
               {isHeating && (
@@ -339,14 +337,10 @@ export const Equipment: React.FC<EquipmentProps> = ({
 
                   {/* Liquid movement animation */}
                   <div className="absolute inset-0">
-                    <div
-                      className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.3s" }}
-                    ></div>
-                    <div
-                      className="absolute top-2 right-1 w-1 h-1 bg-white opacity-30 rounded-full animate-pulse"
-                      style={{ animationDelay: "0.7s" }}
-                    ></div>
+                    <div className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full animate-pulse"
+                         style={{animationDelay: "0.3s"}}></div>
+                    <div className="absolute top-2 right-1 w-1 h-1 bg-white opacity-30 rounded-full animate-pulse"
+                         style={{animationDelay: "0.7s"}}></div>
                   </div>
                 </div>
               )}
@@ -414,21 +408,16 @@ export const Equipment: React.FC<EquipmentProps> = ({
           {/* Realistic Erlenmeyer Flask with 3D appearance */}
           <div className="relative w-24 h-32">
             {/* Flask body with realistic glass effect */}
-            <div
-              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
-                isBeingHeated ? "filter brightness-110 saturate-110" : ""
-              }`}
-            >
+            <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
+              isBeingHeated ? "filter brightness-110 saturate-110" : ""
+            }`}>
               {/* Main flask body */}
-              <div
-                className="relative w-20 h-20 bg-gradient-to-br from-white via-gray-50 to-gray-100
-                            rounded-full border-2 border-gray-300 shadow-lg overflow-hidden"
-              >
+              <div className="relative w-20 h-20 bg-gradient-to-br from-white via-gray-50 to-gray-100
+                            rounded-full border-2 border-gray-300 shadow-lg overflow-hidden">
+
                 {/* Glass reflection effect */}
-                <div
-                  className="absolute top-2 left-2 w-3 h-6 bg-gradient-to-br from-white to-transparent
-                              opacity-60 rounded-full transform rotate-12"
-                ></div>
+                <div className="absolute top-2 left-2 w-3 h-6 bg-gradient-to-br from-white to-transparent
+                              opacity-60 rounded-full transform rotate-12"></div>
 
                 {/* Solution in flask with improved physics */}
                 {chemicals.length > 0 && (
@@ -489,11 +478,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
               </div>
 
               {/* Flask neck */}
-              <div
-                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
                             w-6 h-10 bg-gradient-to-b from-gray-100 to-gray-200
-                            border-2 border-gray-300 rounded-t-lg shadow-sm"
-              >
+                            border-2 border-gray-300 rounded-t-lg shadow-sm">
                 {/* Glass reflection on neck */}
                 <div className="absolute top-1 left-1 w-1 h-6 bg-white opacity-50 rounded-full"></div>
 
@@ -516,10 +503,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
               </div>
 
               {/* Flask opening */}
-              <div
-                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
-                            w-8 h-2 bg-gradient-to-b from-gray-200 to-gray-300 rounded-full border border-gray-400"
-              ></div>
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
+                            w-8 h-2 bg-gradient-to-b from-gray-200 to-gray-300 rounded-full border border-gray-400"></div>
             </div>
 
             {/* Volume markings */}
@@ -541,12 +526,9 @@ export const Equipment: React.FC<EquipmentProps> = ({
             {/* Temperature indicator when heating */}
             {isBeingHeated && (
               <div className="absolute left-0 top-8 w-3 h-12 bg-gray-800 rounded-full overflow-hidden">
-                <div
-                  className="absolute bottom-0 left-0 right-0 bg-red-500 transition-all duration-500 rounded-full"
-                  style={{
-                    height: `${Math.min(100, ((actualTemperature - 25) / 60) * 100)}%`,
-                  }}
-                ></div>
+                <div className="absolute bottom-0 left-0 right-0 bg-red-500 transition-all duration-500 rounded-full"
+                     style={{ height: `${Math.min(100, ((actualTemperature - 25) / 60) * 100)}%` }}>
+                </div>
                 <div className="absolute -left-8 top-0 text-[8px] text-gray-600 font-mono">
                   {Math.round(actualTemperature)}°C
                 </div>
@@ -561,8 +543,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 {chemicals.map((c) => c.name.split(" ")[0]).join(" + ")}
               </div>
               <div className="text-gray-600 text-center">
-                {chemicals.reduce((sum, c) => sum + c.amount, 0).toFixed(1)} mL
-                total
+                {chemicals.reduce((sum, c) => sum + c.amount, 0).toFixed(1)} mL total
               </div>
               {isBeingHeated && (
                 <div className="text-orange-600 text-center font-medium">
@@ -580,10 +561,8 @@ export const Equipment: React.FC<EquipmentProps> = ({
           {/* Smooth drop success animation */}
           {isDropping && (
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-              <div
-                className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium
-                            animate-bounce shadow-lg border border-green-600"
-              >
+              <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium
+                            animate-bounce shadow-lg border border-green-600">
                 ✓ Added!
               </div>
             </div>
@@ -648,27 +627,31 @@ export const Equipment: React.FC<EquipmentProps> = ({
   };
 
   return (
-    <div
-      draggable
-      onDragStart={handleDragStart}
-      onDragOver={isContainer ? handleChemicalDragOver : undefined}
-      onDragLeave={isContainer ? handleChemicalDragLeave : undefined}
-      onDrop={isContainer ? handleChemicalDrop : undefined}
-      className={`flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-grab active:cursor-grabbing border-2 relative ${
-        isOnWorkbench
-          ? "border-blue-400 bg-blue-50"
-          : "border-gray-200 hover:border-blue-400"
-      } ${isContainer && isDragOver ? "border-green-500 bg-green-50 scale-105" : ""} ${
-        isDropping ? "animate-pulse" : ""
-      }`}
-      style={{
-        position: isOnWorkbench ? "absolute" : "relative",
-        left: isOnWorkbench && position ? position.x : "auto",
-        top: isOnWorkbench && position ? position.y : "auto",
-        zIndex: isOnWorkbench ? 10 : "auto",
-        transform: isOnWorkbench ? "translate(-50%, -50%)" : "none",
-      }}
-    >
+    <>
+      <div
+        draggable
+        onDragStart={handleDragStart}
+        onDragOver={isContainer ? handleChemicalDragOver : undefined}
+        onDragLeave={isContainer ? handleChemicalDragLeave : undefined}
+        onDrop={isContainer ? handleChemicalDrop : undefined}
+        onDoubleClick={handleDoubleClick}
+        onContextMenu={handleRightClick}
+        className={`flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-grab active:cursor-grabbing border-2 relative ${
+          isOnWorkbench
+            ? "border-blue-400 bg-blue-50"
+            : "border-gray-200 hover:border-blue-400"
+        } ${isContainer && isDragOver ? "border-green-500 bg-green-50 scale-105" : ""} ${
+          isDropping ? "animate-pulse" : ""
+        }`}
+        style={{
+          position: isOnWorkbench ? "absolute" : "relative",
+          left: isOnWorkbench && position ? position.x : "auto",
+          top: isOnWorkbench && position ? position.y : "auto",
+          zIndex: isOnWorkbench ? 10 : "auto",
+          transform: isOnWorkbench ? "translate(-50%, -50%)" : "none",
+        }}
+        title={isOnWorkbench ? "Double-click or right-click to remove" : "Drag to workbench"}
+      >
       {/* Enhanced drop zone indicator */}
       {isContainer && isOnWorkbench && (
         <div
@@ -754,7 +737,7 @@ export const equipmentList = [
         <div className="absolute top-1 left-1 w-1 h-4 bg-white opacity-50 rounded-full"></div>
         <div className="absolute bottom-0 left-1 right-1 h-2 bg-blue-200 opacity-60 rounded-b-lg"></div>
       </div>
-    ),
+    )
   },
   {
     id: "flask",
@@ -766,7 +749,7 @@ export const equipmentList = [
         </div>
         <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-2 h-4 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-400 rounded-t-lg"></div>
       </div>
-    ),
+    )
   },
   {
     id: "burette",
@@ -778,7 +761,7 @@ export const equipmentList = [
           <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-gray-500 rounded-full"></div>
         </div>
       </div>
-    ),
+    )
   },
   {
     id: "thermometer",
@@ -790,6 +773,6 @@ export const equipmentList = [
           <div className="absolute bottom-3 left-0 right-0 h-2 bg-red-400 rounded-full"></div>
         </div>
       </div>
-    ),
+    )
   },
 ];
