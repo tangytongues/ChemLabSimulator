@@ -262,28 +262,63 @@ export const Equipment: React.FC<EquipmentProps> = ({
         );
       }
 
-      if (id === "graduated_cylinder") {
+      if (id === "graduated_cylinder" || id === "burette") {
         return (
           <div className="relative">
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2F60a43d2a9504457b8647e336617950c9?format=webp&width=800"
               alt="Graduated Cylinder"
-              className="w-12 h-24 object-contain drop-shadow-lg"
+              className="w-14 h-28 object-contain drop-shadow-lg"
             />
 
-            {/* Solution in graduated cylinder */}
+            {/* Solution in graduated cylinder/burette */}
             {chemicals.length > 0 && (
               <div
-                className="absolute bottom-1 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out"
+                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out"
                 style={{
                   backgroundColor: getMixedColor(),
-                  width: "80%",
-                  height: `${Math.min(80, getSolutionHeight() * 0.8)}px`,
+                  width: "70%",
+                  height: `${Math.min(90, getSolutionHeight() * 0.85)}px`,
                   opacity: 0.85,
                   borderRadius: "0 0 4px 4px",
                 }}
               >
                 <div className="absolute top-0 left-0 right-0 h-0.5 bg-white opacity-30 rounded-full"></div>
+
+                {/* Liquid movement animation for burette */}
+                {id === "burette" && (
+                  <div className="absolute inset-0">
+                    <div
+                      className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full"
+                      style={{
+                        animationName: "pulse",
+                        animationDuration: "2s",
+                        animationIterationCount: "infinite",
+                        animationDelay: "0.3s",
+                      }}
+                    ></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Enhanced drop animation for burette */}
+            {id === "burette" && isDropping && (
+              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-2 rounded-full"
+                    style={{
+                      backgroundColor: getMixedColor(),
+                      left: `${-2 + i}px`,
+                      animationName: "bounce",
+                      animationDuration: "0.8s",
+                      animationIterationCount: "infinite",
+                      animationDelay: `${i * 0.2}s`,
+                    }}
+                  />
+                ))}
               </div>
             )}
           </div>
