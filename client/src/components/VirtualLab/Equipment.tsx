@@ -400,12 +400,14 @@ export const Equipment: React.FC<EquipmentProps> = ({
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-2 rounded-full animate-bounce"
+                    className="absolute w-1 h-2 rounded-full"
                     style={{
                       backgroundColor: getMixedColor(),
                       left: `${-2 + i}px`,
-                      animationDelay: `${i * 0.2}s`,
+                      animationName: "bounce",
                       animationDuration: "0.8s",
+                      animationIterationCount: "infinite",
+                      animationDelay: `${i * 0.2}s`,
                     }}
                   />
                 ))}
