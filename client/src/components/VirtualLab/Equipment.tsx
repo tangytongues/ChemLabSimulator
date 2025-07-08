@@ -351,11 +351,20 @@ export const Equipment: React.FC<EquipmentProps> = ({
       }
 
       if (id === "beaker") {
-        // For beaker, we'll use a stylized version since no image was provided
+        // For beaker, create a more realistic glass appearance
         return (
           <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-400 rounded-b-lg shadow-lg relative overflow-hidden">
-              <div className="absolute top-1 left-1 w-2 h-8 bg-white opacity-50 rounded-full"></div>
+            <div
+              className="w-24 h-24 bg-gradient-to-b from-transparent via-gray-50 to-gray-100 border-2 border-gray-300 rounded-b-lg relative overflow-hidden"
+              style={{
+                filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.15))",
+                background:
+                  "linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.7) 50%, rgba(200,200,200,0.3) 100%)",
+                backdropFilter: "blur(1px)",
+              }}
+            >
+              <div className="absolute top-2 left-2 w-3 h-12 bg-white opacity-40 rounded-full"></div>
+              <div className="absolute top-1 right-2 w-1 h-8 bg-white opacity-30 rounded-full"></div>
 
               {/* Solution in beaker */}
               {chemicals.length > 0 && (
