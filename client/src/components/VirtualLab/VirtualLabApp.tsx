@@ -793,7 +793,6 @@ function VirtualLabApp({
     setTargetTemperature(25);
     setActualTemperature(25);
     setHeatingTime(0);
-    setSpeedMultiplier(1);
     setMeasurements((prev) => ({
       ...prev,
       temperature: 25,
