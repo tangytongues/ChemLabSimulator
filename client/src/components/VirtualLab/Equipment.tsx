@@ -376,245 +376,152 @@ export const Equipment: React.FC<EquipmentProps> = ({
 
       return (
         <div className="relative">
-          {/* Enhanced Erlenmeyer Flask Illustration */}
-          <svg
-            width="100"
-            height="120"
-            viewBox="0 0 100 120"
-            className="drop-shadow-lg"
-          >
-            {/* Flask body with glass shine effect */}
-            <defs>
-              <linearGradient
-                id="glassGradient"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
+          {/* Realistic Erlenmeyer Flask with 3D appearance */}
+          <div className="relative w-24 h-32">
+            {/* Flask body with realistic glass effect */}
+            <div
+              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${
+                isBeingHeated ? "filter brightness-110 saturate-110" : ""
+              }`}
+            >
+              {/* Main flask body */}
+              <div
+                className="relative w-20 h-20 bg-gradient-to-br from-white via-gray-50 to-gray-100
+                            rounded-full border-2 border-gray-300 shadow-lg overflow-hidden"
               >
-                <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
-                <stop offset="100%" stopColor="rgba(59, 130, 246, 0.1)" />
-              </linearGradient>
-              <linearGradient
-                id="heatingGlow"
-                x1="0%"
-                y1="0%"
-                x2="100%"
-                y2="100%"
-              >
-                <stop offset="0%" stopColor="rgba(249, 115, 22, 0.2)" />
-                <stop offset="100%" stopColor="rgba(239, 68, 68, 0.1)" />
-              </linearGradient>
-            </defs>
+                {/* Glass reflection effect */}
+                <div
+                  className="absolute top-2 left-2 w-3 h-6 bg-gradient-to-br from-white to-transparent
+                              opacity-60 rounded-full transform rotate-12"
+                ></div>
 
-            {/* Flask body */}
-            <path
-              d="M30 25 L30 40 L15 85 L85 85 L70 40 L70 25 Z"
-              fill={isBeingHeated ? "url(#heatingGlow)" : "url(#glassGradient)"}
-              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
-              strokeWidth="2.5"
-              className={isBeingHeated ? "animate-pulse" : ""}
-            />
-
-            {/* Flask neck */}
-            <rect
-              x="40"
-              y="12"
-              width="20"
-              height="18"
-              fill={
-                isBeingHeated
-                  ? "rgba(249, 115, 22, 0.1)"
-                  : "rgba(59, 130, 246, 0.1)"
-              }
-              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
-              strokeWidth="2.5"
-              rx="3"
-            />
-
-            {/* Flask opening */}
-            <ellipse
-              cx="50"
-              cy="12"
-              rx="12"
-              ry="3"
-              fill="none"
-              stroke={isBeingHeated ? "#f97316" : "#2563eb"}
-              strokeWidth="2.5"
-            />
-
-            {/* Solution in flask with enhanced visual */}
-            {chemicals.length > 0 && (
-              <g>
-                {/* Main solution */}
-                <path
-                  d={`M${20 + chemicals.length * 1.5} ${85 - getSolutionHeight() * 0.5} L${80 - chemicals.length * 1.5} ${85 - getSolutionHeight() * 0.5} L85 85 L15 85 Z`}
-                  fill={getMixedColor()}
-                  opacity="0.9"
-                  className="transition-all duration-500"
-                />
-
-                {/* Solution surface with reflection */}
-                <ellipse
-                  cx="50"
-                  cy={85 - getSolutionHeight() * 0.5}
-                  rx={32 - chemicals.length * 1.5}
-                  ry="2"
-                  fill="rgba(255, 255, 255, 0.4)"
-                  className="animate-pulse"
-                />
-
-                {/* Heat distortion effect when heating */}
-                {isBeingHeated && (
-                  <g>
-                    <path
-                      d="M25 75 Q30 70 35 75 T45 75"
-                      stroke="rgba(255, 255, 255, 0.6)"
-                      strokeWidth="1"
-                      fill="none"
-                      className="animate-bounce"
-                    />
-                    <path
-                      d="M55 75 Q60 70 65 75 T75 75"
-                      stroke="rgba(255, 255, 255, 0.6)"
-                      strokeWidth="1"
-                      fill="none"
-                      className="animate-bounce"
-                      style={{ animationDelay: "0.3s" }}
-                    />
-                  </g>
-                )}
-              </g>
-            )}
-
-            {/* Volume markings */}
-            <g stroke="#6b7280" strokeWidth="1" fill="#6b7280">
-              <line x1="87" y1="55" x2="92" y2="55" />
-              <text x="94" y="58" fontSize="7" fontWeight="bold">
-                125mL
-              </text>
-              <line x1="87" y1="65" x2="90" y2="65" />
-              <text x="94" y="68" fontSize="6">
-                100mL
-              </text>
-              <line x1="87" y1="75" x2="90" y2="75" />
-              <text x="94" y="78" fontSize="6">
-                50mL
-              </text>
-            </g>
-
-            {/* Enhanced bubbling animation for reactions */}
-            {(chemicals.length > 1 || isBeingHeated) && (
-              <g>
-                {[...Array(isBeingHeated ? 12 : 6)].map((_, i) => (
-                  <circle
-                    key={i}
-                    cx={25 + (i % 6) * 9}
-                    cy={80 - (i % 3) * 8 - Math.floor(i / 6) * 5}
-                    r={isBeingHeated ? "2" : "1.5"}
-                    fill="rgba(255, 255, 255, 0.8)"
-                    className="animate-bounce"
+                {/* Solution in flask with improved physics */}
+                {chemicals.length > 0 && (
+                  <div
+                    className="absolute bottom-1 left-1 right-1 rounded-b-full transition-all duration-700 ease-out"
                     style={{
-                      animationDelay: `${i * 0.2}s`,
-                      animationDuration: isBeingHeated ? "1s" : "1.5s",
+                      backgroundColor: getMixedColor(),
+                      height: `${Math.min(70, getSolutionHeight() * 0.8)}px`,
+                      opacity: 0.9,
+                      boxShadow: `inset 0 -2px 4px rgba(0,0,0,0.1)`,
                     }}
-                  />
-                ))}
+                  >
+                    {/* Solution surface with meniscus */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-40 rounded-full"></div>
+
+                    {/* Enhanced bubbling animation for reactions */}
+                    {(chemicals.length > 1 || isBeingHeated) && (
+                      <div className="absolute inset-0">
+                        {[...Array(isBeingHeated ? 12 : 6)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="absolute w-1 h-1 bg-white rounded-full opacity-80"
+                            style={{
+                              left: `${15 + (i % 4) * 15}%`,
+                              bottom: `${10 + (i % 3) * 15}px`,
+                              animation: `bounce ${isBeingHeated ? "1s" : "1.5s"} infinite`,
+                              animationDelay: `${i * 0.15}s`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Heat distortion effect when heating */}
+                    {isBeingHeated && (
+                      <div className="absolute inset-0">
+                        {[...Array(4)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="absolute w-6 h-px bg-white opacity-30 animate-pulse"
+                            style={{
+                              left: `${10 + i * 15}%`,
+                              top: `${20 + i * 10}%`,
+                              animationDelay: `${i * 0.3}s`,
+                              transform: `rotate(${-5 + i * 3}deg)`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Heating glow effect on flask body */}
+                {isBeingHeated && (
+                  <div className="absolute inset-0 rounded-full bg-orange-300 opacity-20 animate-pulse"></div>
+                )}
+              </div>
+
+              {/* Flask neck */}
+              <div
+                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
+                            w-6 h-10 bg-gradient-to-b from-gray-100 to-gray-200
+                            border-2 border-gray-300 rounded-t-lg shadow-sm"
+              >
+                {/* Glass reflection on neck */}
+                <div className="absolute top-1 left-1 w-1 h-6 bg-white opacity-50 rounded-full"></div>
 
                 {/* Steam/vapor when heating */}
                 {isBeingHeated && (
-                  <g>
-                    <path
-                      d="M45 12 Q50 5 55 12"
-                      stroke="rgba(255, 255, 255, 0.7)"
-                      strokeWidth="2"
-                      fill="none"
-                      className="animate-pulse"
-                    />
-                    <path
-                      d="M42 10 Q47 3 52 10"
-                      stroke="rgba(255, 255, 255, 0.5)"
-                      strokeWidth="1.5"
-                      fill="none"
-                      className="animate-pulse"
-                      style={{ animationDelay: "0.5s" }}
-                    />
-                    <path
-                      d="M48 8 Q53 1 58 8"
-                      stroke="rgba(255, 255, 255, 0.5)"
-                      strokeWidth="1.5"
-                      fill="none"
-                      className="animate-pulse"
-                      style={{ animationDelay: "1s" }}
-                    />
-                  </g>
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                    {[...Array(3)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-px h-8 bg-white opacity-40 animate-pulse"
+                        style={{
+                          left: `${-2 + i * 2}px`,
+                          animationDelay: `${i * 0.3}s`,
+                          transform: `rotate(${-5 + i * 5}deg)`,
+                        }}
+                      />
+                    ))}
+                  </div>
                 )}
-              </g>
-            )}
+              </div>
 
-            {/* Glass shine highlight */}
-            <path
-              d="M35 30 L38 32 L38 50 L35 52"
-              stroke="rgba(255, 255, 255, 0.6)"
-              strokeWidth="2"
-              fill="none"
-            />
+              {/* Flask opening */}
+              <div
+                className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8
+                            w-8 h-2 bg-gradient-to-b from-gray-200 to-gray-300 rounded-full border border-gray-400"
+              ></div>
+            </div>
+
+            {/* Volume markings */}
+            <div className="absolute right-0 top-8 space-y-3 text-[8px] text-gray-600 font-mono">
+              <div className="flex items-center">
+                <div className="w-2 h-px bg-gray-400 mr-1"></div>
+                <span>125</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-1 h-px bg-gray-400 mr-1"></div>
+                <span>100</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-1 h-px bg-gray-400 mr-1"></div>
+                <span>50</span>
+              </div>
+            </div>
 
             {/* Temperature indicator when heating */}
             {isBeingHeated && (
-              <g>
-                <rect
-                  x="5"
-                  y="45"
-                  width="8"
-                  height="25"
-                  rx="4"
-                  fill="#374151"
-                />
-                <rect
-                  x="6"
-                  y="46"
-                  width="6"
-                  height="23"
-                  rx="3"
-                  fill="#000000"
-                />
-                <rect
-                  x="7"
-                  y={69 - (actualTemperature - 25) * 0.4}
-                  width="4"
-                  height={(actualTemperature - 25) * 0.4}
-                  fill="#ef4444"
-                  className="transition-all duration-500"
-                />
-                <text
-                  x="2"
-                  y="42"
-                  fontSize="6"
-                  fill="#374151"
-                  fontWeight="bold"
-                >
+              <div className="absolute left-0 top-8 w-3 h-12 bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-red-500 transition-all duration-500 rounded-full"
+                  style={{
+                    height: `${Math.min(100, ((actualTemperature - 25) / 60) * 100)}%`,
+                  }}
+                ></div>
+                <div className="absolute -left-8 top-0 text-[8px] text-gray-600 font-mono">
                   {Math.round(actualTemperature)}°C
-                </text>
-              </g>
+                </div>
+              </div>
             )}
-
-            {/* Flask label */}
-            <text
-              x="50"
-              y="105"
-              textAnchor="middle"
-              fontSize="9"
-              fill="#374151"
-              fontWeight="bold"
-            >
-              125mL Erlenmeyer Flask
-            </text>
-          </svg>
+          </div>
 
           {/* Enhanced chemical composition display */}
           {chemicals.length > 0 && (
-            <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-white border-2 border-gray-300 rounded-lg px-3 py-2 text-xs shadow-lg">
+            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 bg-white border-2 border-gray-300 rounded-lg px-3 py-2 text-xs shadow-lg">
               <div className="text-gray-800 font-medium text-center">
                 {chemicals.map((c) => c.name.split(" ")[0]).join(" + ")}
               </div>
@@ -635,18 +542,16 @@ export const Equipment: React.FC<EquipmentProps> = ({
             </div>
           )}
 
-          {/* Drop success animation */}
+          {/* Smooth drop success animation */}
           {isDropping && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium animate-pulse">
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+              <div
+                className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium
+                            animate-bounce shadow-lg border border-green-600"
+              >
                 ✓ Added!
               </div>
             </div>
-          )}
-
-          {/* Heating glow effect */}
-          {isBeingHeated && (
-            <div className="absolute inset-0 rounded-full bg-orange-400 opacity-20 animate-pulse blur-sm"></div>
           )}
         </div>
       );
