@@ -932,27 +932,33 @@ function VirtualLabApp({
   };
 
   const handleRestartExperiment = () => {
-    setShowWrongStepModal(false);
-    setCurrentGuidedStep(1);
-    setEquipmentPositions([]);
-    setIsHeating(false);
-    setHeatingTime(0);
-    setTargetTemperature(25);
-    setActualTemperature(25);
-    setResults([]);
-    setMeasurements({
-      volume: 0,
-      concentration: 0,
-      ph: 7,
-      molarity: 0,
-      weight: 0,
-      moles: 0,
-      temperature: 25,
-    });
-    setExperimentCompleted(false);
-    setCompletionTime(null);
-    setToastMessage("🔄 Experiment restarted");
-    setTimeout(() => setToastMessage(null), 2000);
+    try {
+      setShowWrongStepModal(false);
+      setCurrentGuidedStep(1);
+      setEquipmentPositions([]);
+      setIsHeating(false);
+      setHeatingTime(0);
+      setTargetTemperature(25);
+      setActualTemperature(25);
+      setResults([]);
+      setMeasurements({
+        volume: 0,
+        concentration: 0,
+        ph: 7,
+        molarity: 0,
+        weight: 0,
+        moles: 0,
+        temperature: 25,
+      });
+      setExperimentCompleted(false);
+      setCompletionTime(null);
+      setToastMessage("🔄 Experiment restarted");
+      setTimeout(() => setToastMessage(null), 2000);
+    } catch (error) {
+      console.warn("Error restarting experiment:", error);
+      // At minimum, close the modal
+      setShowWrongStepModal(false);
+    }
   };
 
   const handleStepClick = (stepId: number) => {
