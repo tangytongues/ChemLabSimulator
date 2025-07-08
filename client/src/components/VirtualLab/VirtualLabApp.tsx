@@ -95,6 +95,10 @@ function VirtualLabApp({
     moles: 0,
     temperature: 25,
   });
+  const [isHeating, setIsHeating] = useState(false);
+  const [heatingTime, setHeatingTime] = useState(0);
+  const [targetTemperature, setTargetTemperature] = useState(25);
+  const [actualTemperature, setActualTemperature] = useState(25);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
 
@@ -408,8 +412,12 @@ function VirtualLabApp({
     {
       id: 6,
       title: "Heat Reaction",
-      instruction: "Place the flask in the water bath and heat for 15 minutes",
+      instruction:
+        "Place the flask in the water bath and heat for 15 minutes at 85°C",
       completed: false,
+      requiresHeating: true,
+      targetTemp: 85,
+      duration: 15,
     },
   ];
 
@@ -428,6 +436,14 @@ function VirtualLabApp({
             setCurrentGuidedStep((prev) => prev + 1);
             setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
             setTimeout(() => setToastMessage(null), 3000);
+          }
+
+          // Auto-start heating when water bath is placed for heating step
+          if (id === "water_bath" && currentGuidedStep === 5) {
+            setTimeout(() => {
+              setToastMessage("💡 Click on the water bath to start heating!");
+              setTimeout(() => setToastMessage(null), 4000);
+            }, 1000);
           }
         }
 
@@ -584,6 +600,76 @@ function VirtualLabApp({
     onStepComplete();
   };
 
+  const handleStartHeating = () => {
+    if (!isHeating) {
+      setIsHeating(true);
+      setTargetTemperature(85);
+      setHeatingTime(0);
+      setToastMessage("🔥 Water bath heating started - Target: 85°C");
+      setTimeout(() => setToastMessage(null), 3000);
+
+      // Simulate temperature increase over time
+      const heatingInterval = setInterval(() => {
+        setActualTemperature((temp) => {
+          const newTemp = Math.min(85, temp + 2);
+          if (newTemp >= 85) {
+            setToastMessage(
+              "✓ Target temperature reached! Heat for 15 minutes.",
+            );
+            setTimeout(() => setToastMessage(null), 4000);
+          }
+          return newTemp;
+        });
+
+        // Update measurements temperature too
+        setMeasurements((prev) => ({
+          ...prev,
+          temperature: Math.min(85, prev.temperature + 2),
+        }));
+      }, 1000);
+
+      // Track heating time
+      const timeInterval = setInterval(() => {
+        setHeatingTime((time) => {
+          const newTime = time + 1;
+          if (newTime >= 15 * 60) {
+            // 15 minutes
+            clearInterval(heatingInterval);
+            clearInterval(timeInterval);
+            setIsHeating(false);
+            setCurrentGuidedStep((prev) => prev + 1);
+            setToastMessage("✅ Heating step completed!");
+            setTimeout(() => setToastMessage(null), 3000);
+            return 15 * 60;
+          }
+          return newTime;
+        });
+      }, 1000);
+
+      // Store intervals for cleanup
+      setTimeout(
+        () => {
+          if (heatingInterval) clearInterval(heatingInterval);
+          if (timeInterval) clearInterval(timeInterval);
+        },
+        16 * 60 * 1000,
+      ); // Cleanup after 16 minutes
+    }
+  };
+
+  const handleStopHeating = () => {
+    setIsHeating(false);
+    setTargetTemperature(25);
+    setActualTemperature(25);
+    setHeatingTime(0);
+    setMeasurements((prev) => ({
+      ...prev,
+      temperature: 25,
+    }));
+    setToastMessage("🔥 Heating stopped");
+    setTimeout(() => setToastMessage(null), 2000);
+  };
+
   const handleClearResults = () => {
     setResults([]);
   };
@@ -674,6 +760,103 @@ function VirtualLabApp({
                   onStepClick={handleStepClick}
                 />
               )}
+
+              {/* Heating Status Panel - For Aspirin Experiment */}
+              {experimentTitle.includes("Aspirin") &&
+                (isHeating || heatingTime > 0) && (
+                  <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-gray-900 text-sm flex items-center">
+                        🔥 Heating Status
+                      </h3>
+                      {isHeating && (
+                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="bg-orange-50 p-2 rounded">
+                          <div className="text-xs text-orange-600 font-medium">
+                            Current Temp
+                          </div>
+                          <div className="text-sm font-bold text-orange-900">
+                            {Math.round(actualTemperature)}°C
+                          </div>
+                        </div>
+                        <div className="bg-red-50 p-2 rounded">
+                          <div className="text-xs text-red-600 font-medium">
+                            Target Temp
+                          </div>
+                          <div className="text-sm font-bold text-red-900">
+                            {targetTemperature}°C
+                          </div>
+                        </div>
+                        <div className="bg-blue-50 p-2 rounded">
+                          <div className="text-xs text-blue-600 font-medium">
+                            Heating Time
+                          </div>
+                          <div className="text-sm font-bold text-blue-900">
+                            {Math.floor(heatingTime / 60)}:
+                            {String(heatingTime % 60).padStart(2, "0")}
+                          </div>
+                        </div>
+                        <div className="bg-green-50 p-2 rounded">
+                          <div className="text-xs text-green-600 font-medium">
+                            Progress
+                          </div>
+                          <div className="text-sm font-bold text-green-900">
+                            {Math.min(
+                              100,
+                              Math.round((heatingTime / (15 * 60)) * 100),
+                            )}
+                            %
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-orange-600 h-2 rounded-full transition-all duration-500"
+                          style={{
+                            width: `${Math.min(100, (heatingTime / (15 * 60)) * 100)}%`,
+                          }}
+                        ></div>
+                      </div>
+
+                      {/* Status messages */}
+                      <div className="bg-gray-50 p-2 rounded border-t border-gray-200">
+                        <div className="text-xs text-gray-600 font-medium mb-1">
+                          Status
+                        </div>
+                        <div className="text-xs">
+                          {!isHeating && heatingTime === 0 && (
+                            <span className="text-gray-600">Ready to heat</span>
+                          )}
+                          {isHeating &&
+                            actualTemperature < targetTemperature && (
+                              <span className="text-orange-600">
+                                Heating up...
+                              </span>
+                            )}
+                          {isHeating &&
+                            actualTemperature >= targetTemperature &&
+                            heatingTime < 15 * 60 && (
+                              <span className="text-green-600">
+                                At target temperature - Continue heating
+                              </span>
+                            )}
+                          {heatingTime >= 15 * 60 && (
+                            <span className="text-green-600">
+                              ✅ Heating complete!
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {/* Concentration Measurement Panel - For Experiments 2 & 3 */}
               {(experimentTitle.includes("Acid-Base") ||
@@ -875,6 +1058,15 @@ function VirtualLabApp({
                     position={pos}
                     chemicals={pos.chemicals}
                     onChemicalDrop={handleChemicalDrop}
+                    isHeating={
+                      isHeating &&
+                      (pos.id === "water_bath" || pos.id === "erlenmeyer_flask")
+                    }
+                    actualTemperature={actualTemperature}
+                    targetTemperature={targetTemperature}
+                    heatingTime={heatingTime}
+                    onStartHeating={handleStartHeating}
+                    onStopHeating={handleStopHeating}
                   />
                 ) : null;
               })}
