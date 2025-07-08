@@ -10,7 +10,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Clock, Book, Trophy } from "lucide-react";
-import { useExperiments } from "@/hooks/use-experiments";
+import { useExperiments, useUserProgress } from "@/hooks/use-experiments";
 import { getUserId } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 
