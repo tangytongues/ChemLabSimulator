@@ -86,9 +86,9 @@ export const Chemical: React.FC<ChemicalProps> = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={() => onSelect(id)}
-      className={`p-4 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200 border-2 transform hover:scale-105 ${
+      className={`p-4 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-300 ease-out border-2 transform hover:scale-[1.02] ${
         selected
-          ? "border-purple-500 bg-purple-50 shadow-lg scale-105 ring-2 ring-purple-300"
+          ? "border-purple-500 bg-purple-50 shadow-lg scale-[1.02] ring-2 ring-purple-300 ring-opacity-50"
           : "border-gray-200 bg-white hover:border-purple-300 hover:shadow-md"
       }`}
     >
