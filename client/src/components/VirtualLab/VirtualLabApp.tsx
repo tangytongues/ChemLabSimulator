@@ -1291,6 +1291,7 @@ function VirtualLabApp({
                   setExperimentCompleted(false);
                   setCompletionTime(null);
                   setShowCompletionModal(false);
+                  setShowWrongStepModal(false);
                   setIsHeating(false);
                   setHeatingTime(0);
                   setTargetTemperature(25);
