@@ -1627,6 +1627,7 @@ function VirtualLabApp({
                     setIsHeating(false);
                     setHeatingTime(0);
                     setActualTemperature(25);
+                    setShowWrongStepModal(false);
                     setMeasurements({
                       volume: 0,
                       concentration: 0,
