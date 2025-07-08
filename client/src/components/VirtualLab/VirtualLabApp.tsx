@@ -1212,6 +1212,7 @@ function VirtualLabApp({
                     heatingTime={heatingTime}
                     onStartHeating={handleStartHeating}
                     onStopHeating={handleStopHeating}
+                    onRemove={handleEquipmentRemove}
                   />
                 ) : null;
               })}
