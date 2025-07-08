@@ -932,9 +932,13 @@ export const Equipment: React.FC<EquipmentProps> = ({
           isOnWorkbench
             ? "cursor-grab active:cursor-grabbing relative"
             : "flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 cursor-grab active:cursor-grabbing border-2 border-gray-200 hover:border-blue-400 relative"
-        } ${isContainer && isDragOver && isOnWorkbench ? "scale-110" : ""} ${
-          isDropping && isOnWorkbench ? "animate-pulse" : ""
-        }`}
+        } ${
+          isContainer && isDragOver && isOnWorkbench && !isDragging
+            ? "scale-105"
+            : ""
+        } ${
+          isDropping && isOnWorkbench && !isDragging ? "animate-pulse" : ""
+        } ${isDragging ? "opacity-80 transition-none" : ""}`}
         style={{
           position: isOnWorkbench ? "absolute" : "relative",
           left: isOnWorkbench && position ? position.x : "auto",
