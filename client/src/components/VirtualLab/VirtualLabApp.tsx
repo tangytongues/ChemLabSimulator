@@ -452,12 +452,13 @@ function VirtualLabApp({
         setExperimentCompleted(true);
         setCompletionTime(new Date());
         setShowCompletionModal(true);
-        updateProgress.mutate({
-          experimentId,
-          currentStep: totalSteps,
-          completed: true,
-          progressPercentage: 100,
-        });
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: totalSteps,
+        //   completed: true,
+        //   progressPercentage: 100,
+        // });
       }
     }
   }, [
