@@ -193,6 +193,146 @@ export const Equipment: React.FC<EquipmentProps> = ({
   };
 
   const getEquipmentSpecificRendering = () => {
+    // Use realistic images when equipment is on the workbench
+    if (isOnWorkbench) {
+      if (id === "erlenmeyer_flask" || id === "flask") {
+        return (
+          <div className="relative">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2F5a2c42e1b48244e886bf6dca231660fb?format=webp&width=800"
+              alt="Erlenmeyer Flask"
+              className="w-20 h-24 object-contain drop-shadow-lg"
+              style={{
+                filter: isHeating ? "brightness(1.1) saturate(1.2)" : "none",
+              }}
+            />
+
+            {/* Solution overlay on the realistic flask */}
+            {chemicals.length > 0 && (
+              <div
+                className="absolute bottom-2 left-1/2 transform -translate-x-1/2 rounded-b-full transition-all duration-700 ease-out"
+                style={{
+                  backgroundColor: getMixedColor(),
+                  width: "60%",
+                  height: `${Math.min(40, getSolutionHeight() * 0.4)}px`,
+                  opacity: 0.8,
+                  boxShadow: "inset 0 -1px 2px rgba(0,0,0,0.1)",
+                }}
+              >
+                {/* Surface shimmer */}
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-white opacity-40 rounded-full"></div>
+
+                {/* Bubbling animation */}
+                {(chemicals.length > 1 || isHeating) && (
+                  <div className="absolute inset-0">
+                    {[...Array(isHeating ? 8 : 4)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="absolute w-0.5 h-0.5 bg-white rounded-full opacity-80"
+                        style={{
+                          left: `${20 + (i % 3) * 20}%`,
+                          bottom: `${5 + (i % 2) * 10}px`,
+                          animationName: "bounce",
+                          animationDuration: isHeating ? "0.8s" : "1.2s",
+                          animationIterationCount: "infinite",
+                          animationDelay: `${i * 0.1}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Temperature indicator when heating */}
+            {isHeating && (
+              <div className="absolute -left-6 top-4 w-2 h-8 bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="absolute bottom-0 left-0 right-0 bg-red-500 transition-all duration-500 rounded-full"
+                  style={{
+                    height: `${Math.min(100, ((actualTemperature - 25) / 60) * 100)}%`,
+                  }}
+                ></div>
+                <div className="absolute -left-6 top-0 text-[8px] text-gray-600 font-mono">
+                  {Math.round(actualTemperature)}°C
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      if (id === "graduated_cylinder") {
+        return (
+          <div className="relative">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2F60a43d2a9504457b8647e336617950c9?format=webp&width=800"
+              alt="Graduated Cylinder"
+              className="w-12 h-24 object-contain drop-shadow-lg"
+            />
+
+            {/* Solution in graduated cylinder */}
+            {chemicals.length > 0 && (
+              <div
+                className="absolute bottom-1 left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-out"
+                style={{
+                  backgroundColor: getMixedColor(),
+                  width: "80%",
+                  height: `${Math.min(80, getSolutionHeight() * 0.8)}px`,
+                  opacity: 0.85,
+                  borderRadius: "0 0 4px 4px",
+                }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-white opacity-30 rounded-full"></div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      if (id === "thermometer") {
+        return (
+          <div className="relative">
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2Ff88985d180ee4381acf1ac1886943b8b?format=webp&width=800"
+              alt="Thermometer"
+              className="w-6 h-20 object-contain drop-shadow-lg"
+            />
+
+            {/* Temperature reading overlay */}
+            <div className="absolute -right-8 top-2 bg-black text-green-400 px-1 py-0.5 rounded text-[8px] font-mono">
+              {Math.round(actualTemperature)}°C
+            </div>
+          </div>
+        );
+      }
+
+      if (id === "beaker") {
+        // For beaker, we'll use a stylized version since no image was provided
+        return (
+          <div className="relative">
+            <div className="w-16 h-16 bg-gradient-to-b from-gray-100 to-gray-200 border-2 border-gray-400 rounded-b-lg shadow-lg relative overflow-hidden">
+              <div className="absolute top-1 left-1 w-2 h-8 bg-white opacity-50 rounded-full"></div>
+
+              {/* Solution in beaker */}
+              {chemicals.length > 0 && (
+                <div
+                  className="absolute bottom-1 left-1 right-1 rounded-b-lg transition-all duration-700 ease-out"
+                  style={{
+                    backgroundColor: getMixedColor(),
+                    height: `${Math.min(50, getSolutionHeight() * 0.6)}px`,
+                    opacity: 0.8,
+                  }}
+                >
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-white opacity-30 rounded-full"></div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+    }
+
     if (id === "water_bath" && isOnWorkbench) {
       return (
         <div className="relative">
