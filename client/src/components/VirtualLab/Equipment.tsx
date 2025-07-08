@@ -282,46 +282,91 @@ export const Equipment: React.FC<EquipmentProps> = ({
     if (id === "burette" && isOnWorkbench) {
       return (
         <div className="relative">
-          {/* Burette specific rendering */}
-          <div className="w-6 h-20 bg-gradient-to-b from-transparent to-blue-100 border-2 border-blue-400 rounded-b-lg relative">
-            {/* Solution in burette */}
-            {chemicals.length > 0 && (
-              <div
-                className="absolute bottom-0 left-0 right-0 rounded-b-lg transition-all duration-500"
-                style={{
-                  backgroundColor: getMixedColor(),
-                  height: `${getSolutionHeight()}%`,
-                  opacity: 0.8,
-                }}
-              >
-                {/* Liquid surface animation */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-white opacity-30 animate-pulse"></div>
+          {/* Realistic Burette */}
+          <div className="relative w-8 h-32">
+            {/* Main burette tube */}
+            <div className="absolute inset-x-1 top-0 bottom-4 bg-gradient-to-b from-transparent to-gray-100 border-2 border-gray-400 rounded-b-lg overflow-hidden shadow-md">
+              {/* Solution in burette with improved animation */}
+              {chemicals.length > 0 && (
+                <div
+                  className="absolute bottom-0 left-0 right-0 rounded-b-lg transition-all duration-700 ease-out"
+                  style={{
+                    backgroundColor: getMixedColor(),
+                    height: `${getSolutionHeight()}%`,
+                    opacity: 0.85,
+                    backgroundImage: `linear-gradient(180deg, ${getMixedColor()}00 0%, ${getMixedColor()} 100%)`,
+                  }}
+                >
+                  {/* Liquid surface with meniscus effect */}
+                  <div className="absolute top-0 left-0 right-0 h-1">
+                    <div className="w-full h-full bg-white opacity-40 rounded-full animate-pulse"></div>
+                  </div>
+
+                  {/* Liquid movement animation */}
+                  <div className="absolute inset-0">
+                    <div
+                      className="absolute top-1 left-1 w-1 h-2 bg-white opacity-20 rounded-full animate-pulse"
+                      style={{ animationDelay: "0.3s" }}
+                    ></div>
+                    <div
+                      className="absolute top-2 right-1 w-1 h-1 bg-white opacity-30 rounded-full animate-pulse"
+                      style={{ animationDelay: "0.7s" }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
+              {/* Volume markings with better positioning */}
+              <div className="absolute -right-10 inset-y-0 flex flex-col justify-between py-2">
+                <div className="text-[8px] text-gray-600 font-mono">50</div>
+                <div className="text-[8px] text-gray-600 font-mono">40</div>
+                <div className="text-[8px] text-gray-600 font-mono">30</div>
+                <div className="text-[8px] text-gray-600 font-mono">20</div>
+                <div className="text-[8px] text-gray-600 font-mono">10</div>
+                <div className="text-[8px] text-gray-600 font-mono">0</div>
+              </div>
+
+              {/* Scale lines */}
+              <div className="absolute right-0 inset-y-0 flex flex-col justify-between py-2">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="w-2 h-px bg-gray-500"></div>
+                ))}
+              </div>
+            </div>
+
+            {/* Realistic burette tap */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+              <div className="w-3 h-3 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full shadow-sm">
+                <div className="absolute top-0.5 left-0.5 w-2 h-2 bg-gradient-to-br from-gray-200 to-gray-400 rounded-full"></div>
+              </div>
+              {/* Tap handle */}
+              <div className="absolute -right-2 top-1 w-3 h-1 bg-gray-500 rounded-sm"></div>
+            </div>
+
+            {/* Enhanced drop animation when chemicals are added */}
+            {isDropping && (
+              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                {/* Multiple droplets for more realistic effect */}
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-2 rounded-full animate-bounce"
+                    style={{
+                      backgroundColor: getMixedColor(),
+                      left: `${-2 + i}px`,
+                      animationDelay: `${i * 0.2}s`,
+                      animationDuration: "0.8s",
+                    }}
+                  />
+                ))}
+
+                {/* Splash effect */}
+                <div className="absolute top-3 left-1/2 transform -translate-x-1/2">
+                  <div className="w-4 h-px bg-blue-300 opacity-50 animate-ping"></div>
+                </div>
               </div>
             )}
-
-            {/* Volume markings */}
-            <div className="absolute -right-8 top-2 text-xs text-gray-600">
-              50
-            </div>
-            <div className="absolute -right-8 top-8 text-xs text-gray-600">
-              40
-            </div>
-            <div className="absolute -right-8 top-14 text-xs text-gray-600">
-              30
-            </div>
-
-            {/* Burette tap */}
-            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-              <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
-            </div>
           </div>
-
-          {/* Drop animation when chemicals are added */}
-          {isDropping && (
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2">
-              <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce"></div>
-            </div>
-          )}
         </div>
       );
     }
