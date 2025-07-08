@@ -801,16 +801,26 @@ function VirtualLabApp({
     setTimeout(() => setToastMessage(null), 2000);
   };
 
-  const handleFastForward = () => {
-    if (isHeating && actualTemperature >= targetTemperature) {
-      const newMultiplier = speedMultiplier === 1 ? 60 : 1; // Toggle between 1x and 60x speed
-      setSpeedMultiplier(newMultiplier);
-      setToastMessage(
-        newMultiplier === 60
-          ? "⚡ Fast forward activated! (60x speed)"
-          : "🔥 Normal speed restored",
-      );
-      setTimeout(() => setToastMessage(null), 3000);
+  const handleSkipMinute = () => {
+    if (
+      isHeating &&
+      actualTemperature >= targetTemperature &&
+      heatingTime < 15 * 60
+    ) {
+      setHeatingTime((prevTime) => {
+        const newTime = Math.min(prevTime + 60, 15 * 60); // Add 1 minute, but don't exceed 15 minutes
+        if (newTime >= 15 * 60) {
+          // If we've reached the end, complete the heating
+          setIsHeating(false);
+          setCurrentGuidedStep((prev) => prev + 1);
+          setToastMessage("✅ Heating step completed!");
+          setTimeout(() => setToastMessage(null), 3000);
+        } else {
+          setToastMessage("⏩ Skipped ahead 1 minute");
+          setTimeout(() => setToastMessage(null), 2000);
+        }
+        return newTime;
+      });
     }
   };
 
