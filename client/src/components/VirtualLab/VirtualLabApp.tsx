@@ -867,68 +867,14 @@ function VirtualLabApp({
   };
 
   // Function to check if an action is valid for the current step
+  // TEMPORARILY DISABLED TO PREVENT CRASHES
   const validateStepSequence = (
     actionType: "equipment" | "chemical",
     itemId: string,
     targetId?: string,
   ) => {
-    try {
-      if (
-        !experimentTitle.includes("Aspirin") ||
-        !aspirinGuidedSteps ||
-        aspirinGuidedSteps.length === 0
-      )
-        return true; // Only validate for Aspirin experiment
-
-      const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
-      if (!currentStep) return true; // No more steps
-
-      // Check if this action matches the current step
-      if (
-        actionType === "equipment" &&
-        currentStep.requiredEquipment === itemId
-      ) {
-        return true; // Correct equipment for current step
-      }
-
-      if (
-        actionType === "chemical" &&
-        currentStep.requiredChemical === itemId &&
-        currentStep.targetEquipment === targetId
-      ) {
-        return true; // Correct chemical for current step
-      }
-
-      // Check if this action belongs to a future step
-      const futureStep = aspirinGuidedSteps.find(
-        (step) =>
-          step &&
-          step.id > currentGuidedStep &&
-          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
-            (actionType === "chemical" &&
-              step.requiredChemical === itemId &&
-              step.targetEquipment === targetId)),
-      );
-
-      if (futureStep) {
-        try {
-          setWrongStepMessage(
-            `You're trying to do Step ${futureStep.id}: "${futureStep.title}" but you should complete Step ${currentGuidedStep}: "${currentStep.title}" first.`,
-          );
-          setShowWrongStepModal(true);
-        } catch (e) {
-          console.warn("Error setting wrong step message:", e);
-        }
-        return false;
-      }
-
-      // For out-of-order actions that don't match known steps, just allow them
-      // This prevents crashes while still providing guidance for known steps
-      return true;
-    } catch (error) {
-      console.warn("Error in step validation:", error);
-      return true; // Allow action if validation fails to prevent crashes
-    }
+    // Always return true to allow all actions and prevent crashes
+    return true;
   };
 
   const handleRestartExperiment = () => {
