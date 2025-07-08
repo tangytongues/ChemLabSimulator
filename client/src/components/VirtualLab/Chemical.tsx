@@ -159,18 +159,27 @@ export const Chemical: React.FC<ChemicalProps> = ({
         )}
       </div>
 
-      {/* Volume indicator with animation */}
+      {/* Volume indicator with smooth animation */}
       {volume && (
-        <div className="mt-3 bg-gray-100 rounded-full h-3 overflow-hidden">
+        <div className="mt-3 bg-gray-100 rounded-full h-3 overflow-hidden shadow-inner">
           <div
-            className="h-full transition-all duration-500 ease-out rounded-full"
+            className="h-full transition-all duration-700 ease-out rounded-full relative"
             style={{
               width: `${Math.min(100, (volume / 100) * 100)}%`,
               backgroundColor: color,
-              boxShadow: `inset 0 1px 2px rgba(0,0,0,0.1)`,
+              boxShadow: `inset 0 1px 3px rgba(0,0,0,0.1)`,
             }}
           >
-            <div className="h-full w-full bg-gradient-to-r from-transparent to-white opacity-30 rounded-full"></div>
+            {/* Liquid surface effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 rounded-full"></div>
+
+            {/* Volume movement animation */}
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1 bg-white opacity-40 rounded-r-full transition-all duration-300"
+              style={{
+                transform: selected ? "scaleY(1.1)" : "scaleY(1)",
+              }}
+            ></div>
           </div>
         </div>
       )}
