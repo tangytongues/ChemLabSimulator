@@ -762,15 +762,13 @@ function VirtualLabApp({
       // Track heating time
       const timeInterval = setInterval(() => {
         setHeatingTime((time) => {
-          const increment = speedMultiplier === 1 ? 1 : speedMultiplier;
-          const newTime = time + increment;
+          const newTime = time + 1;
           if (newTime >= 15 * 60) {
             // 15 minutes
             clearInterval(heatingInterval);
             clearInterval(timeInterval);
             setIsHeating(false);
             setCurrentGuidedStep((prev) => prev + 1);
-            setSpeedMultiplier(1); // Reset speed after completion
             setToastMessage("✅ Heating step completed!");
             setTimeout(() => setToastMessage(null), 3000);
             return 15 * 60;
