@@ -541,10 +541,17 @@ function VirtualLabApp({
 
   const handleEquipmentDrop = useCallback(
     (id: string, x: number, y: number) => {
+      // Ensure coordinates are valid numbers and within reasonable bounds
+      const validX = Math.max(50, Math.min(x, window.innerWidth - 200));
+      const validY = Math.max(50, Math.min(y, window.innerHeight - 200));
+
       setEquipmentPositions((prev) => {
         const existing = prev.find((pos) => pos.id === id);
         if (existing) {
-          return prev.map((pos) => (pos.id === id ? { ...pos, x, y } : pos));
+          // Smooth position update for existing equipment
+          return prev.map((pos) =>
+            pos.id === id ? { ...pos, x: validX, y: validY } : pos,
+          );
         }
 
         // Check if this completes a guided step for Aspirin Synthesis
