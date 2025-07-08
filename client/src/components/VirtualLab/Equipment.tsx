@@ -25,6 +25,7 @@ interface EquipmentProps {
     equipmentId: string,
     amount: number,
   ) => void;
+  onRemove?: (id: string) => void;
   isHeating?: boolean;
   actualTemperature?: number;
   targetTemperature?: number;
