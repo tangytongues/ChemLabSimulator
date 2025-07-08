@@ -1493,6 +1493,7 @@ function VirtualLabApp({
                     setIsHeating(false);
                     setHeatingTime(0);
                     setActualTemperature(25);
+                    setSpeedMultiplier(1);
                     setMeasurements({
                       volume: 0,
                       concentration: 0,
