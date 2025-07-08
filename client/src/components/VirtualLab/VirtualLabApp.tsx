@@ -378,6 +378,115 @@ function VirtualLabApp({
     return [];
   }, [experimentTitle]);
 
+  // Check for experiment completion
+  const checkExperimentCompletion = useCallback(() => {
+    if (experimentTitle.includes("Aspirin")) {
+      // Aspirin experiment completion: all guided steps completed + heating finished
+      const allStepsCompleted = currentGuidedStep > aspirinGuidedSteps.length;
+      const heatingCompleted = heatingTime >= 15 * 60; // 15 minutes
+      const hasRequiredChemicals = equipmentPositions.some(
+        (pos) =>
+          pos.chemicals.length >= 3 &&
+          pos.chemicals.some((c) => c.id === "salicylic_acid") &&
+          pos.chemicals.some((c) => c.id === "acetic_anhydride"),
+      );
+
+      if (
+        allStepsCompleted &&
+        heatingCompleted &&
+        hasRequiredChemicals &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    } else if (experimentTitle.includes("Acid-Base")) {
+      // Acid-Base titration completion: endpoint reached
+      const endpointReached = measurements.ph > 8.5;
+      const hasIndicator = equipmentPositions.some((pos) =>
+        pos.chemicals.some((c) => c.id === "phenol"),
+      );
+      const volumeAdded = measurements.volume > 20; // Reasonable titration volume
+
+      if (
+        endpointReached &&
+        hasIndicator &&
+        volumeAdded &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    } else if (experimentTitle.includes("Equilibrium")) {
+      // Equilibrium experiment completion: all color changes observed
+      const hasTemperatureChange = measurements.temperature !== 25;
+      const hasChemicalReactions = results.some((r) => r.type === "reaction");
+      const hasConcentrationChanges = equipmentPositions.some(
+        (pos) => pos.chemicals.length >= 2,
+      );
+
+      if (
+        hasTemperatureChange &&
+        hasChemicalReactions &&
+        hasConcentrationChanges &&
+        !experimentCompleted
+      ) {
+        setExperimentCompleted(true);
+        setCompletionTime(new Date());
+        setShowCompletionModal(true);
+        updateProgress.mutate({
+          experimentId,
+          currentStep: totalSteps,
+          completed: true,
+          progressPercentage: 100,
+        });
+      }
+    }
+  }, [
+    experimentTitle,
+    currentGuidedStep,
+    heatingTime,
+    equipmentPositions,
+    measurements,
+    results,
+    experimentCompleted,
+    totalSteps,
+    experimentId,
+    updateProgress,
+  ]);
+
+  // Monitor completion conditions
+  useEffect(() => {
+    checkExperimentCompletion();
+  }, [checkExperimentCompletion]);
+
+  // Update progress when step changes
+  useEffect(() => {
+    if (stepNumber > 1) {
+      const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
+      updateProgress.mutate({
+        experimentId,
+        currentStep: stepNumber,
+        completed: stepNumber >= totalSteps,
+        progressPercentage,
+      });
+    }
+  }, [stepNumber, totalSteps, experimentId, updateProgress]);
+
   // Guided steps for Aspirin Synthesis
   const aspirinGuidedSteps = [
     {
