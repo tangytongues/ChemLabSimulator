@@ -270,7 +270,7 @@ export const Equipment: React.FC<EquipmentProps> = ({
             <img
               src="https://cdn.builder.io/api/v1/image/assets%2Fd30aba391b974a07b1dc4ee95e17e59e%2F60a43d2a9504457b8647e336617950c9?format=webp&width=800"
               alt="Graduated Cylinder"
-              className="w-20 h-36 object-contain"
+              className="w-28 h-48 object-contain"
               style={{
                 filter: "drop-shadow(0 10px 25px rgba(0,0,0,0.15))",
               }}
