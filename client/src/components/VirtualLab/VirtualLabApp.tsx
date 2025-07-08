@@ -480,12 +480,13 @@ function VirtualLabApp({
     if (stepNumber > 1) {
       const timeoutId = setTimeout(() => {
         const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
-        updateProgress.mutate({
-          experimentId,
-          currentStep: stepNumber,
-          completed: stepNumber >= totalSteps,
-          progressPercentage,
-        });
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: stepNumber,
+        //   completed: stepNumber >= totalSteps,
+        //   progressPercentage,
+        // });
       }, 1000); // Debounce for 1 second
 
       return () => clearTimeout(timeoutId);
@@ -1045,7 +1046,7 @@ function VirtualLabApp({
                   <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900 text-sm flex items-center">
-                        🔥 Heating Status
+                        ��� Heating Status
                       </h3>
                       <div className="flex items-center gap-2">
                         {isHeating &&
