@@ -36,15 +36,32 @@ export const Chemical: React.FC<ChemicalProps> = ({
     );
     e.dataTransfer.effectAllowed = "copy";
 
-    // Add visual feedback during drag
-    const dragImage = e.currentTarget.cloneNode(true) as HTMLElement;
-    dragImage.style.transform = "rotate(5deg) scale(1.1)";
-    dragImage.style.opacity = "0.8";
-    dragImage.style.border = "2px solid #7C3AED";
-    dragImage.style.borderRadius = "8px";
-    document.body.appendChild(dragImage);
-    e.dataTransfer.setDragImage(dragImage, 50, 50);
-    setTimeout(() => document.body.removeChild(dragImage), 0);
+    // Add smooth visual feedback during drag
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = "scale(1.05) rotate(2deg)";
+    target.style.opacity = "0.9";
+    target.style.transition = "all 0.2s ease-out";
+
+    // Create custom drag image with better styling
+    setTimeout(() => {
+      const dragImage = target.cloneNode(true) as HTMLElement;
+      dragImage.style.transform = "rotate(3deg) scale(1.05)";
+      dragImage.style.opacity = "0.85";
+      dragImage.style.border = "2px solid #7C3AED";
+      dragImage.style.borderRadius = "12px";
+      dragImage.style.boxShadow = "0 8px 25px rgba(124, 58, 237, 0.3)";
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-1000px";
+      document.body.appendChild(dragImage);
+      e.dataTransfer.setDragImage(dragImage, 50, 50);
+
+      // Clean up drag image safely
+      requestAnimationFrame(() => {
+        if (document.body.contains(dragImage)) {
+          document.body.removeChild(dragImage);
+        }
+      });
+    }, 0);
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
