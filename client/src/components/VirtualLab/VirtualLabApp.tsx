@@ -849,7 +849,12 @@ function VirtualLabApp({
     itemId: string,
     targetId?: string,
   ) => {
-    if (!experimentTitle.includes("Aspirin")) return true; // Only validate for Aspirin experiment
+    if (
+      !experimentTitle.includes("Aspirin") ||
+      !aspirinGuidedSteps ||
+      aspirinGuidedSteps.length === 0
+    )
+      return true; // Only validate for Aspirin experiment
 
     const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
     if (!currentStep) return true; // No more steps
