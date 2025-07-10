@@ -106,6 +106,8 @@ function VirtualLabApp({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [currentGuidedStep, setCurrentGuidedStep] = useState(1);
   const [experimentCompleted, setExperimentCompleted] = useState(false);
+  const [showWrongStepModal, setShowWrongStepModal] = useState(false);
+  const [wrongStepMessage, setWrongStepMessage] = useState("");
   const [completionTime, setCompletionTime] = useState<Date | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
@@ -381,7 +383,8 @@ function VirtualLabApp({
   const checkExperimentCompletion = useCallback(() => {
     if (experimentTitle.includes("Aspirin")) {
       // Aspirin experiment completion: all guided steps completed + heating finished
-      const allStepsCompleted = currentGuidedStep > aspirinGuidedSteps.length;
+      const allStepsCompleted =
+        currentGuidedStep > (aspirinGuidedSteps?.length || 0);
       const heatingCompleted = heatingTime >= 15 * 60; // 15 minutes
       const hasRequiredChemicals = equipmentPositions.some(
         (pos) =>
@@ -399,12 +402,13 @@ function VirtualLabApp({
         setExperimentCompleted(true);
         setCompletionTime(new Date());
         setShowCompletionModal(true);
-        updateProgress.mutate({
-          experimentId,
-          currentStep: totalSteps,
-          completed: true,
-          progressPercentage: 100,
-        });
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: totalSteps,
+        //   completed: true,
+        //   progressPercentage: 100,
+        // });
       }
     } else if (experimentTitle.includes("Acid-Base")) {
       // Acid-Base titration completion: endpoint reached
@@ -423,12 +427,13 @@ function VirtualLabApp({
         setExperimentCompleted(true);
         setCompletionTime(new Date());
         setShowCompletionModal(true);
-        updateProgress.mutate({
-          experimentId,
-          currentStep: totalSteps,
-          completed: true,
-          progressPercentage: 100,
-        });
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: totalSteps,
+        //   completed: true,
+        //   progressPercentage: 100,
+        // });
       }
     } else if (experimentTitle.includes("Equilibrium")) {
       // Equilibrium experiment completion: all color changes observed
@@ -447,12 +452,13 @@ function VirtualLabApp({
         setExperimentCompleted(true);
         setCompletionTime(new Date());
         setShowCompletionModal(true);
-        updateProgress.mutate({
-          experimentId,
-          currentStep: totalSteps,
-          completed: true,
-          progressPercentage: 100,
-        });
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: totalSteps,
+        //   completed: true,
+        //   progressPercentage: 100,
+        // });
       }
     }
   }, [
@@ -465,7 +471,6 @@ function VirtualLabApp({
     experimentCompleted,
     totalSteps,
     experimentId,
-    updateProgress,
   ]);
 
   // Monitor completion conditions
@@ -473,18 +478,23 @@ function VirtualLabApp({
     checkExperimentCompletion();
   }, [checkExperimentCompletion]);
 
-  // Update progress when step changes
+  // Update progress when step changes (debounced to prevent excessive API calls)
   useEffect(() => {
     if (stepNumber > 1) {
-      const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
-      updateProgress.mutate({
-        experimentId,
-        currentStep: stepNumber,
-        completed: stepNumber >= totalSteps,
-        progressPercentage,
-      });
+      const timeoutId = setTimeout(() => {
+        const progressPercentage = Math.round((stepNumber / totalSteps) * 100);
+        // Temporarily disabled to debug fetch errors
+        // updateProgress.mutate({
+        //   experimentId,
+        //   currentStep: stepNumber,
+        //   completed: stepNumber >= totalSteps,
+        //   progressPercentage,
+        // });
+      }, 1000); // Debounce for 1 second
+
+      return () => clearTimeout(timeoutId);
     }
-  }, [stepNumber, totalSteps, experimentId, updateProgress]);
+  }, [stepNumber, totalSteps, experimentId]);
 
   // Guided steps for Aspirin Synthesis
   const aspirinGuidedSteps = [
@@ -555,21 +565,28 @@ function VirtualLabApp({
         }
 
         // Check if this completes a guided step for Aspirin Synthesis
-        if (experimentTitle.includes("Aspirin")) {
+        if (
+          experimentTitle.includes("Aspirin") &&
+          aspirinGuidedSteps &&
+          aspirinGuidedSteps.length > 0
+        ) {
+          // Validate step sequence and show warnings
+          validateStepSequence("equipment", id);
+
           const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
           if (currentStep?.requiredEquipment === id) {
             setCurrentGuidedStep((prev) => prev + 1);
             setToastMessage(`✓ Step ${currentGuidedStep} completed!`);
             setTimeout(() => setToastMessage(null), 3000);
           }
+        }
 
-          // Auto-start heating when water bath is placed for heating step
-          if (id === "water_bath" && currentGuidedStep === 5) {
-            setTimeout(() => {
-              setToastMessage("💡 Click on the water bath to start heating!");
-              setTimeout(() => setToastMessage(null), 4000);
-            }, 1000);
-          }
+        // Auto-start heating when water bath is placed for heating step
+        if (id === "water_bath" && currentGuidedStep === 5) {
+          setTimeout(() => {
+            setToastMessage("💡 Click on the water bath to start heating!");
+            setTimeout(() => setToastMessage(null), 4000);
+          }, 1000);
         }
 
         return [...prev, { id, x: validX, y: validY, chemicals: [] }];
@@ -578,11 +595,53 @@ function VirtualLabApp({
     [experimentTitle, currentGuidedStep, aspirinGuidedSteps],
   );
 
-  const handleEquipmentRemove = useCallback((id: string) => {
-    setEquipmentPositions((prev) => prev.filter((pos) => pos.id !== id));
-    setToastMessage(`${id} removed from workbench`);
-    setTimeout(() => setToastMessage(null), 2000);
-  }, []);
+  const handleEquipmentRemove = useCallback(
+    (id: string) => {
+      setEquipmentPositions((prev) => prev.filter((pos) => pos.id !== id));
+
+      // Reset step progress when key equipment is removed for Aspirin experiment
+      if (
+        experimentTitle.includes("Aspirin") &&
+        aspirinGuidedSteps &&
+        aspirinGuidedSteps.length > 0
+      ) {
+        try {
+          // Find which step this equipment belongs to
+          const stepWithEquipment = aspirinGuidedSteps.find(
+            (step) => step.requiredEquipment === id,
+          );
+
+          if (stepWithEquipment && currentGuidedStep > stepWithEquipment.id) {
+            // Reset to the step where this equipment was required
+            setCurrentGuidedStep(stepWithEquipment.id);
+            setToastMessage(
+              `📝 Progress reset to Step ${stepWithEquipment.id} because ${id} was removed`,
+            );
+            setTimeout(() => setToastMessage(null), 4000);
+
+            // Also reset heating if water bath is removed
+            if (id === "water_bath") {
+              setIsHeating(false);
+              setHeatingTime(0);
+              setTargetTemperature(25);
+              setActualTemperature(25);
+            }
+          } else {
+            setToastMessage(`${id} removed from workbench`);
+            setTimeout(() => setToastMessage(null), 2000);
+          }
+        } catch (error) {
+          console.warn("Error resetting step progress:", error);
+          setToastMessage(`${id} removed from workbench`);
+          setTimeout(() => setToastMessage(null), 2000);
+        }
+      } else {
+        setToastMessage(`${id} removed from workbench`);
+        setTimeout(() => setToastMessage(null), 2000);
+      }
+    },
+    [experimentTitle, aspirinGuidedSteps, currentGuidedStep],
+  );
 
   const calculateChemicalProperties = (
     chemical: any,
@@ -648,7 +707,14 @@ function VirtualLabApp({
           setTimeout(() => setToastMessage(null), 3000);
 
           // Check if this completes a guided step for Aspirin Synthesis
-          if (experimentTitle.includes("Aspirin")) {
+          if (
+            experimentTitle.includes("Aspirin") &&
+            aspirinGuidedSteps &&
+            aspirinGuidedSteps.length > 0
+          ) {
+            // Validate step sequence and show warnings
+            validateStepSequence("chemical", chemicalId, equipmentId);
+
             const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
             if (
               currentStep?.requiredChemical === chemicalId &&
@@ -801,8 +867,141 @@ function VirtualLabApp({
     setTimeout(() => setToastMessage(null), 2000);
   };
 
+  const handleSkipMinute = () => {
+    if (
+      isHeating &&
+      actualTemperature >= targetTemperature &&
+      heatingTime < 15 * 60
+    ) {
+      setHeatingTime((prevTime) => {
+        const newTime = Math.min(prevTime + 60, 15 * 60); // Add 1 minute, but don't exceed 15 minutes
+        if (newTime >= 15 * 60) {
+          // If we've reached the end, complete the heating
+          setIsHeating(false);
+          setCurrentGuidedStep((prev) => prev + 1);
+          setToastMessage("✅ Heating step completed!");
+          setTimeout(() => setToastMessage(null), 3000);
+        } else {
+          setToastMessage("⏩ Skipped ahead 1 minute");
+          setTimeout(() => setToastMessage(null), 2000);
+        }
+        return newTime;
+      });
+    }
+  };
+
   const handleClearResults = () => {
     setResults([]);
+  };
+
+  // Function to check if an action is valid for the current step
+  const validateStepSequence = (
+    actionType: "equipment" | "chemical",
+    itemId: string,
+    targetId?: string,
+  ) => {
+    try {
+      if (
+        !experimentTitle.includes("Aspirin") ||
+        !aspirinGuidedSteps ||
+        aspirinGuidedSteps.length === 0
+      )
+        return true; // Only validate for Aspirin experiment
+
+      const currentStep = aspirinGuidedSteps[currentGuidedStep - 1];
+      if (!currentStep) return true; // No more steps
+
+      // Check if this action matches the current step
+      if (
+        actionType === "equipment" &&
+        currentStep.requiredEquipment === itemId
+      ) {
+        return true; // Correct equipment for current step
+      }
+
+      if (
+        actionType === "chemical" &&
+        currentStep.requiredChemical === itemId &&
+        currentStep.targetEquipment === targetId
+      ) {
+        return true; // Correct chemical for current step
+      }
+
+      // Check if this action belongs to a future step
+      const futureStep = aspirinGuidedSteps.find(
+        (step) =>
+          step &&
+          step.id > currentGuidedStep &&
+          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+            (actionType === "chemical" &&
+              step.requiredChemical === itemId &&
+              step.targetEquipment === targetId)),
+      );
+
+      if (futureStep) {
+        // Show warning toast instead of modal to prevent crashes
+        setToastMessage(
+          `⚠️ You're trying to do Step ${futureStep.id} early. Current step is ${currentGuidedStep}.`,
+        );
+        setTimeout(() => setToastMessage(null), 4000);
+        return true; // Allow the action but show warning
+      }
+
+      // Check if this action was already done in a previous step
+      const pastStep = aspirinGuidedSteps.find(
+        (step) =>
+          step &&
+          step.id < currentGuidedStep &&
+          ((actionType === "equipment" && step.requiredEquipment === itemId) ||
+            (actionType === "chemical" &&
+              step.requiredChemical === itemId &&
+              step.targetEquipment === targetId)),
+      );
+
+      if (pastStep) {
+        setToastMessage(
+          `ℹ️ Step ${pastStep.id} was already completed. Continue with Step ${currentGuidedStep}.`,
+        );
+        setTimeout(() => setToastMessage(null), 4000);
+        return true; // Allow the action but show info
+      }
+
+      // Allow unknown actions without warning
+      return true;
+    } catch (error) {
+      console.warn("Error in step validation:", error);
+      return true; // Allow action if validation fails to prevent crashes
+    }
+  };
+
+  const handleRestartExperiment = () => {
+    try {
+      setShowWrongStepModal(false);
+      setCurrentGuidedStep(1);
+      setEquipmentPositions([]);
+      setIsHeating(false);
+      setHeatingTime(0);
+      setTargetTemperature(25);
+      setActualTemperature(25);
+      setResults([]);
+      setMeasurements({
+        volume: 0,
+        concentration: 0,
+        ph: 7,
+        molarity: 0,
+        weight: 0,
+        moles: 0,
+        temperature: 25,
+      });
+      setExperimentCompleted(false);
+      setCompletionTime(null);
+      setToastMessage("🔄 Experiment restarted");
+      setTimeout(() => setToastMessage(null), 2000);
+    } catch (error) {
+      console.warn("Error restarting experiment:", error);
+      // At minimum, close the modal
+      setShowWrongStepModal(false);
+    }
   };
 
   const handleStepClick = (stepId: number) => {
@@ -843,7 +1042,7 @@ function VirtualLabApp({
                     </p>
                   </div>
 
-                  {aspirinGuidedSteps.map((step, index) => (
+                  {(aspirinGuidedSteps || []).map((step, index) => (
                     <div
                       key={step.id}
                       className={`p-3 rounded-lg border-2 transition-all ${
@@ -898,11 +1097,23 @@ function VirtualLabApp({
                   <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900 text-sm flex items-center">
-                        🔥 Heating Status
+                        ��� Heating Status
                       </h3>
-                      {isHeating && (
-                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {isHeating &&
+                          actualTemperature >= targetTemperature &&
+                          heatingTime < 15 * 60 && (
+                            <button
+                              onClick={handleSkipMinute}
+                              className="text-xs px-3 py-1 rounded-md font-medium transition-colors bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                              ⏩ Skip +1 min
+                            </button>
+                          )}
+                        {isHeating && (
+                          <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-3">
@@ -1118,13 +1329,13 @@ function VirtualLabApp({
                 <div className="text-xs text-gray-600 mr-3 flex items-center space-x-2">
                   <span>
                     Progress: {currentGuidedStep - 1}/
-                    {aspirinGuidedSteps.length}
+                    {aspirinGuidedSteps?.length || 0}
                   </span>
                   <div className="w-20 bg-gray-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-500"
                       style={{
-                        width: `${((currentGuidedStep - 1) / aspirinGuidedSteps.length) * 100}%`,
+                        width: `${((currentGuidedStep - 1) / (aspirinGuidedSteps?.length || 1)) * 100}%`,
                       }}
                     ></div>
                   </div>
@@ -1149,6 +1360,7 @@ function VirtualLabApp({
                   setExperimentCompleted(false);
                   setCompletionTime(null);
                   setShowCompletionModal(false);
+                  setShowWrongStepModal(false);
                   setIsHeating(false);
                   setHeatingTime(0);
                   setTargetTemperature(25);
@@ -1375,6 +1587,41 @@ function VirtualLabApp({
         )}
       </div>
 
+      {/* Wrong Step Modal */}
+      {showWrongStepModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <span className="text-3xl">⚠️</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Wrong Step!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {wrongStepMessage ||
+                  "Please follow the experiment steps in order."}
+              </p>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => setShowWrongStepModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Continue Anyway
+                </button>
+                <button
+                  onClick={handleRestartExperiment}
+                  className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  Restart Experiment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-bounce">
@@ -1416,7 +1663,8 @@ function VirtualLabApp({
                   <div className="flex items-center justify-between text-sm mt-2">
                     <span className="text-gray-600">Guided Steps:</span>
                     <span className="font-medium">
-                      {aspirinGuidedSteps.length}/{aspirinGuidedSteps.length}
+                      {aspirinGuidedSteps?.length || 0}/
+                      {aspirinGuidedSteps?.length || 0}
                     </span>
                   </div>
                 )}
@@ -1452,6 +1700,7 @@ function VirtualLabApp({
                     setIsHeating(false);
                     setHeatingTime(0);
                     setActualTemperature(25);
+                    setShowWrongStepModal(false);
                     setMeasurements({
                       volume: 0,
                       concentration: 0,
